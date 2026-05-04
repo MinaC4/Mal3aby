@@ -1,23 +1,20 @@
+
 # Mal3aby - ملعبي
 
 <div align="center">
+  <img src="https://img.shields.io/badge/Mal3aby-10b981?style=for-the-badge&logo=football" alt="Logo" />
+  <h3><strong>Smart Football Pitch Booking Platform</strong></h3>
 
-![Logo](https://img.shields.io/badge/Malaby-10b981?style=for-the-badge&logo=football)
-
-**Smart Football Pitch Booking Platform**
-
-[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev)
-[![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js)](https://nodejs.org)
-[![Express](https://img.shields.io/badge/Express-4-000000?logo=express)](https://expressjs.com)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb)](https://mongodb.com)
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://docker.com)
-
+  [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev)
+  [![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js)](https://nodejs.org)
+  [![Express](https://img.shields.io/badge/Express-4-000000?logo=express)](https://expressjs.com)
+  [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb)](https://mongodb.com)
+  [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://docker.com)
 </div>
 
 ---
 
-##  Table of Contents
-
+## Table of Contents
 - [Overview](#-overview)
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
@@ -27,32 +24,31 @@
 - [Environment Variables](#-environment-variables)
 - [API Documentation](#-api-documentation)
 - [Project Structure](#-project-structure)
-- [Project UI](#-project-UI)
-
-
----
-
-##  Overview
-
-**Mal3aby** is a smart platform that brings football pitch owners together, allowing users to:
-
--  Browse pitches with photos, prices, and locations
--  Smart booking system with automatic conflict prevention
--  Real-time notifications for booking confirmations
--  Comprehensive admin dashboard for managing bookings
+- [Project UI](#-project-ui)
 
 ---
 
-##  Features
+## 📋 Overview
 
-###  For Users
+**Mal3aby** is a smart platform that connects football pitch owners with players, offering:
+
+- Browse pitches with photos, prices, and locations
+- Smart booking system with automatic conflict prevention
+- Real-time notifications
+- Comprehensive admin dashboard for pitch owners
+
+---
+
+## ✨ Features
+
+### For Users
 - Browse pitches with high-quality photos
 - Advanced filtering and search
 - Smart booking with day and time selection
 - Automatic time conflict prevention
 - Payment via Vodafone Cash or InstaPay
 
-###  For Admins (Pitch Owners)
+### For Admins (Pitch Owners)
 - Comprehensive dashboard
 - View all bookings with customer details
 - Real-time notifications for new bookings
@@ -61,320 +57,167 @@
 
 ---
 
-##  Tech Stack
+## 🛠 Tech Stack
 
 ### Architecture: Microservices
 
-```
-┌─────────────────────┐
-│   Frontend User     │  ← React + Vite (Port 3000)
-│   (User App)        │
-└──────────┬──────────┘
-           │
-┌──────────▼──────────┐
-│   Frontend Admin    │  ← React + Vite (Port 3001)
-│   (Dashboard)       │
-└──────────┬──────────┘
-           │
-┌──────────▼──────────┐
-│   Backend API       │  ← Node.js + Express (Port 5000)
-│   (REST API)        │
-└──────────┬──────────┘
-           │
-┌──────────▼──────────┐
-│   MongoDB Atlas     │  ← Cloud Database
-│   (Database)        │
-└─────────────────────┘
+```mermaid
+flowchart TD
+    A[Frontend User<br/>React + Vite (3000)] --> C[Backend API<br/>Node.js + Express (5000)]
+    B[Frontend Admin<br/>React + Vite (3001)] --> C
+    C --> D[MongoDB Atlas]
 ```
 
 ### Technologies Used
 
-| Layer | Technology | Description |
-|-------|------------|-------------|
-| Frontend User | React 18 + Vite + TypeScript + Tailwind CSS | User Interface |
-| Frontend Admin | React 18 + Vite + TypeScript + Tailwind CSS | Admin Dashboard |
-| Backend | Node.js + Express + MongoDB (Mongoose) | API |
-| Database | MongoDB Atlas | Cloud Database |
-| DevOps | Docker + Docker Compose | Containerization |
+| Layer              | Technology                        | Description                  |
+|--------------------|-----------------------------------|------------------------------|
+| Frontend (User)    | React 18 + Vite + TypeScript + Tailwind CSS | User Interface          |
+| Frontend (Admin)   | React 18 + Vite + TypeScript + Tailwind CSS | Admin Dashboard         |
+| Backend            | Node.js + Express + Mongoose      | REST API                     |
+| Database           | MongoDB Atlas                     | Cloud Database               |
+| DevOps             | Docker + Docker Compose           | Containerization             |
 
 ---
 
-##  Requirements
-
-- **Docker** + **Docker Compose**
+## 📌 Requirements
+- **Docker** + **Docker Compose** (Recommended)
 - Or **Node.js 20+** + **npm**
 - Internet connection (for MongoDB Atlas)
 
 ---
 
-##  Run with Docker
+## 🚀 Run with Docker
 
 ### 1. Clone the Repository
-
 ```bash
 git clone <repository-url>
 cd malaby
 ```
 
 ### 2. Set Up Environment Variables
-
 ```bash
-# Edit the .env file with your favorite editor
 nano .env
 ```
 
-Make sure to add your **MongoDB URI**:
+**`.env` example:**
 ```env
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/malaby?retryWrites=true&w=majority
+NODE_ENV=production
+PORT=5000
 ```
 
-### 3. Build and Run Services
-
+### 3. Build and Run
 ```bash
-# Build all services
+# Build and run
 docker-compose up --build
 
-# Or run in background
+# Run in background
 docker-compose up --build -d
 ```
 
-### 4. Access the Applications
+### 4. Access Applications
 
-| Service | URL | Description |
-|---------|-----|-------------|
-| User App | http://localhost:3000 | User Interface |
-| Admin Dashboard | http://localhost:3001 | Admin Panel |
-| API | http://localhost:5000/api | REST API |
-
-### 5. Manage Services
-
-```bash
-# Stop services
-docker-compose down
-
-# Rebuild
-docker-compose up --build
-
-# View logs
-docker-compose logs -f
-
-# View logs for specific service
-docker-compose logs -f api
-```
-
-### 6. Seed Data (Optional)
-
-```bash
-# Run seed inside the container
-docker-compose exec api node seed.js
-```
+| Service           | URL                    | Description         |
+|-------------------|------------------------|---------------------|
+| User App          | http://localhost:3000  | User Interface      |
+| Admin Dashboard   | http://localhost:3001  | Admin Panel         |
+| API               | http://localhost:5000  | REST API            |
 
 ---
 
-##  Local Development (Without Docker)
+## 💻 Local Development
 
 ### Backend
-
 ```bash
 cd backend
 npm install
-npm run seed    # Seed sample data (optional)
-npm start       # Production mode
-# or
-npm run dev     # Development mode (with nodemon)
+npm run seed          # Optional
+npm run dev           # Development
 ```
 
 ### Frontend User
-
 ```bash
 cd frontend-user
 npm install
-npm run dev     # Runs on http://localhost:3000
+npm run dev
 ```
 
 ### Frontend Admin
-
 ```bash
 cd frontend-admin
 npm install
-npm run dev     # Runs on http://localhost:3001
+npm run dev
 ```
 
 ---
 
 ## ⚙ Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `MONGODB_URI` | MongoDB Atlas connection string | Required |
-| `NODE_ENV` | Environment mode | `production` |
-| `PORT` | API port | `5000` |
-| `CORS_ORIGIN` | Allowed origins | `*` |
-| `ADMIN_USERNAME` | Admin username | `admin` |
-| `ADMIN_PASSWORD` | Admin password | `admin123` |
+| Variable           | Description                        | Default      |
+|--------------------|------------------------------------|--------------|
+| `MONGODB_URI`      | MongoDB Atlas connection string    | Required     |
+| `NODE_ENV`         | Environment mode                   | `production` |
+| `PORT`             | API port                           | `5000`       |
+| `CORS_ORIGIN`      | Allowed origins                    | `*`          |
+| `ADMIN_USERNAME`   | Admin username                     | `admin`      |
+| `ADMIN_PASSWORD`   | Admin password                     | `admin123`   |
 
 ---
 
 ## 🔌 API Documentation
 
-### Endpoints
+### Pitches
+- `GET /api/pitches`
+- `GET /api/pitches/:id`
+- `GET /api/pitches/:id/slots?date=YYYY-MM-DD`
 
-#### Pitches
+### Bookings
+- `GET /api/bookings`
+- `POST /api/bookings`
+- `PUT /api/bookings/:id/status`
+- `PUT /api/bookings/:id/payment`
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/pitches` | Get all pitches |
-| `GET` | `/api/pitches/:id` | Get specific pitch |
-| `GET` | `/api/pitches/:id/slots?date=YYYY-MM-DD` | Get available time slots |
+### Notifications
+- `GET /api/notifications`
+- `PUT /api/notifications/:id/read`
+- `PUT /api/notifications/read-all`
 
-#### Bookings
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/bookings` | Get all bookings |
-| `POST` | `/api/bookings` | Create new booking |
-| `GET` | `/api/bookings/:id` | Get specific booking |
-| `PUT` | `/api/bookings/:id/status` | Update booking status |
-| `PUT` | `/api/bookings/:id/payment` | Upload payment screenshot |
-| `DELETE` | `/api/bookings/:id` | Delete booking |
-
-#### Notifications
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/notifications` | Get all notifications |
-| `PUT` | `/api/notifications/:id/read` | Mark as read |
-| `PUT` | `/api/notifications/read-all` | Mark all as read |
-| `DELETE` | `/api/notifications/:id` | Delete notification |
-| `GET` | `/api/notifications/stats/unread` | Get unread count |
-
-### Health Check
-
-```bash
-GET /health
-```
+**Health Check:** `GET /health`
 
 ---
 
 ## 📁 Project Structure
 
-```
+```bash
 malaby/
-├── docker-compose.yml          # Docker Compose configuration
-├── .env                        # Environment variables
-├── .dockerignore               # Docker ignore rules
-├── README.md                   # This file
-├── docs/
-│   └── API_DOCUMENTATION.md    # Detailed API docs
-│
-├── backend/                    # Backend API Service
-│   ├── Dockerfile
-│   ├── server.js               # Entry point
-│   ├── package.json
-│   ├── seed.js                 # Seed data
-│   ├── config/
-│   │   └── db.js               # MongoDB connection
+├── docker-compose.yml
+├── .env
+├── backend/
+│   ├── server.js
 │   ├── models/
-│   │   ├── Pitch.js            # Pitch model
-│   │   ├── Booking.js          # Booking model
-│   │   └── Notification.js     # Notification model
 │   ├── routes/
-│   │   ├── pitches.js          # Pitch routes
-│   │   ├── bookings.js         # Booking routes
-│   │   └── notifications.js    # Notification routes
-│   └── middleware/
-│       └── errorHandler.js     # Error handling
-│
-├── frontend-user/              # User Frontend Service
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   ├── package.json
-│   ├── vite.config.ts
-│   ├── tailwind.config.js
-│   ├── tsconfig.json
-│   ├── index.html
-│   └── src/
-│       ├── main.tsx
-│       ├── App.tsx
-│       ├── index.css
-│       ├── lib/
-│       │   └── utils.ts
-│       ├── types/
-│       │   └── index.ts
-│       ├── hooks/
-│       │   └── useApi.ts
-│       ├── components/
-│       │   ├── Navbar.tsx
-│       │   ├── Footer.tsx
-│       │   ├── PitchCard.tsx
-│       │   └── BookingForm.tsx
-│       └── pages/
-│           ├── HomePage.tsx
-│           ├── PitchesPage.tsx
-│           ├── PitchDetailPage.tsx
-│           ├── BookingPage.tsx
-│           └── BookingSuccessPage.tsx
-│
-└── frontend-admin/             # Admin Dashboard Service
-    ├── Dockerfile
-    ├── nginx.conf
-    ├── package.json
-    ├── vite.config.ts
-    ├── tailwind.config.js
-    ├── tsconfig.json
-    ├── index.html
-    └── src/
-        ├── main.tsx
-        ├── App.tsx
-        ├── index.css
-        ├── lib/
-        │   └── utils.ts
-        ├── types/
-        │   └── index.ts
-        ├── hooks/
-        │   ├── useApi.ts
-        │   └── useAuth.ts
-        ├── components/
-        │   ├── Sidebar.tsx
-        │   └── Navbar.tsx
-        └── pages/
-            ├── LoginPage.tsx
-            ├── DashboardPage.tsx
-            ├── BookingsPage.tsx
-            └── NotificationsPage.tsx
+│   └── ...
+├── frontend-user/
+├── frontend-admin/
+└── README.md
 ```
 
-## 📁 Project UI
-
-                                                            Home Page
-
-                                                            <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 17 36 PM" src="https://github.com/user-attachments/assets/42a67b7b-d501-43e5-b277-77a220f208ad" />
-
-                                                   
-                                                            El Mla3b
-
-                                                            <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 17 41 PM" src="https://github.com/user-attachments/assets/ae76da3e-9ef7-416b-b223-37e84e506b21" />
-
-
-
-                                                             Booking
-
-                                                             <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 17 59 PM" src="https://github.com/user-attachments/assets/24c9845b-088f-47c1-981e-08cf12534211" />
-
-
-                                                             Admin Dashboard
-
-                                                             <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 18 16 PM" src="https://github.com/user-attachments/assets/c2da0968-a450-4814-9d43-5e10f0ac8b76" />
-
-
-
-                                                                <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 18 23 PM" src="https://github.com/user-attachments/assets/63427b3a-e742-4689-8279-53b8baef92a5" />
-
-
-
-
-                                                                <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 18 28 PM" src="https://github.com/user-attachments/assets/bebe9097-a52a-486b-9979-df5cab68cabd" />
-
-                                                              
 ---
 
+## 🖼 Project UI
+
+### Home Page
+![Home Page](https://github.com/user-attachments/assets/42a67b7b-d501-43e5-b277-77a220f208ad)
+
+### Pitches Page
+![Pitches](https://github.com/user-attachments/assets/ae76da3e-9ef7-416b-b223-37e84e506b21)
+
+### Booking Page
+![Booking](https://github.com/user-attachments/assets/24c9845b-088f-47c1-981e-08cf12534211)
+
+### Admin Dashboard
+![Admin Dashboard 1](https://github.com/user-attachments/assets/c2da0968-a450-4814-9d43-5e10f0ac8b76)
+![Admin Dashboard 2](https://github.com/user-attachments/assets/63427b3a-e742-4689-8279-53b8baef92a5)
+![Admin Dashboard 3](https://github.com/user-attachments/assets/bebe9097-a52a-486b-9979-df5cab68cabd)
+```
