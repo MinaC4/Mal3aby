@@ -5,6 +5,10 @@
   <img src="https://img.shields.io/badge/Mal3aby-10b981?style=for-the-badge&logo=football" alt="Logo" />
   <h3><strong>Smart Football Pitch Booking Platform</strong></h3>
 
+### Home Page
+![Home Page](https://github.com/user-attachments/assets/42a67b7b-d501-43e5-b277-77a220f208ad)
+
+
   [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev)
   [![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js)](https://nodejs.org)
   [![Express](https://img.shields.io/badge/Express-4-000000?logo=express)](https://expressjs.com)
@@ -222,8 +226,6 @@ malaby/
 
 ##  Project UI
 
-### Home Page
-![Home Page](https://github.com/user-attachments/assets/42a67b7b-d501-43e5-b277-77a220f208ad)
 
 ### Pitches Page
 ![Pitches](https://github.com/user-attachments/assets/ae76da3e-9ef7-416b-b223-37e84e506b21)
