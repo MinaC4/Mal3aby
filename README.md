@@ -16,7 +16,7 @@
 
 ---
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [Overview](#-overview)
 - [Features](#-features)
@@ -32,27 +32,27 @@
 
 ---
 
-## 🔭 Overview
+##  Overview
 
 **Mal3aby** is a smart platform that brings football pitch owners together, allowing users to:
 
-- ✅ Browse pitches with photos, prices, and locations
-- ✅ Smart booking system with automatic conflict prevention
-- ✅ Real-time notifications for booking confirmations
-- ✅ Comprehensive admin dashboard for managing bookings
+-  Browse pitches with photos, prices, and locations
+-  Smart booking system with automatic conflict prevention
+-  Real-time notifications for booking confirmations
+-  Comprehensive admin dashboard for managing bookings
 
 ---
 
-## ✨ Features
+##  Features
 
-### 👤 For Users
+###  For Users
 - Browse pitches with high-quality photos
 - Advanced filtering and search
 - Smart booking with day and time selection
 - Automatic time conflict prevention
 - Payment via Vodafone Cash or InstaPay
 
-### 👨‍💼 For Admins (Pitch Owners)
+###  For Admins (Pitch Owners)
 - Comprehensive dashboard
 - View all bookings with customer details
 - Real-time notifications for new bookings
@@ -61,7 +61,7 @@
 
 ---
 
-## 🏗 Tech Stack
+##  Tech Stack
 
 ### Architecture: Microservices
 
@@ -99,7 +99,7 @@
 
 ---
 
-## 📦 Requirements
+##  Requirements
 
 - **Docker** + **Docker Compose**
 - Or **Node.js 20+** + **npm**
@@ -107,7 +107,7 @@
 
 ---
 
-## 🐳 Run with Docker
+##  Run with Docker
 
 ### 1. Clone the Repository
 
@@ -171,7 +171,7 @@ docker-compose exec api node seed.js
 
 ---
 
-## 💻 Local Development (Without Docker)
+##  Local Development (Without Docker)
 
 ### Backend
 
