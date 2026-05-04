@@ -12,9 +12,6 @@
     --ring: 160 84% 39%;
   }
 
-  * {
-    @apply border-border;
-  }
 
   body {
     @apply bg-gray-50 text-gray-900 antialiased;

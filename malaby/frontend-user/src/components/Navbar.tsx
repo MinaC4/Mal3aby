@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Football, Calendar } from 'lucide-react';
+import { Menu, X, Gamepad2, Calendar } from 'lucide-react';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,7 +18,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="bg-emerald-600 p-2 rounded-lg">
-              <Football className="h-6 w-6 text-white" />
+              <Gamepad2 className="h-6 w-6 text-white" />
             </div>
             <span className="text-xl font-bold text-gray-900">ملعبي</span>
           </Link>

@@ -1,5 +1,5 @@
 import { useParams, useLocation, Link } from 'react-router-dom';
-import { ArrowRight, ChevronLeft, MapPin, Star, CreditCard, Phone } from 'lucide-react';
+import { ChevronLeft, MapPin, Star, CreditCard, Phone } from 'lucide-react';
 import { useApi } from '@/hooks/useApi';
 import type { Pitch } from '@/types';
 import BookingForm from '@/components/BookingForm';

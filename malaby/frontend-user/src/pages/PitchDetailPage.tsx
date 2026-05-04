@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, Star, ArrowRight, ChevronLeft, ChevronRight, Clock, Calendar, Check, Phone, CreditCard } from 'lucide-react';
+import { MapPin, Star, ChevronLeft, ChevronRight, Clock, Calendar, Check, Phone, CreditCard } from 'lucide-react';
 import { useApi } from '@/hooks/useApi';
 import type { Pitch } from '@/types';
 

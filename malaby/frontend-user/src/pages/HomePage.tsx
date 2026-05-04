@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Shield, Clock, Zap, Star, MapPin, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Shield, Clock, Zap, Star, ChevronDown } from 'lucide-react';
 import { useApi } from '@/hooks/useApi';
 import type { Pitch } from '@/types';
 import PitchCard from '@/components/PitchCard';

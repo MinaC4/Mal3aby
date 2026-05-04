@@ -27,7 +27,7 @@
   }
 
   * {
-    @apply border-border;
+    border: none;
   }
 
   body {

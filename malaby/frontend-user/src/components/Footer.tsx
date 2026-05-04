@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Football, Phone, Mail, MapPin } from 'lucide-react';
+import { Gamepad2, Phone, Mail, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -10,7 +10,7 @@ export default function Footer() {
           <div>
             <Link to="/" className="flex items-center gap-2 mb-4">
               <div className="bg-emerald-600 p-2 rounded-lg">
-                <Football className="h-6 w-6 text-white" />
+                <Gamepad2 className="h-6 w-6 text-white" />
               </div>
               <span className="text-xl font-bold text-white">ملعبي</span>
             </Link>

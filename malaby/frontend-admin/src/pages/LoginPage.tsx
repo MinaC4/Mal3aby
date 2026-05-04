@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Football, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { Gamepad2, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function LoginPage() {
@@ -30,7 +30,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="bg-white/10 backdrop-blur-sm w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Football className="h-10 w-10 text-emerald-400" />
+            <Gamepad2 className="h-10 w-10 text-emerald-400" />
           </div>
           <h1 className="text-2xl font-bold text-white mb-1">ملعبي</h1>
           <p className="text-emerald-200">لوحة تحكم الأدمن</p>

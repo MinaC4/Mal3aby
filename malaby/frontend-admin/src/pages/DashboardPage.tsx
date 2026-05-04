@@ -1,4 +1,4 @@
-import { CalendarDays, CheckCircle, Clock, DollarSign, Bell, TrendingUp, Users } from 'lucide-react';
+import { CalendarDays, CheckCircle, Clock, DollarSign, Bell, TrendingUp } from 'lucide-react';
 import { useApi } from '@/hooks/useApi';
 import type { Booking, Notification } from '@/types';
 import { formatDate, formatPrice, getStatusColor, getStatusLabel } from '@/lib/utils';
@@ -70,7 +70,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Bookings */}
+        {/* Recent Bookings - معدلة */}
         <div className="card">
           <div className="p-5 border-b border-gray-100 flex items-center justify-between">
             <h3 className="font-bold text-gray-900 flex items-center gap-2">
@@ -93,7 +93,12 @@ export default function DashboardPage() {
                   <div>
                     <p className="font-medium text-gray-900">{booking.customerName}</p>
                     <p className="text-sm text-gray-500">
-                      {typeof booking.pitch === 'object' ? booking.pitch.name : ''} - {booking.timeSlot}
+                      {typeof booking.pitch === 'object' ? booking.pitch.name : booking.pitch || 'ملعب'} 
+                      • {booking.timeSlot}
+                    </p>
+                    {/* عدد ساعات الحجز */}
+                    <p className="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
+                      ⏱ {booking.duration || 1} ساعة
                     </p>
                   </div>
                   <div className="text-left">
@@ -126,8 +131,8 @@ export default function DashboardPage() {
                 <p>لا توجد إشعارات</p>
               </div>
             ) : notificationsData.data.slice(0, 5).map((notification) => (
-              <div 
-                key={notification._id} 
+              <div
+                key={notification._id}
                 className={`p-4 hover:bg-gray-50 transition-colors ${!notification.read ? 'bg-emerald-50/50' : ''}`}
               >
                 <div className="flex items-start gap-3">

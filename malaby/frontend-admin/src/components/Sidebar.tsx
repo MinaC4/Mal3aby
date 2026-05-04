@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, CalendarDays, Bell, LogOut, Football, X } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Bell, LogOut, Gamepad2, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
 
@@ -42,7 +42,7 @@ export default function Sidebar() {
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-6 border-b border-gray-800">
           <div className="bg-emerald-600 p-2 rounded-lg">
-            <Football className="h-6 w-6 text-white" />
+            <Gamepad2 className="h-6 w-6 text-white" />
           </div>
           <div>
             <h1 className="font-bold text-lg">ملعبي</h1>
