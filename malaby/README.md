@@ -1,9 +1,3 @@
-  تمام! ده الـ README كامل بالإنجليزي، وشلت جزء الـ Kubernetes. كمان هقولك تغيّر باسورد الأدمن منين.
-
----
-
-##  `README.md` (English - Final)
-
 ```markdown
 # Mal3aby - ملعبي
 
