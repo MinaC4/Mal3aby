@@ -27,8 +27,7 @@
 - [Environment Variables](#-environment-variables)
 - [API Documentation](#-api-documentation)
 - [Project Structure](#-project-structure)
-- [Admin Dashboard Login](#-admin-dashboard-login)
-- [Support](#-support)
+
 
 ---
 
