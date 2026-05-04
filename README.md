@@ -28,7 +28,7 @@
 
 ---
 
-## 📋 Overview
+##  Overview
 
 **Mal3aby** is a smart platform that connects football pitch owners with players, offering:
 
@@ -39,7 +39,7 @@
 
 ---
 
-## ✨ Features
+##  Features
 
 ### For Users
 - Browse pitches with high-quality photos
@@ -95,14 +95,14 @@
 
 ---
 
-## 📌 Requirements
+##  Requirements
 - **Docker** + **Docker Compose** (Recommended)
 - Or **Node.js 20+** + **npm**
 - Internet connection (for MongoDB Atlas)
 
 ---
 
-## 🚀 Run with Docker
+##  Run with Docker
 
 ### 1. Clone the Repository
 ```bash
@@ -141,7 +141,7 @@ docker-compose up --build -d
 
 ---
 
-## 💻 Local Development
+##  Local Development
 
 ### Backend
 ```bash
@@ -202,7 +202,7 @@ npm run dev
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```bash
 malaby/
@@ -220,7 +220,7 @@ malaby/
 
 ---
 
-## 🖼 Project UI
+##  Project UI
 
 ### Home Page
 ![Home Page](https://github.com/user-attachments/assets/42a67b7b-d501-43e5-b277-77a220f208ad)
