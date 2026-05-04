@@ -27,6 +27,7 @@
 - [Environment Variables](#-environment-variables)
 - [API Documentation](#-api-documentation)
 - [Project Structure](#-project-structure)
+- [Project UI](#-project-UI)
 
 
 ---
@@ -343,5 +344,37 @@ malaby/
             └── NotificationsPage.tsx
 ```
 
+## 📁 Project UI
+
+                                                            Home Page
+
+                                                            <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 17 36 PM" src="https://github.com/user-attachments/assets/42a67b7b-d501-43e5-b277-77a220f208ad" />
+
+                                                   
+                                                            El Mla3b
+
+                                                            <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 17 41 PM" src="https://github.com/user-attachments/assets/ae76da3e-9ef7-416b-b223-37e84e506b21" />
+
+
+
+                                                             Booking
+
+                                                             <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 17 59 PM" src="https://github.com/user-attachments/assets/24c9845b-088f-47c1-981e-08cf12534211" />
+
+
+                                                             Admin Dashboard
+
+                                                             <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 18 16 PM" src="https://github.com/user-attachments/assets/c2da0968-a450-4814-9d43-5e10f0ac8b76" />
+
+
+
+                                                                <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 18 23 PM" src="https://github.com/user-attachments/assets/63427b3a-e742-4689-8279-53b8baef92a5" />
+
+
+
+
+                                                                <img width="1920" height="1200" alt="Screenshot 2026-05-04 at 12 18 28 PM" src="https://github.com/user-attachments/assets/bebe9097-a52a-486b-9979-df5cab68cabd" />
+
+                                                              
 ---
 
