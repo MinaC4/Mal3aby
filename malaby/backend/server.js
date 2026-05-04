@@ -86,7 +86,7 @@ const server = app.listen(PORT, () => {
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', err.message);
-  server.close(() => process.exit(1));
+  // server.close(() => process.exit(1)); ← تم إزالته عشان السيرفر مايقعش
 });
 
 module.exports = app;
