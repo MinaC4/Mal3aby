@@ -1,10 +1,17 @@
-# ملعبي - Malaby
+  تمام! ده الـ README كامل بالإنجليزي، وشلت جزء الـ Kubernetes. كمان هقولك تغيّر باسورد الأدمن منين.
+
+---
+
+##  `README.md` (English - Final)
+
+```markdown
+# Mal3aby - ملعبي
 
 <div align="center">
 
-![Logo](https://img.shields.io/badge/ملعبي-Malaby-10b981?style=for-the-badge&logo=football)
+![Logo](https://img.shields.io/badge/Malaby-10b981?style=for-the-badge&logo=football)
 
-**منصة ذكية لحجز ملاعب كرة القدم**
+**Smart Football Pitch Booking Platform**
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev)
 [![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js)](https://nodejs.org)
@@ -16,52 +23,52 @@
 
 ---
 
-## 📋 فهرس المحتويات
+##  Table of Contents
 
-- [نظرة عامة](#-نظرة-عامة)
-- [المميزات](#-المميزات)
-- [الهيكل التقني](#-الهيكل-التقني)
-- [متطلبات التشغيل](#-متطلبات-التشغيل)
-- [التشغيل باستخدام Docker](#-التشغيل-باستخدام-docker)
-- [التشغيل المحلي](#-التشغيل-المحلي)
-- [متغيرات البيئة](#-متغيرات-البيئة)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Requirements](#-requirements)
+- [Run with Docker](#-run-with-docker)
+- [Local Development](#-local-development)
+- [Environment Variables](#-environment-variables)
 - [API Documentation](#-api-documentation)
-- [هيكل المشروع](#-هيكل-المشروع)
-- [الدخول للوحة التحكم](#-الدخول-للوحة-التحكم)
-- [الدعم الفني](#-الدعم-الفني)
+- [Project Structure](#-project-structure)
+- [Admin Dashboard Login](#-admin-dashboard-login)
+- [Support](#-support)
 
 ---
 
-## 🔭 نظرة عامة
+## 🔭 Overview
 
-**"ملعبي"** هي منصة ذكية تجمع كل صاحب ملعب كرة قدم في مكان واحد، حيث يتيح للمستخدمين:
+**Mal3aby** is a smart platform that brings football pitch owners together, allowing users to:
 
-- ✅ استعراض الملاعب مع الصور والأسعار والمواقع
-- ✅ نظام حجز ذكي مع تجنب تضارب المواعيد
-- ✅ إشعارات فورية لتأكيد الحجوزات
-- ✅ لوحة تحكم شاملة لإدارة الحجوزات
-
----
-
-## ✨ المميزات
-
-### 👤 للمستخدمين
-- تصفح الملاعب مع صور عالية الجودة
-- فلترة وبحث متقدم
-- حجز ذكي باختيار اليوم والوقت
-- تجنب تضارب المواعيد تلقائياً
-- دفع عبر فودافون كاش أو إنستا باي
-
-### 👨‍💼 للأدمن (صاحب الملعب)
-- لوحة تحكم شاملة
-- عرض جميع الحجوزات مع تفاصيل العملاء
-- إشعارات فورية بالحجوزات الجديدة
-- إدارة حالات الحجوزات (تأكيد/إلغاء)
-- عرض صور التحويلات البنكية
+-  Browse pitches with photos, prices, and locations
+-  Smart booking system with automatic conflict prevention
+-  Real-time notifications for booking confirmations
+-  Comprehensive admin dashboard for managing bookings
 
 ---
 
-## 🏗 الهيكل التقني
+##  Features
+
+###  For Users
+- Browse pitches with high-quality photos
+- Advanced filtering and search
+- Smart booking with day and time selection
+- Automatic time conflict prevention
+- Payment via Vodafone Cash or InstaPay
+
+###  For Admins (Pitch Owners)
+- Comprehensive dashboard
+- View all bookings with customer details
+- Real-time notifications for new bookings
+- Manage booking statuses (confirm/cancel)
+- View payment transfer screenshots
+
+---
+
+##  Tech Stack
 
 ### Architecture: Microservices
 
@@ -87,101 +94,101 @@
 └─────────────────────┘
 ```
 
-### التقنيات المستخدمة
+### Technologies Used
 
-| الطبقة | التقنية | الوصف |
-|--------|---------|-------|
-| Frontend User | React 18 + Vite + TypeScript + Tailwind CSS | واجهة المستخدم |
-| Frontend Admin | React 18 + Vite + TypeScript + Tailwind CSS | لوحة التحكم |
+| Layer | Technology | Description |
+|-------|------------|-------------|
+| Frontend User | React 18 + Vite + TypeScript + Tailwind CSS | User Interface |
+| Frontend Admin | React 18 + Vite + TypeScript + Tailwind CSS | Admin Dashboard |
 | Backend | Node.js + Express + MongoDB (Mongoose) | API |
-| Database | MongoDB Atlas | قاعدة البيانات |
+| Database | MongoDB Atlas | Cloud Database |
 | DevOps | Docker + Docker Compose | Containerization |
 
 ---
 
-## 📦 متطلبات التشغيل
+##  Requirements
 
 - **Docker** + **Docker Compose**
-- أو **Node.js 20+** + **npm**
-- اتصال بالإنترنت (لـ MongoDB Atlas)
+- Or **Node.js 20+** + **npm**
+- Internet connection (for MongoDB Atlas)
 
 ---
 
-## 🐳 التشغيل باستخدام Docker
+##  Run with Docker
 
-### 1. استنساخ المشروع
+### 1. Clone the Repository
 
 ```bash
 git clone <repository-url>
 cd malaby
 ```
 
-### 2. إعداد متغيرات البيئة
+### 2. Set Up Environment Variables
 
 ```bash
-# تعديل ملف .env باستخدام محررك المفضل
+# Edit the .env file with your favorite editor
 nano .env
 ```
 
-تأكد من إضافة **MongoDB URI** الخاص بك:
+Make sure to add your **MongoDB URI**:
 ```env
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/malaby?retryWrites=true&w=majority
 ```
 
-### 3. بناء وتشغيل الخدمات
+### 3. Build and Run Services
 
 ```bash
-# بناء كل الخدمات
+# Build all services
 docker-compose up --build
 
-# أو للتشغيل في الخلفية
+# Or run in background
 docker-compose up --build -d
 ```
 
-### 4. الوصول للتطبيقات
+### 4. Access the Applications
 
-| الخدمة | الرابط | الوصف |
-|--------|--------|-------|
-| User App | http://localhost:3000 | واجهة المستخدم |
-| Admin Dashboard | http://localhost:3001 | لوحة التحكم |
-| API | http://localhost:5000/api | الـ API |
+| Service | URL | Description |
+|---------|-----|-------------|
+| User App | http://localhost:3000 | User Interface |
+| Admin Dashboard | http://localhost:3001 | Admin Panel |
+| API | http://localhost:5000/api | REST API |
 
-### 5. إدارة الخدمات
+### 5. Manage Services
 
 ```bash
-# إيقاف الخدمات
+# Stop services
 docker-compose down
 
-# إعادة البناء
+# Rebuild
 docker-compose up --build
 
-# عرض الـ logs
+# View logs
 docker-compose logs -f
 
-# عرض logs لخدمة معينة
+# View logs for specific service
 docker-compose logs -f api
 ```
 
-### 6. ملء البيانات الافتراضية (Seed)
+### 6. Seed Data (Optional)
 
 ```bash
-# تشغيل seed داخل الـ container
+# Run seed inside the container
 docker-compose exec api node seed.js
 ```
 
 ---
 
-## 💻 التشغيل المحلي (بدون Docker)
+##  Local Development (Without Docker)
 
 ### Backend
 
 ```bash
 cd backend
 npm install
-npm run seed    # ملء البيانات الافتراضية (اختياري)
-npm start       # التشغيل في وضع الإنتاج
-# أو
-npm run dev     # وضع التطوير (مع nodemon)
+npm run seed    # Seed sample data (optional)
+npm start       # Production mode
+# or
+npm run dev     # Development mode (with nodemon)
 ```
 
 ### Frontend User
@@ -189,7 +196,7 @@ npm run dev     # وضع التطوير (مع nodemon)
 ```bash
 cd frontend-user
 npm install
-npm run dev     # يعمل على http://localhost:3000
+npm run dev     # Runs on http://localhost:3000
 ```
 
 ### Frontend Admin
@@ -197,21 +204,21 @@ npm run dev     # يعمل على http://localhost:3000
 ```bash
 cd frontend-admin
 npm install
-npm run dev     # يعمل على http://localhost:3001
+npm run dev     # Runs on http://localhost:3001
 ```
 
 ---
 
-## ⚙ متغيرات البيئة
+## ⚙ Environment Variables
 
-| المتغير | الوصف | القيمة الافتراضية |
-|---------|-------|-------------------|
-| `MONGODB_URI` | رابط اتصال MongoDB Atlas | مطلوب |
-| `NODE_ENV` | بيئة التشغيل | `production` |
-| `PORT` | منفذ الـ API | `5000` |
-| `CORS_ORIGIN` | المصادر المسموحة | `*` |
-| `ADMIN_USERNAME` | اسم المستخدم للأدمن | `admin` |
-| `ADMIN_PASSWORD` | كلمة المرور للأدمن | `admin123` |
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MONGODB_URI` | MongoDB Atlas connection string | Required |
+| `NODE_ENV` | Environment mode | `production` |
+| `PORT` | API port | `5000` |
+| `CORS_ORIGIN` | Allowed origins | `*` |
+| `ADMIN_USERNAME` | Admin username | `admin` |
+| `ADMIN_PASSWORD` | Admin password | `admin123` |
 
 ---
 
@@ -219,34 +226,34 @@ npm run dev     # يعمل على http://localhost:3001
 
 ### Endpoints
 
-#### Pitches (الملاعب)
+#### Pitches
 
-| Method | Endpoint | الوصف |
-|--------|----------|-------|
-| `GET` | `/api/pitches` | جلب كل الملاعب |
-| `GET` | `/api/pitches/:id` | جلب ملعب محدد |
-| `GET` | `/api/pitches/:id/slots?date=YYYY-MM-DD` | جلب المواعيد المتاحة |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/pitches` | Get all pitches |
+| `GET` | `/api/pitches/:id` | Get specific pitch |
+| `GET` | `/api/pitches/:id/slots?date=YYYY-MM-DD` | Get available time slots |
 
-#### Bookings (الحجوزات)
+#### Bookings
 
-| Method | Endpoint | الوصف |
-|--------|----------|-------|
-| `GET` | `/api/bookings` | جلب كل الحجوزات |
-| `POST` | `/api/bookings` | إنشاء حجز جديد |
-| `GET` | `/api/bookings/:id` | جلب حجز محدد |
-| `PUT` | `/api/bookings/:id/status` | تحديث حالة الحجز |
-| `PUT` | `/api/bookings/:id/payment` | رفع صورة التحويل |
-| `DELETE` | `/api/bookings/:id` | حذف حجز |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/bookings` | Get all bookings |
+| `POST` | `/api/bookings` | Create new booking |
+| `GET` | `/api/bookings/:id` | Get specific booking |
+| `PUT` | `/api/bookings/:id/status` | Update booking status |
+| `PUT` | `/api/bookings/:id/payment` | Upload payment screenshot |
+| `DELETE` | `/api/bookings/:id` | Delete booking |
 
-#### Notifications (الإشعارات)
+#### Notifications
 
-| Method | Endpoint | الوصف |
-|--------|----------|-------|
-| `GET` | `/api/notifications` | جلب كل الإشعارات |
-| `PUT` | `/api/notifications/:id/read` | تحديد كمقروء |
-| `PUT` | `/api/notifications/read-all` | تحديد الكل كمقروء |
-| `DELETE` | `/api/notifications/:id` | حذف إشعار |
-| `GET` | `/api/notifications/stats/unread` | عدد الإشعارات غير المقروءة |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/notifications` | Get all notifications |
+| `PUT` | `/api/notifications/:id/read` | Mark as read |
+| `PUT` | `/api/notifications/read-all` | Mark all as read |
+| `DELETE` | `/api/notifications/:id` | Delete notification |
+| `GET` | `/api/notifications/stats/unread` | Get unread count |
 
 ### Health Check
 
@@ -256,7 +263,7 @@ GET /health
 
 ---
 
-## 📁 هيكل المشروع
+##  Project Structure
 
 ```
 malaby/
@@ -343,61 +350,3 @@ malaby/
             ├── BookingsPage.tsx
             └── NotificationsPage.tsx
 ```
-
----
-
-## 🔐 الدخول للوحة التحكم
-
-1. افتح: http://localhost:3001
-2. أدخل بيانات الدخول:
-   - **اسم المستخدم:** `admin`
-   - **كلمة المرور:** `admin123`
-
-> ⚠️ **تنبيه أمني:** قم بتغيير بيانات الدخول الافتراضية في بيئة الإنتاج!
-
----
-
-## 🚀 DevOps Friendly
-
-تم تصميم المشروع ليكون سهل النشر على Kubernetes و Helm:
-
-- ✅ كل خدمة في container مستقل
-- ✅ Health checks مدمجة
-- ✅ Environment variables للإعدادات
-- ✅ Nginx reverse proxy للـ frontend
-- ✅ قابل للتوسع أفقياً
-
-### ملفات Kubernetes مستقبلية
-
-```yaml
-# k8s/namespace.yaml
-# k8s/api-deployment.yaml
-# k8s/api-service.yaml
-# k8s/frontend-user-deployment.yaml
-# k8s/frontend-user-service.yaml
-# k8s/frontend-admin-deployment.yaml
-# k8s/frontend-admin-service.yaml
-# k8s/ingress.yaml
-# helm/Chart.yaml
-# helm/values.yaml
-# helm/templates/*.yaml
-```
-
----
-
-## 📞 الدعم الفني
-
-للاستفسارات أو المشاكل:
-
-- 📧 البريد: info@malaby.com
-- 📱 الهاتف: 0101 234 5678
-
----
-
-<div align="center">
-
-**Made with ❤️ for football lovers**
-
-© 2024 ملعبي - Malaby. جميع الحقوق محفوظة.
-
-</div>
