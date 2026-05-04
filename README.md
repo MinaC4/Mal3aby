@@ -61,11 +61,26 @@
 
 ### Architecture: Microservices
 
-```mermaid
-flowchart TD
-    A[Frontend User<br/>React + Vite (3000)] --> C[Backend API<br/>Node.js + Express (5000)]
-    B[Frontend Admin<br/>React + Vite (3001)] --> C
-    C --> D[MongoDB Atlas]
+```
+┌─────────────────────┐
+│   Frontend User     │  ← React + Vite (Port 3000)
+│   (User App)        │
+└──────────┬──────────┘
+           │
+┌──────────▼──────────┐
+│   Frontend Admin    │  ← React + Vite (Port 3001)
+│   (Dashboard)       │
+└──────────┬──────────┘
+           │
+┌──────────▼──────────┐
+│   Backend API       │  ← Node.js + Express (Port 5000)
+│   (REST API)        │
+└──────────┬──────────┘
+           │
+┌──────────▼──────────┐
+│   MongoDB Atlas     │  ← Cloud Database
+│   (Database)        │
+└─────────────────────┘
 ```
 
 ### Technologies Used
@@ -219,5 +234,4 @@ malaby/
 ### Admin Dashboard
 ![Admin Dashboard 1](https://github.com/user-attachments/assets/c2da0968-a450-4814-9d43-5e10f0ac8b76)
 ![Admin Dashboard 2](https://github.com/user-attachments/assets/63427b3a-e742-4689-8279-53b8baef92a5)
-![Admin Dashboard 3](https://github.com/user-attachments/assets/bebe9097-a52a-486b-9979-df5cab68cabd)
 ```
