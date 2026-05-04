@@ -57,7 +57,7 @@
 
 ---
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 ### Architecture: Microservices
 
@@ -167,7 +167,7 @@ npm run dev
 
 ---
 
-## ⚙ Environment Variables
+##  Environment Variables
 
 | Variable           | Description                        | Default      |
 |--------------------|------------------------------------|--------------|
@@ -180,7 +180,7 @@ npm run dev
 
 ---
 
-## 🔌 API Documentation
+##  API Documentation
 
 ### Pitches
 - `GET /api/pitches`
