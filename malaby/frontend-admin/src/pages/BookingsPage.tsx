@@ -3,6 +3,7 @@ import { Search, CalendarDays, Phone, Mail, CreditCard, Clock, Filter, ChevronDo
 import { useApi, apiPut, apiDelete } from '@/hooks/useApi';
 import type { Booking } from '@/types';
 import { formatDate, getStatusColor, getStatusLabel } from '@/lib/utils';
+import { formatTime12Hour, formatTimeRange } from '@/utils/timeFormat';
 
 export default function BookingsPage() {
   const { data: bookings, loading, refetch } = useApi<Booking[]>('/bookings');
@@ -135,7 +136,9 @@ export default function BookingsPage() {
                     <td className="px-4 py-3 text-sm text-gray-700">
                       {new Date(booking.bookingDate).toLocaleDateString('ar-EG')}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{booking.timeSlot}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700 font-medium">
+                      {formatTimeRange(booking.timeSlot, booking.duration)}
+                    </td>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">
                       {booking.totalPrice} ج.م
                     </td>
@@ -225,7 +228,9 @@ export default function BookingsPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <Clock className="h-4 w-4 text-emerald-600" />
-                  <span className="text-sm text-gray-700">{selectedBooking.timeSlot}</span>
+                  <span className="text-sm text-gray-700 font-medium">
+                    {formatTimeRange(selectedBooking.timeSlot, selectedBooking.duration)}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <CreditCard className="h-4 w-4 text-emerald-600" />

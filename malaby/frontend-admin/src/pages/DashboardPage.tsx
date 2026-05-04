@@ -2,6 +2,7 @@ import { CalendarDays, CheckCircle, Clock, DollarSign, Bell, TrendingUp } from '
 import { useApi } from '@/hooks/useApi';
 import type { Booking, Notification } from '@/types';
 import { formatDate, formatPrice, getStatusColor, getStatusLabel } from '@/lib/utils';
+import { formatTime12Hour } from '@/utils/timeFormat';
 
 export default function DashboardPage() {
   const { data: bookings, loading: bookingsLoading } = useApi<Booking[]>('/bookings');
@@ -70,7 +71,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Bookings - معدلة */}
+        {/* Recent Bookings */}
         <div className="card">
           <div className="p-5 border-b border-gray-100 flex items-center justify-between">
             <h3 className="font-bold text-gray-900 flex items-center gap-2">
@@ -94,9 +95,8 @@ export default function DashboardPage() {
                     <p className="font-medium text-gray-900">{booking.customerName}</p>
                     <p className="text-sm text-gray-500">
                       {typeof booking.pitch === 'object' ? booking.pitch.name : booking.pitch || 'ملعب'} 
-                      • {booking.timeSlot}
+                      • {formatTime12Hour(booking.timeSlot)}
                     </p>
-                    {/* عدد ساعات الحجز */}
                     <p className="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
                       ⏱ {booking.duration || 1} ساعة
                     </p>

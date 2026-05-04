@@ -5,6 +5,59 @@ const Booking = require('../models/Booking');
 const Pitch = require('../models/Pitch');
 const Notification = require('../models/Notification');
 
+// ==================== HELPER FUNCTIONS ====================
+
+/**
+ * Add hours to a time string (HH:MM)
+ * @param {string} timeStr - Time in HH:MM format
+ * @param {number} hoursToAdd - Hours to add
+ * @returns {string} Result time in HH:MM format
+ */
+function addHoursToTime(timeStr, hoursToAdd) {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const totalMinutes = hours * 60 + minutes + (hoursToAdd * 60);
+  const newHours = Math.floor(totalMinutes / 60) % 24;
+  const newMinutes = totalMinutes % 60;
+  return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+}
+
+/**
+ * Convert time string to minutes for comparison
+ * @param {string} timeStr - Time in HH:MM format
+ * @returns {number} Total minutes
+ */
+function timeToMinutes(timeStr) {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+/**
+ * Check if two time ranges overlap
+ * Range 1: [start1, end1)
+ * Range 2: [start2, end2)
+ * Overlap if: start1 < end2 AND end1 > start2
+ * @param {string} start1 - Start time of first range
+ * @param {number} duration1 - Duration of first range in hours
+ * @param {string} start2 - Start time of second range
+ * @param {number} duration2 - Duration of second range in hours
+ * @returns {boolean} True if ranges overlap
+ */
+function hasTimeOverlap(start1, duration1, start2, duration2) {
+  const end1 = addHoursToTime(start1, duration1);
+  const end2 = addHoursToTime(start2, duration2);
+
+  const start1Min = timeToMinutes(start1);
+  const end1Min = timeToMinutes(end1);
+  const start2Min = timeToMinutes(start2);
+  const end2Min = timeToMinutes(end2);
+
+  // Two ranges overlap if:
+  // start1 < end2 AND end1 > start2
+  return (start1Min < end2Min && end1Min > start2Min);
+}
+
+// ==================== MIDDLEWARE ====================
+
 // Validation middleware
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -16,6 +69,8 @@ const validate = (req, res, next) => {
   }
   next();
 };
+
+// ==================== ROUTES ====================
 
 // @desc    Create new booking
 // @route   POST /api/bookings
@@ -44,9 +99,36 @@ router.post(
         });
       }
 
+      // ✅ FIXED: Check for TIME OVERLAP (not just same timeSlot)
+      // Get all non-cancelled bookings for this pitch & date
+      const existingBookings = await Booking.find({
+        pitch: pitchId,
+        bookingDate: new Date(bookingDate),
+        status: { $ne: 'cancelled' }
+      });
+
+      const requestedDuration = duration || 1;
+
+      // Check if requested time overlaps with any existing booking
+      const overlappingBooking = existingBookings.find(booking => {
+        return hasTimeOverlap(
+          timeSlot,           // requested start
+          requestedDuration,  // requested duration
+          booking.timeSlot,   // existing start
+          booking.duration    // existing duration
+        );
+      });
+
+      if (overlappingBooking) {
+        const existingEnd = addHoursToTime(overlappingBooking.timeSlot, overlappingBooking.duration);
+        return res.status(400).json({
+          success: false,
+          message: `This time overlaps with an existing booking (${overlappingBooking.timeSlot} - ${existingEnd}). Please select another time.`
+        });
+      }
+
       // Calculate total price
-      const bookingDuration = duration || 1;
-      const totalPrice = pitch.pricePerHour * bookingDuration;
+      const totalPrice = pitch.pricePerHour * requestedDuration;
 
       // Create booking
       const booking = await Booking.create({
@@ -56,7 +138,7 @@ router.post(
         customerPhone,
         bookingDate: new Date(bookingDate),
         timeSlot,
-        duration: bookingDuration,
+        duration: requestedDuration,
         totalPrice,
         paymentMethod: paymentMethod || 'vodafone_cash',
         notes
@@ -66,10 +148,11 @@ router.post(
       await booking.populate('pitch');
 
       // Create notification for admin
+      const bookingEnd = addHoursToTime(timeSlot, requestedDuration);
       await Notification.create({
         booking: booking._id,
         title: 'New Booking Received',
-        message: `${customerName} booked ${pitch.name} on ${new Date(bookingDate).toLocaleDateString('en-GB')} at ${timeSlot}`,
+        message: `${customerName} booked ${pitch.name} on ${new Date(bookingDate).toLocaleDateString('en-GB')} at ${timeSlot} - ${bookingEnd}`,
         type: 'new_booking'
       });
 
@@ -79,7 +162,7 @@ router.post(
         message: 'Booking created successfully'
       });
     } catch (error) {
-      // Handle duplicate booking
+      // Handle duplicate booking (fallback from unique index)
       if (error.code === 11000) {
         return res.status(400).json({
           success: false,
@@ -152,6 +235,45 @@ router.get('/:id', async (req, res, next) => {
 router.put('/:id/status', async (req, res, next) => {
   try {
     const { status } = req.body;
+
+    // ✅ FIXED: Check for overlap when confirming a booking
+    if (status === 'confirmed') {
+      const bookingToConfirm = await Booking.findById(req.params.id);
+
+      if (!bookingToConfirm) {
+        return res.status(404).json({
+          success: false,
+          message: 'Booking not found'
+        });
+      }
+
+      // Find all other confirmed/pending bookings for same pitch & date
+      const otherBookings = await Booking.find({
+        pitch: bookingToConfirm.pitch,
+        bookingDate: bookingToConfirm.bookingDate,
+        status: { $nin: ['cancelled'] },
+        _id: { $ne: bookingToConfirm._id }
+      });
+
+      // Check for overlap
+      const overlappingBooking = otherBookings.find(booking => {
+        return hasTimeOverlap(
+          bookingToConfirm.timeSlot,
+          bookingToConfirm.duration,
+          booking.timeSlot,
+          booking.duration
+        );
+      });
+
+      if (overlappingBooking) {
+        const existingEnd = addHoursToTime(overlappingBooking.timeSlot, overlappingBooking.duration);
+        return res.status(400).json({
+          success: false,
+          message: `Cannot confirm: overlaps with existing booking (${overlappingBooking.timeSlot} - ${existingEnd})`
+        });
+      }
+    }
+
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
       { status },
@@ -168,7 +290,7 @@ router.put('/:id/status', async (req, res, next) => {
     // Create notification for status change
     const notificationType = status === 'confirmed' ? 'booking_confirmed' : 
                             status === 'cancelled' ? 'booking_cancelled' : 'new_booking';
-    
+
     await Notification.create({
       booking: booking._id,
       title: `Booking ${status.charAt(0).toUpperCase() + status.slice(1)}`,
@@ -191,7 +313,7 @@ router.put('/:id/status', async (req, res, next) => {
 router.put('/:id/payment', async (req, res, next) => {
   try {
     const { paymentScreenshotUrl } = req.body;
-    
+
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
       { 

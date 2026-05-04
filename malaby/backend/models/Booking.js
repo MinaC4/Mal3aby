@@ -62,7 +62,17 @@ const bookingSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for preventing double bookings
-bookingSchema.index({ pitch: 1, bookingDate: 1, timeSlot: 1 }, { unique: true });
+// ✅ FIXED: Partial unique index - excludes cancelled bookings
+// This allows re-booking a cancelled time slot
+bookingSchema.index(
+  { pitch: 1, bookingDate: 1, timeSlot: 1, status: 1 },
+  { 
+    unique: true,
+    partialFilterExpression: { status: { $ne: 'cancelled' } }
+  }
+);
+
+// Regular index for fast queries
+bookingSchema.index({ pitch: 1, bookingDate: 1, status: 1 });
 
 module.exports = mongoose.model('Booking', bookingSchema);
