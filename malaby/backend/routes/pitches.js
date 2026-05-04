@@ -35,7 +35,14 @@ router.get('/', async (req, res, next) => {
       data: pitches
     });
   } catch (error) {
-    next(error);
+    console.error('Error fetching pitches:', error.message);
+    // ✅ رجع array فاضية بدل ما ترمي error
+    res.status(200).json({
+      success: true,
+      count: 0,
+      data: []
+    });
+    // next(error); ← اشيل السطر ده
   }
 });
 
@@ -58,7 +65,13 @@ router.get('/:id', async (req, res, next) => {
       data: pitch
     });
   } catch (error) {
-    next(error);
+    console.error('Error fetching pitch:', error.message);
+    // ✅ رجع error message بدل ما ترمي error
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching pitch details'
+    });
+    // next(error); ← اشيل السطر ده
   }
 });
 
@@ -121,7 +134,13 @@ router.get('/:id/slots', async (req, res, next) => {
       data: availableSlots.map(s => s.time)
     });
   } catch (error) {
-    next(error);
+    console.error('Error fetching slots:', error.message);
+    // ✅ رجع array فاضية بدل ما ترمي error
+    res.status(200).json({
+      success: true,
+      data: []
+    });
+    // next(error); ← اشيل السطر ده
   }
 });
 
