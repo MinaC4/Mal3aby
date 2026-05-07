@@ -15,7 +15,7 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     customerName: '',
     customerEmail: '',
@@ -39,12 +39,12 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
       });
       setSubmitted(true);
       setTimeout(() => {
-        navigate('/booking-success', { 
-          state: { 
+        navigate('/booking-success', {
+          state: {
             pitchName: pitch.name,
             booking: formData,
             totalPrice: pitch.pricePerHour * formData.duration
-          } 
+          }
         });
       }, 1500);
     } catch (err) {
@@ -61,121 +61,79 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
 
   if (submitted) {
     return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-8 text-center">
-        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Check className="h-8 w-8 text-emerald-600" />
+      <div className="bg-emerald-900/20 border border-emerald-500/30 rounded-2xl p-8 text-center">
+        <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/30"
+          style={{ boxShadow: '0 0 30px rgba(16,185,129,0.2)' }}>
+          <Check className="h-8 w-8 text-emerald-400" />
         </div>
-        <h3 className="text-xl font-bold text-emerald-800 mb-2">تم إرسال الحجز بنجاح!</h3>
-        <p className="text-emerald-600">جاري تحويلك لصفحة التأكيد...</p>
+        <h3 className="text-xl font-bold text-emerald-400 mb-2">تم إرسال الحجز بنجاح!</h3>
+        <p className="text-emerald-400/60">جاري تحويلك لصفحة التأكيد...</p>
       </div>
     );
   }
 
+  const labelClass = "flex items-center gap-2 text-sm font-medium text-white/50 mb-2";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
-          <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
-          <p className="text-red-700 text-sm">{error}</p>
+        <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 flex items-center gap-3">
+          <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
+          <p className="text-red-300 text-sm">{error}</p>
         </div>
       )}
 
-      {/* Name */}
       <div>
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-          <User className="h-4 w-4 text-emerald-600" />
+        <label className={labelClass}>
+          <User className="h-4 w-4 text-emerald-500" />
           الاسم بالكامل
         </label>
-        <input
-          type="text"
-          name="customerName"
-          required
-          value={formData.customerName}
-          onChange={handleChange}
-          className="input-field"
-          placeholder="أدخل اسمك الكامل"
-        />
+        <input type="text" name="customerName" required value={formData.customerName}
+          onChange={handleChange} className="input-field" placeholder="أدخل اسمك الكامل" />
       </div>
 
-      {/* Email */}
       <div>
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-          <Mail className="h-4 w-4 text-emerald-600" />
+        <label className={labelClass}>
+          <Mail className="h-4 w-4 text-emerald-500" />
           البريد الإلكتروني
         </label>
-        <input
-          type="email"
-          name="customerEmail"
-          required
-          value={formData.customerEmail}
-          onChange={handleChange}
-          className="input-field"
-          placeholder="example@email.com"
-        />
+        <input type="email" name="customerEmail" required value={formData.customerEmail}
+          onChange={handleChange} className="input-field" placeholder="example@email.com" />
       </div>
 
-      {/* Phone */}
       <div>
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-          <Phone className="h-4 w-4 text-emerald-600" />
+        <label className={labelClass}>
+          <Phone className="h-4 w-4 text-emerald-500" />
           رقم الهاتف
         </label>
-        <input
-          type="tel"
-          name="customerPhone"
-          required
-          value={formData.customerPhone}
-          onChange={handleChange}
-          className="input-field"
-          placeholder="01X XXXX XXXX"
-        />
+        <input type="tel" name="customerPhone" required value={formData.customerPhone}
+          onChange={handleChange} className="input-field" placeholder="01X XXXX XXXX" />
       </div>
 
-      {/* Date */}
       <div>
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-          <Calendar className="h-4 w-4 text-emerald-600" />
+        <label className={labelClass}>
+          <Calendar className="h-4 w-4 text-emerald-500" />
           تاريخ الحجز
         </label>
-        <input
-          type="date"
-          name="bookingDate"
-          required
-          value={formData.bookingDate}
-          onChange={handleChange}
-          min={new Date().toISOString().split('T')[0]}
-          className="input-field"
-        />
+        <input type="date" name="bookingDate" required value={formData.bookingDate}
+          onChange={handleChange} min={new Date().toISOString().split('T')[0]} className="input-field" />
       </div>
 
-      {/* Time Slot */}
       <div>
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-          <Clock className="h-4 w-4 text-emerald-600" />
+        <label className={labelClass}>
+          <Clock className="h-4 w-4 text-emerald-500" />
           الوقت
         </label>
-        <input
-          type="time"
-          name="timeSlot"
-          required
-          value={formData.timeSlot}
-          onChange={handleChange}
-          className="input-field"
-        />
+        <input type="time" name="timeSlot" required value={formData.timeSlot}
+          onChange={handleChange} className="input-field" />
       </div>
 
-      {/* Duration */}
       <div>
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-          <Clock className="h-4 w-4 text-emerald-600" />
+        <label className={labelClass}>
+          <Clock className="h-4 w-4 text-emerald-500" />
           المدة (ساعات)
         </label>
-        <select
-          name="duration"
-          value={formData.duration}
-          onChange={handleChange}
-          className="input-field"
-        >
+        <select name="duration" value={formData.duration} onChange={handleChange} className="input-field">
           <option value={1}>1 ساعة</option>
           <option value={2}>2 ساعة</option>
           <option value={3}>3 ساعات</option>
@@ -183,88 +141,64 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
         </select>
       </div>
 
-      {/* Payment Method */}
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          طريقة الدفع
-        </label>
+        <label className="text-sm font-medium text-white/50 mb-2 block">طريقة الدفع</label>
         <div className="grid grid-cols-2 gap-3">
-          <label className={`border-2 rounded-lg p-3 cursor-pointer transition-all text-center ${
-            formData.paymentMethod === 'vodafone_cash' 
-              ? 'border-emerald-500 bg-emerald-50' 
-              : 'border-gray-200 hover:border-gray-300'
-          }`}>
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="vodafone_cash"
-              checked={formData.paymentMethod === 'vodafone_cash'}
-              onChange={handleChange}
-              className="sr-only"
-            />
-            <span className="text-sm font-medium">فودافون كاش</span>
-          </label>
-          <label className={`border-2 rounded-lg p-3 cursor-pointer transition-all text-center ${
-            formData.paymentMethod === 'instapay' 
-              ? 'border-emerald-500 bg-emerald-50' 
-              : 'border-gray-200 hover:border-gray-300'
-          }`}>
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="instapay"
-              checked={formData.paymentMethod === 'instapay'}
-              onChange={handleChange}
-              className="sr-only"
-            />
-            <span className="text-sm font-medium">إنستا باي</span>
-          </label>
+          {[
+            { value: 'vodafone_cash', label: 'فودافون كاش' },
+            { value: 'instapay', label: 'إنستا باي' },
+          ].map((method) => (
+            <label key={method.value} className={`border-2 rounded-xl p-3 cursor-pointer transition-all text-center ${
+              formData.paymentMethod === method.value
+                ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400'
+                : 'border-white/10 bg-white/5 text-white/60 hover:border-white/20'
+            }`}>
+              <input type="radio" name="paymentMethod" value={method.value}
+                checked={formData.paymentMethod === method.value}
+                onChange={handleChange} className="sr-only" />
+              <span className="text-sm font-medium">{method.label}</span>
+            </label>
+          ))}
         </div>
       </div>
 
-      {/* Notes */}
       <div>
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-          <FileText className="h-4 w-4 text-emerald-600" />
+        <label className={labelClass}>
+          <FileText className="h-4 w-4 text-emerald-500" />
           ملاحظات (اختياري)
         </label>
-        <textarea
-          name="notes"
-          value={formData.notes}
-          onChange={handleChange}
-          className="input-field min-h-[80px] resize-none"
-          placeholder="أي ملاحظات إضافية..."
-        />
+        <textarea name="notes" value={formData.notes} onChange={handleChange}
+          className="input-field min-h-[80px] resize-none" placeholder="أي ملاحظات إضافية..." />
       </div>
 
       {/* Price Summary */}
-      <div className="bg-gray-50 rounded-lg p-4">
+      <div className="bg-emerald-900/15 border border-emerald-500/15 rounded-2xl p-5">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-600">السعر/ساعة</span>
-          <span className="font-semibold">{pitch.pricePerHour} ج.م</span>
+          <span className="text-white/40 text-sm">السعر/ساعة</span>
+          <span className="font-semibold text-white">{pitch.pricePerHour} ج.م</span>
         </div>
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-600">المدة</span>
-          <span className="font-semibold">{formData.duration} ساعة</span>
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-white/40 text-sm">المدة</span>
+          <span className="font-semibold text-white">{formData.duration} ساعة</span>
         </div>
-        <div className="border-t pt-2 mt-2">
+        <div className="border-t border-white/10 pt-3">
           <div className="flex justify-between items-center">
-            <span className="font-bold">الإجمالي</span>
-            <span className="font-bold text-emerald-600 text-lg">
+            <span className="font-bold text-white">الإجمالي</span>
+            <span className="font-bold text-emerald-400 text-xl">
               {pitch.pricePerHour * formData.duration} ج.م
             </span>
           </div>
         </div>
       </div>
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={loading}
-        className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 hover:-translate-y-0.5"
+        style={{ boxShadow: '0 0 25px rgba(16,185,129,0.3)' }}
       >
         {loading ? (
-          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
         ) : (
           <>
             <Calendar className="h-5 w-5" />

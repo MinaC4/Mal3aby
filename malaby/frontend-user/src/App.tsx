@@ -9,9 +9,14 @@ import BookingSuccessPage from './pages/BookingSuccessPage';
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50" dir="rtl">
+    <div className="min-h-screen flex flex-col bg-[#0a0f0d]" dir="rtl">
+      {/* Global background glow effects */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-emerald-600/8 rounded-full blur-[150px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-900/15 rounded-full blur-[120px]" />
+      </div>
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/pitches" element={<PitchesPage />} />
