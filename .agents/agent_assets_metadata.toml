@@ -1,0 +1,38 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "hj8Txn-Av3QRxjG6bJtD4"
+uri = "file://artifacts/mockup-sandbox/public/images/dark-stadium.png"
+type = "image"
+title = "Cinematic night football stadium"
+
+[[generated]]
+id = "gwzPZ6HkeIAl_4wbmqrJu"
+uri = "file://artifacts/mockup-sandbox/public/images/pitch-card.png"
+type = "image"
+title = "Night football match"
+
+[[generated]]
+id = "M1MasJlupgOlFM5DKIsCM"
+uri = "file://artifacts/mockup-sandbox/public/images/luxury-pitch-1.png"
+type = "image"
+title = "Aerial luxury football pitch"
+
+[[generated]]
+id = "7lqI5MTHAmTNrLL8vkuOt"
+uri = "file://artifacts/mockup-sandbox/public/images/luxury-pitch-2.png"
+type = "image"
+title = "Night luxury football pitch"
+
+[[generated]]
+id = "grKFwmJyr-A6J63LxfOi-"
+uri = "file://artifacts/mockup-sandbox/public/images/stadium-hero.png"
+type = "image"
+title = "Glowing football stadium"
+
+[[generated]]
+id = "oBLToq_YfKNwQurcXY7Pt"
+uri = "file://artifacts/mockup-sandbox/public/images/player-action.png"
+type = "image"
+title = "Player striking ball"
