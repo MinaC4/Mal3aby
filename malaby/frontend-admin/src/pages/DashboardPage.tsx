@@ -6,7 +6,8 @@ import { formatTime12Hour } from '@/utils/timeFormat';
 
 export default function DashboardPage() {
   const { data: bookings, loading: bookingsLoading } = useApi<Booking[]>('/bookings');
-  const { data: notificationsData } = useApi<{ data: Notification[]; unreadCount: number }>('/notifications');
+  const { data: notifications } = useApi<Notification[]>('/notifications');
+  const { data: unreadData } = useApi<{ unreadCount: number }>('/notifications/stats/unread');
 
   const stats = [
     {
@@ -121,16 +122,16 @@ export default function DashboardPage() {
               الإشعارات الأخيرة
             </h3>
             <span className="text-sm text-gray-500">
-              {notificationsData?.unreadCount || 0} غير مقروء
+              {unreadData?.unreadCount || 0} غير مقروء
             </span>
           </div>
           <div className="divide-y divide-gray-50">
-            {!notificationsData?.data?.length ? (
+            {!notifications?.length ? (
               <div className="p-8 text-center text-gray-500">
                 <Bell className="h-10 w-10 mx-auto mb-2 text-gray-300" />
                 <p>لا توجد إشعارات</p>
               </div>
-            ) : notificationsData.data.slice(0, 5).map((notification) => (
+            ) : notifications.slice(0, 5).map((notification) => (
               <div
                 key={notification._id}
                 className={`p-4 hover:bg-gray-50 transition-colors ${!notification.read ? 'bg-emerald-50/50' : ''}`}

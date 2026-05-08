@@ -5,7 +5,7 @@ const path = require('path');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 connectDB();
 
@@ -83,7 +83,7 @@ if (isProd) {
 
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
