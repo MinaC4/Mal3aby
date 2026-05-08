@@ -9,7 +9,7 @@ import BookingSuccessPage from './pages/BookingSuccessPage';
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50" dir="rtl">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-dark-900 transition-colors duration-300" dir="rtl">
       <Navbar />
       <main className="flex-1">
         <Routes>
