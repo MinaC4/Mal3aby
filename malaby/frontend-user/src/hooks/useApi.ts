@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// Use relative /api path — Vite proxy forwards to backend on port 8000
-// This works in both dev (via Vite proxy) and production (same origin)
-const API_BASE_URL = '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 interface UseApiOptions {
   immediate?: boolean;
