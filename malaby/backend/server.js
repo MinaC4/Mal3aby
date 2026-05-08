@@ -1,33 +1,28 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
-// Load env vars
 dotenv.config();
 
-// Connect to database
 connectDB();
 
-// Route files
 const pitches = require('./routes/pitches');
 const bookings = require('./routes/bookings');
 const notifications = require('./routes/notifications');
 
 const app = express();
 
-// Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Enable CORS
 app.use(cors({
   origin: process.env.CORS_ORIGIN || '*',
   credentials: true
 }));
 
-// Request logging in development
 if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
     console.log(`${req.method} ${req.path}`, req.body);
@@ -35,7 +30,6 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
@@ -45,12 +39,10 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Mount routers
 app.use('/api/pitches', pitches);
 app.use('/api/bookings', bookings);
 app.use('/api/notifications', notifications);
 
-// API root
 app.get('/api', (req, res) => {
   res.status(200).json({
     success: true,
@@ -65,28 +57,41 @@ app.get('/api', (req, res) => {
   });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Route ${req.originalUrl} not found`
-  });
-});
+const isProd = process.env.NODE_ENV === 'production';
 
-// Error handler
+if (isProd) {
+  const adminDist = path.join(__dirname, '../frontend-admin/dist');
+  const userDist = path.join(__dirname, '../frontend-user/dist');
+
+  app.use('/admin', express.static(adminDist));
+  app.get('/admin/*', (req, res) => {
+    res.sendFile(path.join(adminDist, 'index.html'));
+  });
+
+  app.use(express.static(userDist));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(userDist, 'index.html'));
+  });
+} else {
+  app.use((req, res) => {
+    res.status(404).json({
+      success: false,
+      message: `Route ${req.originalUrl} not found`
+    });
+  });
+}
+
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'production'}`);
 });
 
-// Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', err.message);
-  // server.close(() => process.exit(1)); ← تم إزالته عشان السيرفر مايقعش
 });
 
 module.exports = app;

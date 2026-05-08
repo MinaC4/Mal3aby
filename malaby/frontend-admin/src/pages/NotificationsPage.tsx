@@ -3,7 +3,7 @@ import { useApi, apiPut, apiDelete } from '@/hooks/useApi';
 import { formatDate } from '@/lib/utils';
 
 export default function NotificationsPage() {
-  const { data: apiResponse, loading, refetch } = useApi('/notifications');
+  const { data: apiResponse, loading, refetch } = useApi<any>('/notifications');
 
   // Debug قوي جداً
   console.log("🔥 RAW useApi RESPONSE:", JSON.stringify(apiResponse, null, 2));

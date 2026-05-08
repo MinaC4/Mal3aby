@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Search, CalendarDays, Phone, Mail, CreditCard, Clock, Filter, ChevronDown, Eye, Check, X, ImageIcon } from 'lucide-react';
-import { useApi, apiPut, apiDelete } from '@/hooks/useApi';
+import { Search, CalendarDays, Phone, Mail, CreditCard, Clock, Filter, ChevronDown, Eye, Check, X } from 'lucide-react';
+import { useApi, apiPut } from '@/hooks/useApi';
 import type { Booking } from '@/types';
-import { formatDate, getStatusColor, getStatusLabel } from '@/lib/utils';
-import { formatTime12Hour, formatTimeRange } from '@/utils/timeFormat';
+import { getStatusColor, getStatusLabel } from '@/lib/utils';
+import { formatTimeRange } from '@/utils/timeFormat';
 
 export default function BookingsPage() {
   const { data: bookings, loading, refetch } = useApi<Booking[]>('/bookings');
@@ -27,16 +27,6 @@ export default function BookingsPage() {
       refetch();
     } catch (error) {
       console.error('Failed to update status:', error);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا الحجز؟')) return;
-    try {
-      await apiDelete(`/bookings/${id}`);
-      refetch();
-    } catch (error) {
-      console.error('Failed to delete booking:', error);
     }
   };
 

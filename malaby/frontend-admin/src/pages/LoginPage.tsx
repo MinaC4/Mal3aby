@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Gamepad2, Lock, User, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
   const { login } = useAuth();
