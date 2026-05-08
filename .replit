@@ -84,3 +84,8 @@ externalPort = 80
 [[ports]]
 localPort = 8000
 externalPort = 8000
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "cd malaby/backend && node server.js & cd malaby/frontend-user && npm run build && npx serve dist -l 5000"]
+build = ["bash", "-c", "cd malaby/frontend-user && npm install && npm run build"]
