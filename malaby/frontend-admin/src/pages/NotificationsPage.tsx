@@ -1,19 +1,10 @@
 import { Bell, Check, Trash2 } from 'lucide-react';
 import { useApi, apiPut, apiDelete } from '@/hooks/useApi';
+import type { Notification } from '@/types';
 import { formatDate } from '@/lib/utils';
 
 export default function NotificationsPage() {
-  const { data: apiResponse, loading, refetch } = useApi<any>('/notifications');
-
-  // Debug قوي جداً
-  console.log("🔥 RAW useApi RESPONSE:", JSON.stringify(apiResponse, null, 2));
-
-  // استخراج البيانات بكل الطرق
-  const notifications = apiResponse?.data || 
-                       (Array.isArray(apiResponse) ? apiResponse : []) || 
-                       [];
-
-  console.log("✅ FINAL NOTIFICATIONS COUNT:", notifications.length);
+  const { data: notifications, loading, refetch } = useApi<Notification[]>('/notifications');
 
   const handleMarkAsRead = async (id: string) => {
     await apiPut(`/notifications/${id}/read`);
@@ -28,18 +19,18 @@ export default function NotificationsPage() {
 
   return (
     <div className="p-8 space-y-6">
-      <h1 className="text-3xl font-bold">الإشعارات ({notifications.length})</h1>
+      <h1 className="text-3xl font-bold">الإشعارات ({notifications?.length || 0})</h1>
 
       {loading ? (
         <p className="text-center py-10">جاري التحميل...</p>
-      ) : notifications.length === 0 ? (
+      ) : !notifications?.length ? (
         <div className="text-center py-20">
           <Bell className="h-20 w-20 mx-auto text-gray-300" />
           <p className="mt-6 text-xl text-gray-500">لا توجد إشعارات</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {notifications.map((n: any) => (
+          {notifications.map((n) => (
             <div key={n._id} className="bg-white border rounded-2xl p-6 shadow-sm">
               <div className="flex gap-4">
                 <Bell className="h-10 w-10 text-emerald-600 mt-1" />

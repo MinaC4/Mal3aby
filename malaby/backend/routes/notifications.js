@@ -2,6 +2,22 @@ const express = require('express');
 const router = express.Router();
 const Notification = require('../models/Notification');
 
+// @desc    Get unread notifications count
+// @route   GET /api/notifications/stats/unread
+// @access  Admin
+router.get('/stats/unread', async (req, res, next) => {
+  try {
+    const count = await Notification.countDocuments({ read: false });
+
+    res.status(200).json({
+      success: true,
+      data: { unreadCount: count }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // @desc    Get all notifications (Admin)
 // @route   GET /api/notifications
 // @access  Admin
@@ -133,22 +149,6 @@ router.delete('/:id', async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Notification deleted successfully'
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// @desc    Get unread notifications count
-// @route   GET /api/notifications/stats/unread
-// @access  Admin
-router.get('/stats/unread', async (req, res, next) => {
-  try {
-    const count = await Notification.countDocuments({ read: false });
-
-    res.status(200).json({
-      success: true,
-      data: { unreadCount: count }
     });
   } catch (error) {
     next(error);
