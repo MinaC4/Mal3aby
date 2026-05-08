@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, User, Phone, Mail, FileText, AlertCircle, Check } from 'lucide-react';
 import type { Pitch } from '@/types';
 import { apiPost } from '@/hooks/useApi';
+import TimeSlotPicker from './TimeSlotPicker';
 
 interface BookingFormProps {
   pitch: Pitch;
@@ -29,6 +30,10 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.timeSlot) {
+      setError('اختر ميعاد الحجز من المواعيد المتاحة أدناه');
+      return;
+    }
     setLoading(true);
     setError(null);
 
@@ -54,9 +59,16 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'duration' ? Number(value) : value,
+      ...(name === 'bookingDate' ? { timeSlot: '' } : {}),
+      ...(name === 'duration' ? { timeSlot: '' } : {})
+    }));
   };
 
   if (submitted) {
@@ -65,14 +77,19 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
         <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-emerald-500/30 animate-float">
           <Check className="h-8 w-8 text-white" />
         </div>
-        <h3 className="text-xl font-black text-emerald-800 dark:text-emerald-300 mb-2">تم إرسال الحجز بنجاح!</h3>
-        <p className="text-emerald-600 dark:text-emerald-500 text-sm">جاري تحويلك لصفحة التأكيد...</p>
+        <h3 className="text-xl font-black text-emerald-800 dark:text-emerald-300 mb-2">
+          تم إرسال الحجز بنجاح!
+        </h3>
+        <p className="text-emerald-600 dark:text-emerald-500 text-sm">
+          جاري تحويلك لصفحة التأكيد...
+        </p>
       </div>
     );
   }
 
-  const fieldClass = "input-field";
-  const labelClass = "flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2";
+  const fieldClass = 'input-field';
+  const labelClass =
+    'flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -89,8 +106,15 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
           <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           الاسم بالكامل
         </label>
-        <input type="text" name="customerName" required value={formData.customerName}
-          onChange={handleChange} className={fieldClass} placeholder="أدخل اسمك الكامل" />
+        <input
+          type="text"
+          name="customerName"
+          required
+          value={formData.customerName}
+          onChange={handleChange}
+          className={fieldClass}
+          placeholder="أدخل اسمك الكامل"
+        />
       </div>
 
       {/* Email */}
@@ -99,8 +123,15 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
           <Mail className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           البريد الإلكتروني
         </label>
-        <input type="email" name="customerEmail" required value={formData.customerEmail}
-          onChange={handleChange} className={fieldClass} placeholder="example@email.com" />
+        <input
+          type="email"
+          name="customerEmail"
+          required
+          value={formData.customerEmail}
+          onChange={handleChange}
+          className={fieldClass}
+          placeholder="example@email.com"
+        />
       </div>
 
       {/* Phone */}
@@ -109,8 +140,15 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
           <Phone className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           رقم الهاتف
         </label>
-        <input type="tel" name="customerPhone" required value={formData.customerPhone}
-          onChange={handleChange} className={fieldClass} placeholder="01X XXXX XXXX" />
+        <input
+          type="tel"
+          name="customerPhone"
+          required
+          value={formData.customerPhone}
+          onChange={handleChange}
+          className={fieldClass}
+          placeholder="01X XXXX XXXX"
+        />
       </div>
 
       {/* Date */}
@@ -119,32 +157,56 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
           <Calendar className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           تاريخ الحجز
         </label>
-        <input type="date" name="bookingDate" required value={formData.bookingDate}
-          onChange={handleChange} min={new Date().toISOString().split('T')[0]} className={fieldClass} />
+        <input
+          type="date"
+          name="bookingDate"
+          required
+          value={formData.bookingDate}
+          onChange={handleChange}
+          min={new Date().toISOString().split('T')[0]}
+          className={fieldClass}
+        />
       </div>
 
-      {/* Time Slot */}
-      <div>
-        <label className={labelClass}>
-          <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-          الوقت
-        </label>
-        <input type="time" name="timeSlot" required value={formData.timeSlot}
-          onChange={handleChange} className={fieldClass} />
-      </div>
-
-      {/* Duration */}
+      {/* Duration — shown before slot picker so it affects availability */}
       <div>
         <label className={labelClass}>
           <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           المدة (ساعات)
         </label>
-        <select name="duration" value={formData.duration} onChange={handleChange} className={fieldClass}>
+        <select
+          name="duration"
+          value={formData.duration}
+          onChange={handleChange}
+          className={fieldClass}
+        >
           <option value={1}>1 ساعة</option>
           <option value={2}>2 ساعة</option>
           <option value={3}>3 ساعات</option>
           <option value={4}>4 ساعات</option>
         </select>
+      </div>
+
+      {/* Time Slot Picker */}
+      <div>
+        <label className={labelClass}>
+          <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+          اختر الميعاد
+          {formData.timeSlot && (
+            <span className="mr-auto text-emerald-600 dark:text-emerald-400 font-bold text-xs bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
+              ✓ مختار: {formData.timeSlot}
+            </span>
+          )}
+        </label>
+        <div className="bg-gray-50 dark:bg-dark-700 rounded-2xl p-4 border border-gray-100 dark:border-dark-500">
+          <TimeSlotPicker
+            pitchId={pitch._id}
+            date={formData.bookingDate}
+            duration={formData.duration}
+            selected={formData.timeSlot}
+            onChange={(time) => setFormData((prev) => ({ ...prev, timeSlot: time }))}
+          />
+        </div>
       </div>
 
       {/* Payment Method */}
@@ -166,11 +228,20 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
               }`}
             >
               <input
-                type="radio" name="paymentMethod" value={opt.value}
+                type="radio"
+                name="paymentMethod"
+                value={opt.value}
                 checked={formData.paymentMethod === opt.value}
-                onChange={handleChange} className="sr-only"
+                onChange={handleChange}
+                className="sr-only"
               />
-              <span className={`text-sm font-bold ${formData.paymentMethod === opt.value ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-700 dark:text-gray-300'}`}>
+              <span
+                className={`text-sm font-bold ${
+                  formData.paymentMethod === opt.value
+                    ? 'text-emerald-700 dark:text-emerald-400'
+                    : 'text-gray-700 dark:text-gray-300'
+                }`}
+              >
                 {opt.label}
               </span>
             </label>
@@ -184,21 +255,37 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
           <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           ملاحظات (اختياري)
         </label>
-        <textarea name="notes" value={formData.notes} onChange={handleChange}
+        <textarea
+          name="notes"
+          value={formData.notes}
+          onChange={handleChange}
           className={`${fieldClass} min-h-[80px] resize-none`}
-          placeholder="أي ملاحظات إضافية..." />
+          placeholder="أي ملاحظات إضافية..."
+        />
       </div>
 
       {/* Price Summary */}
       <div className="bg-gray-50 dark:bg-dark-700 rounded-2xl p-5 border border-gray-100 dark:border-dark-500">
         <div className="flex justify-between items-center mb-2.5">
           <span className="text-gray-600 dark:text-gray-400 text-sm">السعر/ساعة</span>
-          <span className="font-bold text-gray-900 dark:text-white text-sm">{pitch.pricePerHour} ج.م</span>
+          <span className="font-bold text-gray-900 dark:text-white text-sm">
+            {pitch.pricePerHour} ج.م
+          </span>
         </div>
-        <div className="flex justify-between items-center mb-3">
+        <div className="flex justify-between items-center mb-2.5">
           <span className="text-gray-600 dark:text-gray-400 text-sm">المدة</span>
-          <span className="font-bold text-gray-900 dark:text-white text-sm">{formData.duration} ساعة</span>
+          <span className="font-bold text-gray-900 dark:text-white text-sm">
+            {formData.duration} ساعة
+          </span>
         </div>
+        {formData.timeSlot && (
+          <div className="flex justify-between items-center mb-2.5">
+            <span className="text-gray-600 dark:text-gray-400 text-sm">الميعاد</span>
+            <span className="font-bold text-gray-900 dark:text-white text-sm">
+              {formData.timeSlot}
+            </span>
+          </div>
+        )}
         <div className="border-t border-gray-200 dark:border-dark-500 pt-3">
           <div className="flex justify-between items-center">
             <span className="font-black text-gray-900 dark:text-white">الإجمالي</span>
@@ -212,7 +299,7 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
       {/* Submit */}
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || !formData.timeSlot}
         className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 text-base"
       >
         {loading ? (
@@ -220,7 +307,7 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
         ) : (
           <>
             <Calendar className="h-5 w-5" />
-            تأكيد الحجز
+            {formData.timeSlot ? 'تأكيد الحجز' : 'اختر ميعاداً للمتابعة'}
           </>
         )}
       </button>

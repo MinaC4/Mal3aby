@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "0JnmVTLyCOW889jB-M6s4"
+uri = "file://README.md"
+type = "text"
+title = "README — ملعبي Full Documentation"

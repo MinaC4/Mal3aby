@@ -72,6 +72,69 @@ const validate = (req, res, next) => {
 
 // ==================== ROUTES ====================
 
+// @desc    Get available time slots for a pitch on a specific date
+// @route   GET /api/bookings/availability
+// @access  Public
+router.get('/availability', async (req, res, next) => {
+  try {
+    const { pitchId, date, duration = 1 } = req.query;
+
+    if (!pitchId || !date) {
+      return res.status(400).json({
+        success: false,
+        message: 'pitchId and date are required'
+      });
+    }
+
+    const requestedDuration = parseInt(duration) || 1;
+
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const existingBookings = await Booking.find({
+      pitch: pitchId,
+      bookingDate: { $gte: startOfDay, $lte: endOfDay },
+      status: { $ne: 'cancelled' }
+    });
+
+    const slots = [];
+    const maxStartHour = 24 - requestedDuration;
+
+    for (let hour = 6; hour <= maxStartHour; hour++) {
+      const timeStr = `${String(hour).padStart(2, '0')}:00`;
+      const endTime = addHoursToTime(timeStr, requestedDuration);
+
+      const conflicting = existingBookings.filter(b =>
+        hasTimeOverlap(timeStr, requestedDuration, b.timeSlot, b.duration)
+      );
+
+      slots.push({
+        time: timeStr,
+        endTime,
+        isAvailable: conflicting.length === 0,
+        conflictsWith: conflicting.map(b => ({
+          from: b.timeSlot,
+          to: addHoursToTime(b.timeSlot, b.duration)
+        }))
+      });
+    }
+
+    const bookedRanges = existingBookings.map(b => ({
+      from: b.timeSlot,
+      to: addHoursToTime(b.timeSlot, b.duration)
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: { slots, bookedRanges, date }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // @desc    Create new booking
 // @route   POST /api/bookings
 // @access  Public
