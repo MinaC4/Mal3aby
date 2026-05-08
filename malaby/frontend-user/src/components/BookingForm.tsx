@@ -72,7 +72,7 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
   }
 
   const fieldClass = "input-field";
-  const labelClass = "flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2";
+  const labelClass = "flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -149,7 +149,7 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
 
       {/* Payment Method */}
       <div>
-        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3 block">
+        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 block">
           طريقة الدفع
         </label>
         <div className="grid grid-cols-2 gap-3">
@@ -162,7 +162,7 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
               className={`border-2 rounded-xl p-3.5 cursor-pointer transition-all text-center ${
                 formData.paymentMethod === opt.value
                   ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 shadow-md shadow-emerald-500/10'
-                  : 'border-gray-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 bg-white dark:bg-dark-700'
+                  : 'border-gray-200 dark:border-dark-500 hover:border-emerald-300 dark:hover:border-emerald-700 bg-white dark:bg-dark-700'
               }`}
             >
               <input
@@ -170,7 +170,7 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
                 checked={formData.paymentMethod === opt.value}
                 onChange={handleChange} className="sr-only"
               />
-              <span className={`text-sm font-bold ${formData.paymentMethod === opt.value ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-700 dark:text-slate-300'}`}>
+              <span className={`text-sm font-bold ${formData.paymentMethod === opt.value ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-700 dark:text-gray-300'}`}>
                 {opt.label}
               </span>
             </label>
@@ -190,16 +190,16 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
       </div>
 
       {/* Price Summary */}
-      <div className="bg-gray-50 dark:bg-dark-700 rounded-2xl p-5 border border-gray-100 dark:border-slate-700">
+      <div className="bg-gray-50 dark:bg-dark-700 rounded-2xl p-5 border border-gray-100 dark:border-dark-500">
         <div className="flex justify-between items-center mb-2.5">
-          <span className="text-gray-600 dark:text-slate-400 text-sm">السعر/ساعة</span>
+          <span className="text-gray-600 dark:text-gray-400 text-sm">السعر/ساعة</span>
           <span className="font-bold text-gray-900 dark:text-white text-sm">{pitch.pricePerHour} ج.م</span>
         </div>
         <div className="flex justify-between items-center mb-3">
-          <span className="text-gray-600 dark:text-slate-400 text-sm">المدة</span>
+          <span className="text-gray-600 dark:text-gray-400 text-sm">المدة</span>
           <span className="font-bold text-gray-900 dark:text-white text-sm">{formData.duration} ساعة</span>
         </div>
-        <div className="border-t border-gray-200 dark:border-slate-600 pt-3">
+        <div className="border-t border-gray-200 dark:border-dark-500 pt-3">
           <div className="flex justify-between items-center">
             <span className="font-black text-gray-900 dark:text-white">الإجمالي</span>
             <span className="font-black text-emerald-600 dark:text-emerald-400 text-lg">

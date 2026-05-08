@@ -14,7 +14,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-dark-900/80 border-b border-gray-100/60 dark:border-slate-800/60 shadow-sm">
+    <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/85 dark:bg-dark-900/90 border-b border-gray-100/60 dark:border-dark-600/40 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo */}
@@ -25,7 +25,7 @@ export default function Navbar() {
             <span className="text-xl font-black text-gray-900 dark:text-white tracking-tight">ملعبي</span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
               <Link
@@ -33,8 +33,8 @@ export default function Navbar() {
                 to={link.path}
                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                   location.pathname === link.path
-                    ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-                    : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white'
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700 hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
                 {link.label}
@@ -42,30 +42,27 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Right side actions */}
+          {/* Right actions */}
           <div className="flex items-center gap-2">
-            {/* Dark Mode Toggle */}
             <button
               onClick={toggle}
               aria-label="تبديل الوضع"
-              className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-all duration-200"
+              className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700 hover:text-gray-900 dark:hover:text-white transition-all duration-200"
             >
-              {isDark ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
 
-            {/* Book Now CTA */}
             <Link
               to="/pitches"
-              className="hidden md:flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5"
+              className="hidden md:flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md shadow-emerald-500/25 hover:-translate-y-0.5"
             >
               <Calendar className="h-4 w-4" />
               احجز الآن
             </Link>
 
-            {/* Mobile menu button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-all"
+              className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700 transition-all"
             >
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -73,9 +70,9 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden border-t border-gray-100 dark:border-slate-800 bg-white/95 dark:bg-dark-900/95 backdrop-blur-xl animate-fade-in">
+        <div className="md:hidden border-t border-gray-100 dark:border-dark-600 bg-white/95 dark:bg-dark-900/98 backdrop-blur-xl animate-fade-in">
           <div className="px-4 py-3 space-y-1">
             {navLinks.map((link) => (
               <Link
@@ -84,8 +81,8 @@ export default function Navbar() {
                 onClick={() => setIsOpen(false)}
                 className={`block px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                   location.pathname === link.path
-                    ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-                    : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800'
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-700'
                 }`}
               >
                 {link.label}

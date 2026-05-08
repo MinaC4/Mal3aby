@@ -8,39 +8,25 @@
   :root {
     --background: 0 0% 98%;
     --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 160 84% 39%;
-    --primary-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --ring: 160 84% 39%;
-    --radius: 0.75rem;
     --glass: rgba(255,255,255,0.7);
     --glass-border: rgba(255,255,255,0.3);
-    --glass-dark: rgba(15,23,42,0.7);
-    --glass-border-dark: rgba(255,255,255,0.08);
   }
 
   .dark {
-    --background: 222 47% 8%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 11%;
-    --glass: rgba(30,41,59,0.7);
-    --glass-border: rgba(255,255,255,0.08);
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+    --glass: rgba(17,17,17,0.8);
+    --glass-border: rgba(255,255,255,0.07);
   }
 
-  * {
-    border: none;
-  }
+  * { border: none; }
 
   body {
-    @apply bg-gray-50 dark:bg-dark-900 text-gray-900 dark:text-slate-100 antialiased transition-colors duration-300;
+    @apply bg-gray-50 dark:bg-dark-900 text-gray-900 dark:text-gray-100 antialiased transition-colors duration-300;
     font-family: 'Cairo', 'Inter', system-ui, sans-serif;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 }
 
 @layer components {
@@ -49,52 +35,38 @@
   }
 
   .btn-secondary {
-    @apply bg-white/80 dark:bg-dark-700/80 backdrop-blur-sm hover:bg-white dark:hover:bg-dark-600 text-gray-800 dark:text-slate-200 font-semibold py-3 px-6 rounded-xl border border-gray-200/60 dark:border-slate-700/60 transition-all duration-200 hover:-translate-y-0.5;
+    @apply bg-white/80 dark:bg-dark-700/80 backdrop-blur-sm hover:bg-white dark:hover:bg-dark-600 text-gray-800 dark:text-gray-200 font-semibold py-3 px-6 rounded-xl border border-gray-200/60 dark:border-dark-500/60 transition-all duration-200 hover:-translate-y-0.5;
   }
 
   .card {
-    @apply bg-white dark:bg-dark-800 rounded-2xl shadow-sm hover:shadow-xl dark:shadow-slate-900/50 transition-all duration-300 overflow-hidden border border-gray-100/80 dark:border-slate-700/50 hover:-translate-y-1;
+    @apply bg-white dark:bg-dark-800 rounded-2xl shadow-sm hover:shadow-xl dark:shadow-black/60 transition-all duration-300 overflow-hidden border border-gray-100/80 dark:border-dark-600/50 hover:-translate-y-1;
   }
 
   .glass-card {
-    @apply backdrop-blur-md bg-white/70 dark:bg-dark-800/70 border border-white/30 dark:border-slate-700/40 rounded-2xl shadow-xl;
+    @apply backdrop-blur-md bg-white/75 dark:bg-dark-800/80 border border-white/40 dark:border-dark-600/40 rounded-2xl shadow-xl dark:shadow-black/40;
   }
 
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-dark-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all duration-200;
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-dark-500 bg-white dark:bg-dark-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all duration-200;
   }
 
   .section-padding {
     @apply px-4 sm:px-6 lg:px-8 xl:px-12;
   }
 
-  .gradient-text {
-    @apply bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent;
-  }
-
-  .stat-widget {
-    @apply glass-card p-5 flex flex-col gap-2 hover:-translate-y-1 transition-transform duration-300;
-  }
-
   .sparkline-bar {
-    @apply bg-emerald-400/60 dark:bg-emerald-500/60 rounded-t-sm flex-1 min-h-[4px] transition-all duration-300;
+    @apply bg-emerald-400/60 dark:bg-emerald-500/70 rounded-t-sm flex-1 min-h-[4px] transition-all duration-300;
   }
 }
 
 /* ===================== SCROLLBAR ===================== */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(to bottom, #10b981, #059669);
   border-radius: 99px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #059669;
-}
+::-webkit-scrollbar-thumb:hover { background: #059669; }
 
 /* ===================== ANIMATIONS ===================== */
 @keyframes fadeInUp {
@@ -115,21 +87,17 @@
 }
 @keyframes shimmer {
   0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  100% { background-position:  200% center; }
 }
 @keyframes pulse-ring {
   0%   { transform: scale(0.8); opacity: 1; }
   100% { transform: scale(1.5); opacity: 0; }
 }
-@keyframes counter {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 
-.animate-fade-in-up  { animation: fadeInUp 0.6s ease-out forwards; }
-.animate-fade-in     { animation: fadeIn 0.5s ease-out forwards; }
-.animate-slide-in    { animation: slideInRight 0.4s ease-out forwards; }
-.animate-float       { animation: float 3s ease-in-out infinite; }
+.animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+.animate-fade-in    { animation: fadeIn 0.5s ease-out forwards; }
+.animate-slide-in   { animation: slideInRight 0.4s ease-out forwards; }
+.animate-float      { animation: float 3s ease-in-out infinite; }
 
 .stagger-1 { animation-delay: 0.1s; }
 .stagger-2 { animation-delay: 0.2s; }
@@ -138,28 +106,18 @@
 
 /* ===================== SHIMMER SKELETON ===================== */
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    #f0f0f0 25%,
-    #e0e0e0 50%,
-    #f0f0f0 75%
-  );
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% auto;
   animation: shimmer 1.5s infinite;
 }
 .dark .shimmer {
-  background: linear-gradient(
-    90deg,
-    #1e293b 25%,
-    #334155 50%,
-    #1e293b 75%
-  );
+  background: linear-gradient(90deg, #1a1a1a 25%, #2e2e2e 50%, #1a1a1a 75%);
   background-size: 200% auto;
 }
 
-/* ===================== GLASSMORPHISM HERO ===================== */
+/* ===================== GLASS HERO ===================== */
 .hero-glass {
-  background: rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.08);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: 1.5rem;
@@ -169,14 +127,7 @@
 .pitch-card-img {
   transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.pitch-card:hover .pitch-card-img {
-  transform: scale(1.08);
-}
-
-/* ===================== PROGRESS CIRCLES ===================== */
-.progress-ring {
-  transition: stroke-dashoffset 1s ease-in-out;
-}
+.pitch-card:hover .pitch-card-img { transform: scale(1.08); }
 
 /* ===================== DARK MODE TRANSITIONS ===================== */
 *, *::before, *::after {
@@ -184,7 +135,6 @@
   transition-duration: 200ms;
   transition-timing-function: ease;
 }
-/* Prevent transition on transforms (performance) */
 .animate-float, .animate-fade-in-up, .animate-fade-in, .animate-slide-in {
   transition-property: none;
 }

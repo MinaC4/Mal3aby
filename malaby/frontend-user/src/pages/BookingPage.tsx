@@ -16,7 +16,7 @@ export default function BookingPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-dark-900 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-500 dark:text-slate-400">جاري التحميل...</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">جاري التحميل...</p>
         </div>
       </div>
     );
@@ -38,15 +38,15 @@ export default function BookingPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-900">
       {/* Breadcrumb */}
-      <div className="bg-white dark:bg-dark-800 border-b border-gray-100 dark:border-slate-800">
+      <div className="bg-white dark:bg-dark-800 border-b border-gray-100 dark:border-dark-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-2 text-sm">
-            <Link to="/" className="text-gray-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">الرئيسية</Link>
-            <ChevronLeft className="h-4 w-4 text-gray-300 dark:text-slate-600" />
-            <Link to="/pitches" className="text-gray-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">الملاعب</Link>
-            <ChevronLeft className="h-4 w-4 text-gray-300 dark:text-slate-600" />
-            <Link to={`/pitches/${pitch._id}`} className="text-gray-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">{pitch.name}</Link>
-            <ChevronLeft className="h-4 w-4 text-gray-300 dark:text-slate-600" />
+            <Link to="/" className="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">الرئيسية</Link>
+            <ChevronLeft className="h-4 w-4 text-gray-300 dark:text-gray-600" />
+            <Link to="/pitches" className="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">الملاعب</Link>
+            <ChevronLeft className="h-4 w-4 text-gray-300 dark:text-gray-600" />
+            <Link to={`/pitches/${pitch._id}`} className="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">{pitch.name}</Link>
+            <ChevronLeft className="h-4 w-4 text-gray-300 dark:text-gray-600" />
             <span className="text-emerald-600 dark:text-emerald-400 font-semibold">حجز</span>
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function BookingPage() {
           <div className="lg:col-span-2 animate-fade-in-up">
             <div className="glass-card p-6 md:p-8">
               <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-1">إتمام الحجز</h1>
-              <p className="text-gray-500 dark:text-slate-400 text-sm mb-8">أدخل بياناتك لإتمام حجز الملعب</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">أدخل بياناتك لإتمام حجز الملعب</p>
               <BookingForm
                 pitch={pitch}
                 preselectedDate={state?.preselectedDate}
@@ -82,7 +82,7 @@ export default function BookingPage() {
 
               <h3 className="font-black text-gray-900 dark:text-white mb-2 text-sm">{pitch.name}</h3>
 
-              <div className="flex items-center gap-2 text-gray-500 dark:text-slate-400 text-xs mb-2">
+              <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs mb-2">
                 <MapPin className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>{pitch.location}</span>
               </div>
@@ -92,9 +92,9 @@ export default function BookingPage() {
                 <span className="text-xs font-bold text-gray-900 dark:text-white">{pitch.rating}</span>
               </div>
 
-              <div className="border-t border-gray-100 dark:border-slate-700 pt-4 mb-4">
+              <div className="border-t border-gray-100 dark:border-dark-500 pt-4 mb-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 dark:text-slate-400 text-sm">السعر/ساعة</span>
+                  <span className="text-gray-600 dark:text-gray-400 text-sm">السعر/ساعة</span>
                   <span className="font-black text-gray-900 dark:text-white text-sm">{pitch.pricePerHour} ج.م</span>
                 </div>
               </div>

@@ -67,8 +67,8 @@ export default function BookingSuccessPage() {
 
             <div className="space-y-2">
               {details.map((item, i) => (
-                <div key={i} className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-slate-800 last:border-0">
-                  <div className="flex items-center gap-3 text-gray-500 dark:text-slate-400">
+                <div key={i} className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-dark-600 last:border-0">
+                  <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
                     <div className="w-7 h-7 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
                       <item.icon className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                     </div>
@@ -90,7 +90,7 @@ export default function BookingSuccessPage() {
               <h3 className="font-black text-amber-800 dark:text-amber-400 mb-4 text-sm uppercase tracking-wide">تعليمات الدفع</h3>
               <div className="space-y-3 text-sm text-amber-700 dark:text-amber-500">
                 <p className="font-semibold">1. قم بالتحويل على أحد الأرقام التالية:</p>
-                <div className="bg-white dark:bg-dark-800 rounded-xl p-4 space-y-3 border border-amber-100 dark:border-slate-700">
+                <div className="bg-white dark:bg-dark-800 rounded-xl p-4 space-y-3 border border-amber-100 dark:border-dark-500">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
                       <Phone className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -120,7 +120,7 @@ export default function BookingSuccessPage() {
               </Link>
               <Link
                 to="/pitches"
-                className="flex-1 flex items-center justify-center gap-2 bg-gray-100 dark:bg-dark-700 hover:bg-gray-200 dark:hover:bg-dark-600 text-gray-700 dark:text-slate-300 py-3.5 rounded-xl font-bold transition-all text-sm border border-gray-200 dark:border-slate-700 hover:-translate-y-0.5"
+                className="flex-1 flex items-center justify-center gap-2 bg-gray-100 dark:bg-dark-700 hover:bg-gray-200 dark:hover:bg-dark-600 text-gray-700 dark:text-gray-300 py-3.5 rounded-xl font-bold transition-all text-sm border border-gray-200 dark:border-dark-500 hover:-translate-y-0.5"
               >
                 <ArrowLeft className="h-4 w-4" />
                 المزيد من الملاعب

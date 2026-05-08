@@ -29,7 +29,7 @@ export default function PitchDetailPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-dark-900 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-500 dark:text-slate-400">جاري التحميل...</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">جاري التحميل...</p>
         </div>
       </div>
     );
@@ -51,13 +51,13 @@ export default function PitchDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-900 pb-16">
       {/* Breadcrumb */}
-      <div className="bg-white dark:bg-dark-800 border-b border-gray-100 dark:border-slate-800">
+      <div className="bg-white dark:bg-dark-800 border-b border-gray-100 dark:border-dark-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-2 text-sm">
-            <Link to="/" className="text-gray-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">الرئيسية</Link>
-            <ChevronLeft className="h-4 w-4 text-gray-300 dark:text-slate-600" />
-            <Link to="/pitches" className="text-gray-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">الملاعب</Link>
-            <ChevronLeft className="h-4 w-4 text-gray-300 dark:text-slate-600" />
+            <Link to="/" className="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">الرئيسية</Link>
+            <ChevronLeft className="h-4 w-4 text-gray-300 dark:text-gray-600" />
+            <Link to="/pitches" className="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">الملاعب</Link>
+            <ChevronLeft className="h-4 w-4 text-gray-300 dark:text-gray-600" />
             <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{pitch.name}</span>
           </div>
         </div>
@@ -81,13 +81,13 @@ export default function PitchDetailPage() {
                     onClick={prevImage}
                     className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 dark:bg-dark-800/90 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white dark:hover:bg-dark-700 transition-all shadow-lg hover:-translate-y-1/2 hover:scale-110"
                   >
-                    <ChevronRight className="h-5 w-5 text-gray-700 dark:text-slate-300" />
+                    <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                   </button>
                   <button
                     onClick={nextImage}
                     className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 dark:bg-dark-800/90 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white dark:hover:bg-dark-700 transition-all shadow-lg hover:scale-110"
                   >
-                    <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-slate-300" />
+                    <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                   </button>
                 </>
               )}
@@ -119,9 +119,9 @@ export default function PitchDetailPage() {
           {/* Info */}
           <div className="animate-fade-in-up">
             <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-3">{pitch.name}</h1>
-            <p className="text-gray-600 dark:text-slate-400 leading-relaxed mb-5 text-sm">{pitch.description}</p>
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-5 text-sm">{pitch.description}</p>
 
-            <div className="flex items-center gap-2 text-gray-500 dark:text-slate-400 mb-6">
+            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-6">
               <MapPin className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
               <span className="text-sm">{pitch.location}</span>
             </div>
@@ -141,7 +141,7 @@ export default function PitchDetailPage() {
                 {pitch.amenities.map((amenity) => (
                   <span
                     key={amenity}
-                    className="flex items-center gap-1.5 bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-slate-300 text-xs px-3 py-1.5 rounded-full font-medium border border-gray-200 dark:border-slate-700"
+                    className="flex items-center gap-1.5 bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-gray-300 text-xs px-3 py-1.5 rounded-full font-medium border border-gray-200 dark:border-dark-500"
                   >
                     <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                     {amenity}
@@ -155,7 +155,7 @@ export default function PitchDetailPage() {
               <h3 className="font-black text-gray-900 dark:text-white mb-4 text-sm uppercase tracking-wide">حجز سريع</h3>
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
-                  <label className="flex items-center gap-1 text-xs text-gray-600 dark:text-slate-400 mb-1.5 font-semibold">
+                  <label className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 mb-1.5 font-semibold">
                     <Calendar className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                     التاريخ
                   </label>
@@ -168,7 +168,7 @@ export default function PitchDetailPage() {
                   />
                 </div>
                 <div>
-                  <label className="flex items-center gap-1 text-xs text-gray-600 dark:text-slate-400 mb-1.5 font-semibold">
+                  <label className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 mb-1.5 font-semibold">
                     <Clock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                     الوقت
                   </label>
