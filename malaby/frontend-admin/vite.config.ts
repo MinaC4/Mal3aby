@@ -10,9 +10,15 @@ export default defineConfig({
     }
   },
   server: {
-    port: 5001,
+    port: 6000,
     host: '0.0.0.0',
-    allowedHosts: true
+    allowedHosts: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
+      }
+    }
   },
   build: {
     outDir: 'dist',
