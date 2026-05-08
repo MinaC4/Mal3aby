@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
+// Use relative /api path — Vite proxy forwards to backend on port 8000
+const API_BASE_URL = '/api';
 
 interface UseApiOptions {
   immediate?: boolean;
@@ -15,16 +16,22 @@ export function useApi<T>(url: string, options: UseApiOptions = { immediate: tru
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch(`${API_BASE_URL}${url}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Something went wrong');
       }
-      
+
       setData(result.data);
     } catch (err) {
+      console.error('[useApi] error fetching', url, err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
@@ -42,48 +49,57 @@ export function useApi<T>(url: string, options: UseApiOptions = { immediate: tru
 
 export async function apiGet<T>(url: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${url}`);
+
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
+
   const result = await response.json();
-  
+
   if (!result.success) {
     throw new Error(result.message || 'Something went wrong');
   }
-  
+
   return result.data;
 }
 
 export async function apiPost<T>(url: string, body: Record<string, unknown>): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${url}`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
-  
+
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
+
   const result = await response.json();
-  
+
   if (!result.success) {
     throw new Error(result.message || 'Something went wrong');
   }
-  
+
   return result.data;
 }
 
 export async function apiPut<T>(url: string, body?: Record<string, unknown>): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${url}`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: body ? JSON.stringify(body) : undefined
   });
-  
+
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
+
   const result = await response.json();
-  
+
   if (!result.success) {
     throw new Error(result.message || 'Something went wrong');
   }
-  
+
   return result.data;
 }
 
@@ -91,12 +107,16 @@ export async function apiDelete<T>(url: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${url}`, {
     method: 'DELETE'
   });
-  
+
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
+
   const result = await response.json();
-  
+
   if (!result.success) {
     throw new Error(result.message || 'Something went wrong');
   }
-  
+
   return result.data;
 }
