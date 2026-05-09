@@ -1,0 +1,8 @@
+{
+  "name": "malaby",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd malaby/backend && npm install && cd ../frontend-user && npm install && npm run build && cd ../frontend-admin && npm install && npm run build",
+    "start": "cd malaby/backend && NODE_ENV=production node server.js"
+  }
+}
