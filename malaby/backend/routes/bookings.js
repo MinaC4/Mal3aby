@@ -102,7 +102,7 @@ router.get('/availability', async (req, res, next) => {
     const slots = [];
     const maxStartHour = 24 - requestedDuration;
 
-    for (let hour = 6; hour <= maxStartHour; hour++) {
+    for (let hour = 0; hour <= maxStartHour; hour++) {
       const timeStr = `${String(hour).padStart(2, '0')}:00`;
       const endTime = addHoursToTime(timeStr, requestedDuration);
 
