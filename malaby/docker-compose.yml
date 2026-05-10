@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Backend API Service
+
   api:
     build:
       context: ./backend
@@ -24,13 +24,10 @@ services:
       retries: 3
       start_period: 40s
 
-  # Frontend User App
   frontend-user:
     build:
       context: ./frontend-user
       dockerfile: Dockerfile
-      args:
-        VITE_API_URL: http://localhost:5000/api
     container_name: malaby-frontend-user
     restart: unless-stopped
     ports:
@@ -41,13 +38,13 @@ services:
     networks:
       - malaby-network
 
-  # Frontend Admin Dashboard
   frontend-admin:
     build:
       context: ./frontend-admin
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: http://localhost:5000/api
+        # Docker serves admin at root '/' — Replit uses '/admin/' (set in vite.config.ts default)
+        VITE_BASE_URL: /
     container_name: malaby-frontend-admin
     restart: unless-stopped
     ports:
