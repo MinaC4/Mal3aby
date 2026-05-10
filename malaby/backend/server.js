@@ -64,6 +64,9 @@ if (isProd) {
   const userDist = path.join(__dirname, '../frontend-user/dist');
 
   app.use('/admin', express.static(adminDist));
+  app.get('/admin', (req, res) => {
+    res.sendFile(path.join(adminDist, 'index.html'));
+  });
   app.get('/admin/*', (req, res) => {
     res.sendFile(path.join(adminDist, 'index.html'));
   });
