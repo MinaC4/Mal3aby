@@ -31,61 +31,24 @@
 
 ---
 
-## Overview
-
-**Mal3aby (ملعبي)** connects football pitch owners with players through a streamlined booking experience. Users browse pitches, see real-time slot availability, and complete bookings online. Admins manage everything through a dedicated dashboard.
-
-The platform has three services that work together:
-
-| Service | Purpose | Port (dev) | URL (prod) |
-|---|---|---|---|
-| User Frontend | Customer-facing booking app | 5000 | `/` |
-| Admin Dashboard | Pitch management & bookings | 3001 | `/admin` |
-| Backend API | REST API + MongoDB | 8000 | `/api` |
-
----
-
-## Architecture
-
-```
-┌──────────────────────────────────────────────────────────┐
-│                    PRODUCTION (port 5000)                 │
-│                                                          │
-│   /          → User Frontend (React static build)        │
-│   /admin     → Admin Dashboard (React static build)      │
-│   /api       → REST API (Express routes)                 │
-│   /health    → Health check endpoint                     │
-│                                                          │
-│                  [ Node.js / Express ]                   │
-│                        │                                 │
-│               [ MongoDB Atlas ]                          │
-└──────────────────────────────────────────────────────────┘
-
-DEVELOPMENT:
-  frontend-user  → localhost:5000  (Vite dev server, proxies /api → 8000)
-  frontend-admin → localhost:3001  (Vite dev server, proxies /api → 8000)
-  backend        → localhost:8000  (nodemon)
-```
-
----
-
 ## Features
 
-### User App (`/`)
-- **Homepage** — Hero image section, platform stats (sparkline widgets), featured pitches
-- **Pitches listing** — Browse all active pitches with search and filtering
-- **Pitch detail page** — Image gallery with thumbnails, amenities, pricing, quick-booking widget
-- **Real-time availability picker** — Visual time slot grid showing available (green) vs booked (red) slots; clicking a booked slot shows which time range is already taken
-- **Booking form** — Full form (name, email, phone, date, duration, time slot, payment method, notes)
-- **Booking success page** — Booking summary with payment instructions
-- **Dark mode** — True-black glassmorphism design with toggle in navbar
+**User App**
+- Browse and search football pitches by name, location, and price
+- View pitch details, images, and pricing
+- Select available time slots (only confirmed bookings block slots)
+- Submit a booking request and upload payment screenshot
 
-### Admin Dashboard (`/admin`)
-- **Login page** — Credentials: `admin` / `admin123`
-- **Dashboard** — Total bookings, revenue, active pitches, pending count
-- **Bookings management** — Table with search/filter, confirm/cancel actions, detail modal with payment screenshot
-- **Notifications** — Real-time list of new bookings, confirmations, payment receipts
-- **Sidebar logout** — Works correctly across all components (shared `AuthContext`)
+**Admin Dashboard**
+- View all pending, confirmed, cancelled, and completed bookings
+- Confirm or cancel bookings (confirming a slot makes it unavailable to new bookings)
+- Manage pitches (add, edit, activate/deactivate)
+- Real-time notifications for new bookings and payments
+
+**Booking Logic**
+- A `pending` booking does **not** block a time slot — multiple users can request the same slot
+- Only after an admin **confirms** a booking does the slot become unavailable to others
+- Admins cannot confirm a booking that overlaps with an already-confirmed booking
 
 ---
 
@@ -93,203 +56,11 @@ DEVELOPMENT:
 
 | Layer | Technology |
 |---|---|
-| User & Admin Frontend | React 18 · TypeScript · Vite · Tailwind CSS · React Router v6 · Lucide Icons |
-| Backend | Node.js · Express.js · Mongoose · express-validator |
-| Database | MongoDB Atlas |
-| Deployment | Replit Autoscale (single process, multi-port in dev) |
-
----
-
-## API Reference
-
-**Base URL (dev):** `http://localhost:8000/api`
-**Base URL (prod):** `https://your-app.replit.app/api`
-
-### Pitches
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/pitches` | List all active pitches |
-| `GET` | `/pitches/:id` | Get single pitch details |
-| `POST` | `/pitches` | Create pitch |
-| `PUT` | `/pitches/:id` | Update pitch |
-| `DELETE` | `/pitches/:id` | Delete pitch |
-
-### Bookings
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/bookings` | List all bookings (admin) |
-| `GET` | `/bookings/availability` | **Real-time slot availability** |
-| `POST` | `/bookings` | Create new booking |
-| `GET` | `/bookings/:id` | Get single booking |
-| `PUT` | `/bookings/:id/status` | Update booking status |
-| `PUT` | `/bookings/:id/payment` | Upload payment screenshot URL |
-| `DELETE` | `/bookings/:id` | Delete booking |
-
-#### `GET /bookings/availability`
-
-Returns hourly time slots for a given pitch and date, marking each as available or booked.
-
-**Query Parameters:**
-
-| Param | Type | Required | Description |
-|---|---|---|---|
-| `pitchId` | string | ✅ | MongoDB ObjectId of the pitch |
-| `date` | string | ✅ | Date in `YYYY-MM-DD` format |
-| `duration` | number | — | Requested duration in hours (default: 1) |
-
-**Example Request:**
-```
-GET /api/bookings/availability?pitchId=69fcfbad70b945fb2759c016&date=2026-05-10&duration=2
-```
-
-**Example Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "slots": [
-      {
-        "time": "06:00",
-        "endTime": "08:00",
-        "isAvailable": true,
-        "conflictsWith": []
-      },
-      {
-        "time": "14:00",
-        "endTime": "16:00",
-        "isAvailable": false,
-        "conflictsWith": [
-          { "from": "13:00", "to": "15:00" }
-        ]
-      }
-    ],
-    "bookedRanges": [
-      { "from": "13:00", "to": "15:00" }
-    ],
-    "date": "2026-05-10"
-  }
-}
-```
-
-**Slot generation rules:**
-- Slots run from `06:00` to `(24 - duration):00` so no slot ends past midnight
-- A slot is unavailable if booking it (for the requested duration) would **overlap** with any existing non-cancelled booking
-- Overlap logic: `startA < endB AND endA > startB`
-
-### Notifications
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/notifications` | List all notifications |
-| `GET` | `/notifications/stats/unread` | Unread count |
-| `PUT` | `/notifications/:id/read` | Mark as read |
-| `DELETE` | `/notifications/:id` | Delete notification |
-
-**Health Check:** `GET /health`
-
----
-
-## Data Models
-
-### Pitch
-
-```javascript
-{
-  name: String,                    // required
-  description: String,             // required
-  images: [String],                // array of image URLs
-  pricePerHour: Number,            // required, min 0
-  location: String,                // required
-  amenities: [String],             // e.g. ['إضاءة', 'مياه', 'دش']
-  availability: [{
-    day: String,                   // 'Saturday' | 'Sunday' | ... | 'Friday'
-    slots: [{ time: String, available: Boolean }]
-  }],
-  rating: Number,                  // 0–5, default 0
-  isActive: Boolean                // default true
-}
-```
-
-### Booking
-
-```javascript
-{
-  pitch: ObjectId,                 // ref: Pitch
-  customerName: String,            // required
-  customerEmail: String,           // required, lowercase
-  customerPhone: String,           // required
-  bookingDate: Date,               // required
-  timeSlot: String,                // 'HH:MM' e.g. '14:00'
-  duration: Number,                // 1–4 hours, default 1
-  totalPrice: Number,              // pricePerHour × duration
-  paymentMethod: String,           // 'vodafone_cash' | 'instapay' | 'cash'
-  paymentScreenshot: String,       // URL after upload
-  status: String,                  // 'pending' | 'confirmed' | 'cancelled' | 'completed'
-  notes: String                    // optional
-}
-```
-
-Indexes:
-- Partial unique index on `(pitch, bookingDate, timeSlot, status)` — excludes cancelled bookings
-- Regular index on `(pitch, bookingDate, status)` for fast availability queries
-
-### Notification
-
-```javascript
-{
-  booking: ObjectId,               // ref: Booking
-  title: String,
-  message: String,
-  type: String,                    // 'new_booking' | 'booking_confirmed' | 'booking_cancelled' | 'payment_received'
-  read: Boolean,                   // default false
-  readAt: Date
-}
-```
-
----
-
-## Booking Flow
-
-```
-Homepage
-  └─► Browse Pitches (/pitches)
-        └─► Pitch Detail (/pitches/:id)
-              ├─ View image gallery, amenities, price
-              ├─ Quick booking widget (pick date + time)
-              └─► Booking Page (/booking/:pitchId)
-                    ├─ Fill: name, email, phone
-                    ├─ Pick: date, duration
-                    ├─ [API] GET /bookings/availability
-                    │         ↓ returns slot grid
-                    ├─ Pick: available time slot (green ✓)
-                    │   OR   blocked slot (red ✗) → shows conflict info in Arabic
-                    ├─ Pick: payment method
-                    ├─ [API] POST /bookings
-                    └─► Booking Success (/booking-success)
-                          └─ User sends payment transfer + screenshot
-```
-
----
-
-## Admin Workflow
-
-```
-/admin (Login page)
-  └─► Dashboard
-        ├─ Stats: total bookings, revenue, pitches, pending
-        ├─► Bookings Tab
-        │     ├─ Search / filter by status
-        │     ├─ View booking detail modal (customer info, payment screenshot)
-        │     ├─ Confirm booking → [API] PUT /bookings/:id/status
-        │     └─ Cancel booking → [API] PUT /bookings/:id/status
-        └─► Notifications Tab
-              ├─ New booking alerts
-              ├─ Payment receipt notifications
-              ├─ Mark as read / Delete
-              └─ Unread badge shown in navbar
-```
+| Backend | Node.js, Express, MongoDB Atlas (Mongoose) |
+| User Frontend | React, Vite, TypeScript, Tailwind CSS |
+| Admin Dashboard | React, Vite, TypeScript, Tailwind CSS, shadcn/ui |
+| Deployment | Replit (single Express server serves all three) |
+| Containerization | Docker, Docker Compose, Nginx |
 
 ---
 
@@ -297,240 +68,167 @@ Homepage
 
 ```
 malaby/
-├── README.md
-│
-├── backend/
-│   ├── server.js                      # Express app entry, static file serving in prod
-│   ├── seed.js                        # Database seeder (4 sample pitches)
-│   ├── config/
-│   │   └── db.js                      # MongoDB Atlas connection via Mongoose
-│   ├── middleware/
-│   │   └── errorHandler.js            # Global Express error handler
-│   ├── models/
-│   │   ├── Pitch.js                   # Pitch schema + timeSlot subdocuments
-│   │   ├── Booking.js                 # Booking schema + partial unique index
-│   │   └── Notification.js            # Notification schema
-│   └── routes/
-│       ├── pitches.js                 # CRUD for pitches
-│       ├── bookings.js                # Bookings + /availability endpoint + overlap detection
-│       └── notifications.js           # Notifications CRUD + unread stats
-│
-├── frontend-user/
-│   └── src/
-│       ├── components/
-│       │   ├── Navbar.tsx             # Navigation + dark mode toggle
-│       │   ├── Footer.tsx             # Site footer
-│       │   ├── PitchCard.tsx          # Pitch card in listing
-│       │   ├── BookingForm.tsx        # Full booking form (uses TimeSlotPicker)
-│       │   └── TimeSlotPicker.tsx     # Visual availability grid component
-│       ├── pages/
-│       │   ├── HomePage.tsx           # Hero + stats widgets + featured pitches
-│       │   ├── PitchesPage.tsx        # All pitches listing with search
-│       │   ├── PitchDetailPage.tsx    # Single pitch detail + quick booking
-│       │   ├── BookingPage.tsx        # Full booking page wrapper
-│       │   └── BookingSuccessPage.tsx # Post-booking confirmation
-│       ├── hooks/
-│       │   └── useApi.ts              # Generic fetch hook + apiPost/apiPut/apiDelete helpers
-│       ├── lib/
-│       │   └── theme.tsx              # ThemeContext — dark mode state + localStorage
-│       ├── types/
-│       │   └── index.ts               # TypeScript interfaces: Pitch, Booking, Notification, etc.
-│       └── utils/
-│           └── timeFormat.ts          # formatTimeRange, formatTime12Hour helpers
-│
-└── frontend-admin/
-    └── src/
-        ├── components/
-        │   ├── Sidebar.tsx            # Nav sidebar with logout button
-        │   └── Navbar.tsx             # Top bar with date + notification badge
-        ├── contexts/
-        │   └── AuthContext.tsx        # React Context for shared auth state (login/logout)
-        ├── pages/
-        │   ├── LoginPage.tsx          # Admin login form
-        │   ├── DashboardPage.tsx      # Stats cards overview
-        │   ├── BookingsPage.tsx       # Bookings table with filter + detail modal
-        │   └── NotificationsPage.tsx  # Notifications list
-        └── hooks/
-            └── useApi.ts              # Admin fetch hook (same /api pattern)
+├── backend/                  # Express API server
+│   ├── config/db.js          # MongoDB connection
+│   ├── middleware/           # Error handler
+│   ├── models/               # Mongoose models (Booking, Pitch, Notification)
+│   ├── routes/               # API routes (pitches, bookings, notifications)
+│   ├── seed.js               # Database seeder (sample pitches)
+│   ├── clean.js              # Database cleaner (removes all data)
+│   ├── server.js             # Entry point
+│   └── Dockerfile
+├── frontend-user/            # React user app (port 3000 in Docker / root in Replit)
+│   ├── src/
+│   │   ├── components/       # Reusable UI components
+│   │   ├── pages/            # Route pages
+│   │   ├── hooks/            # useApi, custom hooks
+│   │   └── types/            # TypeScript interfaces
+│   ├── nginx.conf            # Nginx config for Docker (proxies /api to backend)
+│   └── Dockerfile
+├── frontend-admin/           # React admin dashboard (port 3001 in Docker / /admin in Replit)
+│   ├── src/
+│   │   ├── components/       # Navbar, Sidebar
+│   │   ├── contexts/         # AuthContext (login state)
+│   │   ├── pages/            # Dashboard, Bookings, Notifications, Login
+│   │   ├── hooks/            # useApi, useAuth
+│   │   └── types/            # TypeScript interfaces
+│   ├── nginx.conf            # Nginx config for Docker (proxies /api to backend)
+│   └── Dockerfile
+├── docs/
+│   └── API_DOCUMENTATION.md  # Full API reference
+├── docker-compose.yml
+├── .env.example
+└── README.md
 ```
 
 ---
 
-## Development Setup
+## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- npm
-- MongoDB Atlas account (or local MongoDB)
+- Node.js 20+
+- MongoDB Atlas URI (or local MongoDB)
 
-### 1. Install dependencies
+### Environment Variables
+
+Copy `.env.example` to `.env` inside the `malaby/` folder and fill in your values:
+
+```env
+MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/malaby?retryWrites=true&w=majority
+PORT=8000
+NODE_ENV=development
+CORS_ORIGIN=*
+```
+
+### Run in Development
 
 ```bash
-cd malaby/backend       && npm install
-cd malaby/frontend-user  && npm install
-cd malaby/frontend-admin && npm install
+# Backend (port 8000)
+cd malaby/backend && npm install && npm run dev
+
+# User frontend (port 5000)
+cd malaby/frontend-user && npm install && npm run dev
+
+# Admin dashboard (port 3001)
+cd malaby/frontend-admin && npm install && npm run dev
 ```
 
-### 2. Set environment variable
-
-The `MONGODB_URI` secret must be set in your environment:
-```
-MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/malaby
-```
-
-### 3. Seed the database (optional)
+### Seed Sample Data
 
 ```bash
 cd malaby/backend
-node seed.js
-```
-
-Creates 4 sample pitches: ملعب النجوم, ملعب القمة, ملعب الذهب, ملعب البطل.
-
-### 4. Start all three services
-
-```bash
-# Terminal 1
-cd malaby/backend && npm run dev          # port 8000
-
-# Terminal 2
-cd malaby/frontend-user && npm run dev    # port 5000
-
-# Terminal 3
-cd malaby/frontend-admin && npm run dev   # port 3001
-```
-
-### Admin credentials
-```
-Username: admin
-Password: admin123
+node seed.js    # Add sample pitches
+node clean.js   # Remove all data
 ```
 
 ---
 
-## Production Deployment
+## Docker Deployment
 
-Configured for **Replit Autoscale**.
+### Requirements
+- Docker and Docker Compose
+- A `.env` file in `malaby/` with `MONGODB_URI` set
 
-### Build command
+### Start all services
+
 ```bash
-cd malaby/frontend-user && npm run build && cd ../frontend-admin && npm run build
+cd malaby
+docker compose up --build -d
 ```
 
-### Run command
-```bash
-cd malaby/backend && NODE_ENV=production node server.js
-```
-
-In production, the single Express server on **port 5000** serves:
-- `GET /admin/*` → `frontend-admin/dist/index.html` (SPA fallback)
-- `GET /api/*` → Express REST routes
-- `GET /*` → `frontend-user/dist/index.html` (SPA fallback)
-
-The admin dashboard React Router uses `basename="/admin"` in production (`import.meta.env.PROD`).
-
----
-
-## Design System
-
-### Color Palette (User Frontend)
-
-| Token | Value | Usage |
-|---|---|---|
-| `emerald-500` | `#10b981` | Primary actions, accents, selected states |
-| `dark-950` | `#000000` | True black background (dark mode) |
-| `dark-900` | `#0a0a0a` | Page background (dark mode) |
-| `dark-800` | `#111111` | Card background (dark mode) |
-| `dark-700` | `#1a1a1a` | Secondary surfaces (dark mode) |
-| `dark-600` | `#242424` | Borders, dividers (dark mode) |
-
-### Glassmorphism Cards
-
-```css
-.glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-}
-```
-
-### Animations
-
-| Class | Effect |
+| Service | URL |
 |---|---|
-| `animate-fade-in` | Opacity 0→1 (0.5s) |
-| `animate-fade-in-up` | Opacity + translateY (0.5s) |
-| `animate-float` | Gentle up/down bob (3s loop) |
-| `animate-shimmer` | Skeleton loading shimmer |
+| User App | http://localhost:3000 |
+| Admin Dashboard | http://localhost:3001 |
+| Backend API | http://localhost:5000 |
+| Health Check | http://localhost:5000/health |
 
-### TimeSlotPicker States
+### Stop all services
 
-| State | Color | Meaning |
-|---|---|---|
-| Available | Emerald border + bg | Slot is free for the selected duration |
-| Booked | Red border + bg | Slot overlaps with existing booking |
-| Selected | Solid emerald | User's chosen slot |
+```bash
+docker compose down
+```
+
+> **Note:** The Docker admin dashboard is built with `base: '/'` and served standalone by Nginx on port 3001. The Nginx configs in both frontends proxy `/api` requests to the backend container.
 
 ---
 
-## Key Implementation Details
+## Replit Deployment
 
-### Overlap Detection Algorithm
+On Replit, a single Express server serves everything on one port:
 
-Used in both booking creation (`POST /bookings`) and availability calculation (`GET /bookings/availability`):
+| Path | Content |
+|---|---|
+| `/` | User frontend |
+| `/admin` | Admin dashboard |
+| `/api/*` | Backend API |
+| `/health` | Health check |
 
-```javascript
-function hasTimeOverlap(start1, duration1, start2, duration2) {
-  const end1 = addHoursToTime(start1, duration1);
-  const end2 = addHoursToTime(start2, duration2);
+Build command: `cd malaby/frontend-user && npm run build && cd ../frontend-admin && npm run build`  
+Run command: `cd malaby/backend && node server.js`
 
-  const start1Min = timeToMinutes(start1);
-  const end1Min   = timeToMinutes(end1);
-  const start2Min = timeToMinutes(start2);
-  const end2Min   = timeToMinutes(end2);
+---
 
-  // Overlap if: start1 < end2 AND end1 > start2
-  return (start1Min < end2Min && end1Min > start2Min);
-}
+## API Overview
+
+Full documentation: [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/pitches` | List all active pitches |
+| GET | `/api/pitches/:id` | Get pitch details |
+| GET | `/api/bookings/availability` | Get available slots (only confirmed block slots) |
+| POST | `/api/bookings` | Create a new booking (pending) |
+| GET | `/api/bookings` | List all bookings (admin) |
+| PUT | `/api/bookings/:id/status` | Update booking status (admin) |
+| PUT | `/api/bookings/:id/payment` | Upload payment screenshot |
+| GET | `/api/notifications` | List admin notifications |
+
+---
+
+## Admin Access
+
+Default credentials (hardcoded for demo — change before production):
+
+| Field | Value |
+|---|---|
+| Username | `admin` |
+| Password | `admin123` |
+
+---
+
+## Booking Status Flow
+
+```
+[User submits] → pending
+                    ↓
+         [Admin reviews on dashboard]
+                    ↓
+         confirmed ──────── cancelled
+                    ↓
+                completed (after booking date)
 ```
 
-This correctly handles all cases:
-- Exact same time slot
-- One booking fully inside another
-- Partial overlaps at start or end
-- Cancelled bookings are excluded from all checks
-
-### Auth Context Pattern
-
-The admin dashboard uses React Context to share auth state across all components. Previously, each component called `useAuth()` independently which caused the logout in `Sidebar` not to reflect in `App`. Fix:
-
-```tsx
-// main.tsx — single AuthProvider wraps entire app
-<BrowserRouter basename={...}>
-  <AuthProvider>
-    <App />
-  </AuthProvider>
-</BrowserRouter>
-
-// AuthContext.tsx — single source of truth for isAuthenticated
-const AuthContext = createContext<AuthContextValue | null>(null);
-export function useAuth() {
-  return useContext(AuthContext)!;
-}
-```
-
-### API Proxy (Development)
-
-Both Vite dev servers proxy `/api` to the backend to avoid CORS issues:
-
-```typescript
-// vite.config.ts (both frontends)
-server: {
-  proxy: {
-    '/api': { target: 'http://localhost:8000', changeOrigin: true }
-  }
-}
-```
-
-Both frontends hardcode `const API_BASE_URL = '/api'` — no environment variables needed.
+- `pending` → slot is still visible and bookable by other users
+- `confirmed` → slot is blocked; no other booking can overlap
+- `cancelled` → slot is released back as available
