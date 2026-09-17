@@ -76,4 +76,7 @@ platform. Operator answers I-1/I-2/I-3 in `docs/ISSUES.md` unblock Phase 1.
 
 ## Created so far
 - Local files only (above). Cluster: only the temporary `malaby-preflight` ns (deleted).
-  Branch `feature/devsecops-foundation`. **No commits. Nothing pushed.**
+- Branch `feature/devsecops-foundation`, local commit `b5b2cc6`.
+- **PUSH BLOCKED (I-10):** `git push` → 403; `Hephast0s` has pull but **push=false** on
+  `MinaC4/Mal3aby`. Operator must add/accept the collaborator invite with write access.
+- Repo identity set **repo-local only**: `Malaby DevSecOps <devsecops@malaby.local>`.
