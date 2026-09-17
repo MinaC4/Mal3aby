@@ -1,0 +1,76 @@
+# Pre-commit gates mirroring the Jenkins pipeline (Phase 6), so the same checks
+# run locally before a commit. Keep in sync with Jenkinsfile and ci/services.yaml.
+#
+# Install once:        pre-commit install
+# Run whole tree:      pre-commit run --all-files
+#
+# Tools not installed on the host run through official container images
+# (Docker is present), so nothing extra must be installed locally.
+
+default_stages: [pre-commit]
+
+repos:
+  - repo: local
+    hooks:
+      - id: conventional-commit
+        name: conventional commit message
+        language: system
+        stages: [commit-msg]
+        entry: bash ci/scripts/commit-msg-conventional.sh
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]
+
+  - repo: local
+    hooks:
+      - id: guard-secret-files
+        name: block committing secret files (*.env, *.pem, *.key, id_rsa*)
+        language: system
+        pass_filenames: false
+        entry: bash ci/scripts/guard-secret-files.sh
+
+      - id: gitleaks
+        name: gitleaks secret scan
+        language: system
+        pass_filenames: false
+        entry: bash -c 'docker run --rm -v "$PWD":/repo ghcr.io/gitleaks/gitleaks:latest dir /repo --config /repo/.gitleaks.toml --redact --exit-code=1'
+
+      - id: hadolint
+        name: hadolint Dockerfile lint
+        language: system
+        files: (^|/)Dockerfile$
+        entry: bash -c 'for f in "$@"; do docker run --rm -i hadolint/hadolint:latest hadolint --failure-threshold error - < "$f" || exit 1; done' --
+
+      - id: yamllint
+        name: yamllint
+        language: system
+        files: \.ya?ml$
+        entry: bash -c 'for f in "$@"; do docker run --rm -v "$PWD":/repo pipelinecomponents/yamllint yamllint -c /repo/.yamllint "/repo/$f" || exit 1; done' --
+
+      - id: shellcheck
+        name: shellcheck
+        language: system
+        files: \.sh$
+        entry: bash -c 'docker run --rm -v "$PWD":/mnt koalaman/shellcheck:stable "$@"' --
+
+      - id: backend-syntax
+        name: backend syntax check (node --check)
+        language: system
+        files: ^malaby/backend/.*\.js$
+        entry: bash -c 'for f in "$@"; do node --check "$f" || exit 1; done' --
+
+      - id: frontend-typecheck
+        name: frontend typecheck (tsc --noEmit)
+        language: system
+        pass_filenames: false
+        files: ^malaby/frontend-(user|admin)/src/.*\.(ts|tsx)$
+        entry: bash -c 'for d in malaby/frontend-user malaby/frontend-admin; do if [ -d "$d/node_modules" ]; then (cd "$d" && npx tsc --noEmit) || exit 1; else echo "$d/node_modules missing; skipped (run npm ci)"; fi; done'

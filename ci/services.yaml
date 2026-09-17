@@ -1,0 +1,25 @@
+services:
+  - name: api
+    context: malaby/backend
+    dockerfile: malaby/backend/Dockerfile
+    language: node
+    port: 5000
+    protocol: http
+    test: "npm test"          # does not exist yet — added in Phase 5; tracked as a known gap until then
+    deploy: true
+  - name: frontend-user
+    context: malaby/frontend-user
+    dockerfile: malaby/frontend-user/Dockerfile
+    language: node-vite
+    port: 80
+    protocol: http
+    test: "npm run check"     # tsc typecheck only, not a real test suite
+    deploy: true
+  - name: frontend-admin
+    context: malaby/frontend-admin
+    dockerfile: malaby/frontend-admin/Dockerfile
+    language: node-vite
+    port: 80
+    protocol: http
+    test: "npm run check"
+    deploy: true

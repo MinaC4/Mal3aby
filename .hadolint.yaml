@@ -1,0 +1,11 @@
+---
+ignore: DL3018
+# DL3018 (pin apk versions) is not enforced: node:20-alpine/nginx:alpine are
+# pinned by digest at the image level (Phase 7); apk package pinning is out of scope.
+#
+# Blocking threshold is `error` (CI plan: "BLOCKING on errors"). Known warnings
+# deferred to Phase 7/9 when images are digest-pinned and rebuilt non-root:
+#   DL3025 shell-form HEALTHCHECK CMD (all 3 Dockerfiles)
+#   DL3059 consecutive RUN (backend)
+#   DL3066 non-numeric USER (backend)
+failure-threshold: error

@@ -1,0 +1,4 @@
+# Raw evidence exports. Large and may contain cluster topology/secret references.
+# Never commit these; only curated, redacted artifacts go to git.
+pre-engagement/
+raw/

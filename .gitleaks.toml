@@ -1,0 +1,18 @@
+title = "malaby gitleaks config"
+
+# Without `useDefault = true` this file REPLACES gitleaks' built-in rule set,
+# which silently turns the secret scan into a no-op. Keep it true.
+# (Lesson imported from the operator's prior engagement.)
+[extend]
+useDefault = true
+
+# Allowlist is intentionally tiny and path-based only. Both entries are
+# git-ignored local secret files and must never be committed.
+# Add a narrow regex only after confirming a real false positive.
+[allowlist]
+description = "Local-only, git-ignored secret files and raw cluster exports."
+paths = [
+  '''\.env$''',
+  '''\.env\..+$''',
+  '''docs/evidence/pre-engagement/''',
+]

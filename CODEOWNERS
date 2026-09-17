@@ -1,0 +1,12 @@
+# CODEOWNERS — Malaby
+# Single-operator homelab project. The operating GitHub account is Hephast0s,
+# the repository owner is @MinaC4. Adjust if ownership changes.
+
+*                       @MinaC4
+
+# Security-critical paths require explicit review.
+/security/              @MinaC4
+/malaby/backend/        @MinaC4
+/Jenkinsfile            @MinaC4
+/gitops/                @MinaC4
+/.github/               @MinaC4
