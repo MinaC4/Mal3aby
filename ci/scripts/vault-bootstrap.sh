@@ -77,7 +77,7 @@ for env in $ENVS; do
   # mongodb secret + composed URI
   if [ "$FORCE" = "1" ] || [ "$(api GET "malaby/data/$env/mongodb")" = "404" ]; then
     rootuser="root"; rootpw="$(rand 18)"; appuser="malaby"; apppw="$(rand 18)"
-    uri="mongodb://$appuser:$apppw@mongodb.malaby-$env.svc.cluster.local:27017/malaby?authSource=admin"
+    uri="mongodb://$appuser:$apppw@mongodb.malaby-$env.svc.cluster.local:27017/malaby?authSource=malaby"
     code=$(api POST "malaby/data/$env/mongodb" "$(jq -n \
       --arg ru "$rootuser" --arg rp "$rootpw" --arg au "$appuser" --arg ap "$apppw" --arg uri "$uri" \
       '{data:{MONGODB_ROOT_USERNAME:$ru, MONGODB_ROOT_PASSWORD:$rp, MONGODB_APP_USERNAME:$au, MONGODB_APP_PASSWORD:$ap, MONGODB_URI:$uri}}')")

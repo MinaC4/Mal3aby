@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: malaby-dev
+  labels:
+    app: api
+    app.kubernetes.io/part-of: malaby
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+        app.kubernetes.io/part-of: malaby
+    spec:
+      containers:
+        - name: api
+          image: 192.168.1.8:30082/malaby/api:baseline
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+              name: http
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: PORT
+              value: "5000"
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secrets-eso
+                  key: MONGODB_URI
+          envFrom:
+            - secretRef:
+                name: api-secrets-eso
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: malaby-dev
+  labels:
+    app: api
+    app.kubernetes.io/part-of: malaby
+spec:
+  selector:
+    app: api
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000

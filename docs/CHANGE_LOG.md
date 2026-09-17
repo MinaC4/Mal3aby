@@ -14,4 +14,6 @@ Rule: additive-only; `malaby-*` scope only. Nothing outside this project is modi
 | 7 | 2026-09-18 | Vault | role `malaby-dev` | `PUT auth/kubernetes/role/malaby-dev` | `DELETE auth/kubernetes/role/malaby-dev` |
 | 8 | 2026-09-18 | Vault | secrets `malaby/data/dev/{api,mongodb}` | `ci/scripts/vault-bootstrap.sh` | `vault kv metadata delete malaby/dev/api` (and mongodb) |
 | 9 | 2026-09-18 | k8s | ns `malaby-dev`, SA `eso-vault`, SecretStore `vault`, ExternalSecrets `api-secrets-eso`,`mongodb-secrets-eso` | `kubectl apply -f gitops/secrets/dev/` | `kubectl delete ns malaby-dev` |
-| — | - | - | _app workloads begin in Phase 4_ | - | - |
+| 10 | 2026-09-18 | Harbor | project `malaby` (+ images api/frontend-user/frontend-admin `:baseline`) | `POST /api/v2.0/projects` ; `docker push localhost:30082/malaby/…` | Harbor UI/API delete project `malaby` |
+| 11 | 2026-09-18 | k8s | `gitops/base/` workloads: mongodb StatefulSet+svc+cm+PVC, api deploy+svc, frontend-user/admin deploy+svc, Ingress `malaby-dev` | `kubectl apply -f gitops/base/` | `kubectl delete -f gitops/base/` ; or `kubectl delete ns malaby-dev` |
+| — | - | - | _Phase 5 modifies the app, not new cluster objects_ | - | - |

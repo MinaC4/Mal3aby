@@ -1,6 +1,6 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **3 COMPLETE** → next Phase 4 (baseline deployment dev) | Updated: 2026-09-18
+Phase: **4 COMPLETE** → next Phase 5 (application security remediation) | Updated: 2026-09-18
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared
@@ -74,10 +74,23 @@ platform. Operator answers I-1/I-2/I-3 in `docs/ISSUES.md` unblock Phase 1.
 - Secrets: ESO-owned Secrets always suffixed `-eso`; per-env Vault policies.
 - Signing: unsigned until a key is supplied (I-3). Branch protection blocked (needs admin).
 
-## Next (Phase 4)
-- Build 3 images from **unmodified** app (control group), push Harbor project `malaby`.
-- `malaby-dev` namespace already exists. Add MongoDB StatefulSet + api/frontend Deployments/Services/Ingress.
-- Then the deliberate unauthenticated-admin exploit transcript.
+- Phase 4: `docs/04-baseline-deployment.md`, `gitops/base/*`, `security/exceptions.yaml`,
+  `docs/evidence/phase4-{unauth-exploit,smoke}.txt`. Harbor project `malaby` + 3 baseline images.
+  All pods Running; exploit proven (PII list + confirm + delete, no creds). Actual ~53m/157Mi.
+
+## Live cluster objects (malaby-dev)
+- ns `malaby-dev`; SA `eso-vault`; SecretStore `vault`; ExternalSecrets `api-secrets-eso`,`mongodb-secrets-eso`
+- StatefulSet `mongodb` (+ headless svc, init CM, PVC data-mongodb-0 2Gi)
+- Deployment/Service `api` (:5000), `frontend-user` (:80), `frontend-admin` (:80); Ingress `malaby-dev`
+- Hosts: `malaby-dev.192.168.1.8.nip.io`, `malaby-admin-dev.192.168.1.8.nip.io`
+
+## Next (Phase 5 — mandatory app security fix)
+- Add `requireAdmin` JWT middleware + `POST /api/auth/login` (bcrypt hash from Vault), apply to all
+  admin routes; replace client-side `AuthContext` check; escape `$regex`; helmet + rate limit;
+  fix payment URL; disable sourcemaps; add `npm test`.
+- Then re-run the Phase 4 exploit → expect 401/403, and a legitimate login succeeding.
+- Decisions still pending but defaulted: JWT (recommended), generate admin password (already generated
+  in Vault `malaby/data/dev/api` `ADMIN_PASSWORD`). Signing key still unresolved (I-3).
 
 ## Key Phase 1 facts
 - Egress to registries/GitHub OK. Atlas not needed (in-cluster Mongo). NetworkPolicy controller active.
