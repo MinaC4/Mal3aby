@@ -1,6 +1,6 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **2 COMPLETE** → next Phase 3 (secrets bootstrap) | Updated: 2026-09-18
+Phase: **3 COMPLETE** → next Phase 4 (baseline deployment dev) | Updated: 2026-09-18
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared
@@ -64,10 +64,20 @@ platform. Operator answers I-1/I-2/I-3 in `docs/ISSUES.md` unblock Phase 1.
   no `.env` in image.
 - Governance: `docs/CHANGE_LOG.md`, `docs/ROLLBACK.md`, `docs/ISSUES.md`
 
-## Key Phase 2 facts
-- GitHub branch `feature/devsecops-foundation`; local `main` == `origin/main` (`97cf817`), not behind.
-- Vault is **dev-mode** (root token `root`, emptyDir) → ephemeral; bootstrap must be idempotent.
+- Phase 3: `docs/03-secrets-management.md`, `ci/scripts/vault-bootstrap.sh`,
+  `gitops/secrets/dev/*`. Vault mount `malaby/` + k8s auth + role `malaby-dev`; ESO SecretStore
+  `Valid/Ready`; refresh proven; cross-env denial proven (dev 200 / staging+prod 403).
+
+## Key facts
+- GitHub branch `feature/devsecops-foundation`, pushed and tracking `origin`; push access works.
+- Vault is **dev-mode** (root token `root`, emptyDir) → ephemeral; re-run `vault-bootstrap.sh` after restart.
+- Secrets: ESO-owned Secrets always suffixed `-eso`; per-env Vault policies.
 - Signing: unsigned until a key is supplied (I-3). Branch protection blocked (needs admin).
+
+## Next (Phase 4)
+- Build 3 images from **unmodified** app (control group), push Harbor project `malaby`.
+- `malaby-dev` namespace already exists. Add MongoDB StatefulSet + api/frontend Deployments/Services/Ingress.
+- Then the deliberate unauthenticated-admin exploit transcript.
 
 ## Key Phase 1 facts
 - Egress to registries/GitHub OK. Atlas not needed (in-cluster Mongo). NetworkPolicy controller active.
