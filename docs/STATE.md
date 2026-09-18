@@ -1,6 +1,6 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **6 COMPLETE; 7 substantially complete** → next Phase 8 (GitOps) | Updated: 2026-09-18
+Phase: **8 COMPLETE (dev GitOps)** → next Phase 9 (Kyverno) | Updated: 2026-09-18
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared

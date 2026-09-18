@@ -27,4 +27,7 @@ Rule: additive-only; `malaby-*` scope only. Nothing outside this project is modi
 | 20 | 2026-09-18 | Jenkins | credentials `malaby-cosign-key` (file), `malaby-cosign-pub` (file), `malaby-cosign-password` (string) | Jenkins API `createCredentials` | delete those credential IDs |
 | 21 | 2026-09-18 | k8s | reset `mongodb` StatefulSet + PVC `data-mongodb-0` (Vault restart changed creds) | `kubectl delete -f gitops/base/mongodb.yaml ; kubectl delete pvc data-mongodb-0 -n malaby-dev ; kubectl apply -f gitops/base/mongodb.yaml` | n/a (dev data) |
 | 22 | 2026-09-18 | (repo) | `security/cosign.pub` published for Kyverno/verification | file add | `git rm security/cosign.pub` |
-| — | - | - | _Phase 7 adds Harbor push/pull robots and policy docs_ | - | - |
+| 23 | 2026-09-18 | Harbor | robots `robot$malaby+malaby-ci-push` (pull+push), `robot$malaby+malaby-cluster-pull` (pull) | `POST /api/v2.0/robots` | delete robot via `DELETE /api/v2.0/robots/{id}` |
+| 24 | 2026-09-18 | Argo CD | `AppProject/malaby`, `Application/malaby-dev` (automated+prune+selfHeal) | `kubectl apply -f gitops/apps/` | `kubectl delete application -n argocd malaby-dev` ; `kubectl delete appproject -n argocd malaby` |
+| 25 | 2026-09-18 | (repo) | pinned all three workloads to signed CI image digests | `gitops/base/*.yaml` | git revert |
+| — | - | - | _Phase 9 adds Kyverno ClusterPolicies scoped to malaby-*_ | - | - |

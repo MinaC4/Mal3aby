@@ -19,8 +19,8 @@ Status: **COMPLETE for dev** (auto-sync, drift self-heal, rollback proven). Date
 - [x] dev running from Git (Argo CD)
 - [x] drift reverted automatically in dev
 - [x] rollback completes under 5 minutes with evidence
-- [ ] every image reference is a digest in the GitOps overlay — api is digest-pinned; pinning the two
-      frontends from the latest CI digests is a small follow-up
+- [x] every image reference is a digest in the GitOps overlay — all three pinned to the signed CI
+      digests of run `22-b20ab29`
 - [ ] staging/prod from Git — **deliberately deferred** (minimum-resource directive); pattern documented
 - [ ] single GitOps controller — yes (Argo CD); Devtron carries no `malaby-*` app
 

@@ -9,8 +9,9 @@
   destination `malaby-dev`. Sync policy **automated + prune + selfHeal**.
 
 ## Promotion by digest
-- Images are built and pushed by Jenkins (Phase 6/7). The dev Deployment currently pins `api` by digest;
-  the remaining services are pinned by digest too as each CI run completes.
+- Images are built, signed and pushed by Jenkins (Phase 6/7). All three dev workloads are pinned to the
+  **signed CI digests** of run `22-b20ab29` (`api@628c02fe`, `frontend-user@d2b5dc7d`,
+  `frontend-admin@610ddd3e`).
 - `gitops/environments/{dev,staging,prod}` overlays (digest pins per env) are the intended structure;
   today `gitops/base/` is the dev source. Promotion copies the exact digest — never a rebuild.
 
