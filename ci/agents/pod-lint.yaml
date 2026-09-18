@@ -16,7 +16,7 @@ spec:
       type: RuntimeDefault
   containers:
     - name: hadolint
-      image: hadolint/hadolint:latest
+      image: hadolint/hadolint:latest-alpine
       command: ["sleep", "43200"]
       tty: true
       resources:
@@ -36,7 +36,7 @@ spec:
         allowPrivilegeEscalation: false
         capabilities: { drop: ["ALL"] }
     - name: shellcheck
-      image: koalaman/shellcheck:stable
+      image: koalaman/shellcheck-alpine:stable
       command: ["sleep", "43200"]
       tty: true
       resources:
