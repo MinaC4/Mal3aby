@@ -1,0 +1,43 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: malaby-alerts
+  namespace: malaby-dev
+  labels:
+    release: prometheus
+    app.kubernetes.io/part-of: malaby
+spec:
+  groups:
+    - name: malaby.rules
+      rules:
+        - alert: MalabyApiDown
+          expr: up{namespace="malaby-dev",job="api"} == 0
+          for: 2m
+          labels: { severity: critical, part_of: malaby }
+          annotations:
+            summary: "Malaby API is down (Prometheus target not up)"
+        - alert: MalabyAdminAuthFailureSpike
+          expr: sum(rate(malaby_admin_auth_failures_total[5m])) * 60 > 10
+          for: 2m
+          labels: { severity: warning, part_of: malaby }
+          annotations:
+            summary: "Spike in unauthenticated admin API attempts (>10/min)"
+            description: "Could indicate probing of the admin surface."
+        - alert: MalabyHighErrorRate
+          expr: sum(rate(malaby_http_requests_total{status=~"5.."}[5m])) / clamp_min(sum(rate(malaby_http_requests_total[5m])), 0.0001) > 0.05
+          for: 5m
+          labels: { severity: warning, part_of: malaby }
+          annotations:
+            summary: "Malaby API 5xx ratio above 5% for 5m"
+        - alert: MalabyPodRestarting
+          expr: increase(kube_pod_container_status_restarts_total{namespace="malaby-dev"}[15m]) > 3
+          for: 5m
+          labels: { severity: warning, part_of: malaby }
+          annotations:
+            summary: "A Malaby pod is restarting repeatedly"
+        - alert: MalabyKyvernoPolicyFailures
+          expr: sum(kyverno_policy_results_total{result="fail"}) > 0
+          for: 10m
+          labels: { severity: info, part_of: malaby }
+          annotations:
+            summary: "Kyverno is reporting policy failures"

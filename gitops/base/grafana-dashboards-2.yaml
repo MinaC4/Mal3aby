@@ -1,0 +1,124 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: malaby-dashboard-runtime-security
+  namespace: malaby-dev
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/part-of: malaby
+data:
+  malaby-runtime-security.json: |-
+    {
+      "title": "Malaby — Runtime & Security",
+      "uid": "malaby-runtime-security",
+      "tags": ["malaby", "security", "runtime"],
+      "schemaVersion": 39,
+      "refresh": "30s",
+      "time": {"from": "now-24h", "to": "now"},
+      "templating": {"list": [{"name": "DS_PROMETHEUS", "type": "datasource", "query": "prometheus", "current": {}}]},
+      "panels": [
+        {"type":"row","title":"Runtime","gridPos":{"x":0,"y":0,"w":24,"h":1}},
+        {"type":"stat","title":"Running pods","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":0,"y":1,"w":4,"h":4},
+          "targets":[{"expr":"count(kube_pod_status_phase{namespace=\"malaby-dev\",phase=\"Running\"}==1)"}]},
+        {"type":"stat","title":"Restarts","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":4,"y":1,"w":4,"h":4},
+          "targets":[{"expr":"sum(kube_pod_container_status_restarts_total{namespace=\"malaby-dev\"})"}]},
+        {"type":"stat","title":"OOMKilled (24h)","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":8,"y":1,"w":4,"h":4},
+          "targets":[{"expr":"sum(increase(kube_pod_container_status_terminated_reason{namespace=\"malaby-dev\",reason=\"OOMKilled\"}[24h]))"}]},
+        {"type":"stat","title":"Admin auth failures (24h)","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":12,"y":1,"w":5,"h":4},
+          "targets":[{"expr":"sum(increase(malaby_admin_auth_failures_total[24h]))"}],
+          "fieldConfig":{"defaults":{"thresholds":{"steps":[{"color":"green","value":null},{"color":"orange","value":1},{"color":"red","value":25}]}}}},
+        {"type":"stat","title":"Kyverno policy failures (fail results)","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":17,"y":1,"w":7,"h":4},
+          "targets":[{"expr":"sum(kyverno_policy_results_total{result=\"fail\"})"}]},
+
+        {"type":"row","title":"Compliance & vulnerabilities","gridPos":{"x":0,"y":5,"w":24,"h":1}},
+        {"type":"timeseries","title":"Kyverno policy results by policy","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":0,"y":6,"w":12,"h":8},
+          "targets":[{"expr":"sum by (policy, result) (kyverno_policy_results_total)","legendFormat":"{{policy}} {{result}}"}]},
+        {"type":"timeseries","title":"Image vulnerabilities by severity (Trivy Operator)","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":12,"y":6,"w":12,"h":8},
+          "targets":[{"expr":"sum by (severity) (trivy_image_vulnerabilities)","legendFormat":"{{severity}}"}],
+          "fieldConfig":{"defaults":{"custom":{"fillOpacity":20,"stacking":{"mode":"normal"}}}}},
+
+        {"type":"row","title":"Pods","gridPos":{"x":0,"y":14,"w":24,"h":1}},
+        {"type":"table","title":"Pods & restarts","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":0,"y":15,"w":24,"h":8},
+          "targets":[{"expr":"sum by (pod, app) (kube_pod_container_status_restarts_total{namespace=\"malaby-dev\"})","format":"table","instant":true}],
+          "transformations":[{"id":"organize","options":{"excludeByName":{"Time":true},"renameByName":{"pod":"Pod","app":"App","Value":"Restarts"}}}]}
+      ]
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: malaby-dashboard-infra
+  namespace: malaby-dev
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/part-of: malaby
+data:
+  malaby-infrastructure.json: |-
+    {
+      "title": "Malaby — Infrastructure & Capacity",
+      "uid": "malaby-infrastructure",
+      "tags": ["malaby", "capacity"],
+      "schemaVersion": 39,
+      "refresh": "30s",
+      "time": {"from": "now-6h", "to": "now"},
+      "templating": {"list": [{"name": "DS_PROMETHEUS", "type": "datasource", "query": "prometheus", "current": {}}]},
+      "panels": [
+        {"type":"row","title":"Requests vs limits","gridPos":{"x":0,"y":0,"w":24,"h":1}},
+        {"type":"timeseries","title":"CPU usage vs requests","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":0,"y":1,"w":12,"h":8},
+          "targets":[
+            {"expr":"sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"malaby-dev\",container!=\"\"}[5m]))","legendFormat":"{{pod}} usage"},
+            {"expr":"sum by (pod) (kube_pod_container_resource_requests{namespace=\"malaby-dev\",resource=\"cpu\"})","legendFormat":"{{pod}} requests"}],
+          "fieldConfig":{"defaults":{"unit":"none"}}},
+        {"type":"timeseries","title":"Memory usage vs limits","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":12,"y":1,"w":12,"h":8},
+          "targets":[
+            {"expr":"sum by (pod) (container_memory_working_set_bytes{namespace=\"malaby-dev\",container!=\"\"})","legendFormat":"{{pod}} usage"},
+            {"expr":"sum by (pod) (kube_pod_container_resource_limits{namespace=\"malaby-dev\",resource=\"memory\"})","legendFormat":"{{pod}} limits"}],
+          "fieldConfig":{"defaults":{"unit":"bytes"}}},
+
+        {"type":"row","title":"Nodes","gridPos":{"x":0,"y":9,"w":24,"h":1}},
+        {"type":"timeseries","title":"Node CPU utilisation","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":0,"y":10,"w":12,"h":7},
+          "targets":[{"expr":"100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)","legendFormat":"{{instance}}"}],
+          "fieldConfig":{"defaults":{"unit":"percent","max":100}}},
+        {"type":"timeseries","title":"Node memory available","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":12,"y":10,"w":12,"h":7},
+          "targets":[{"expr":"node_memory_MemAvailable_bytes","legendFormat":"{{instance}}"}],
+          "fieldConfig":{"defaults":{"unit":"bytes"}}}
+      ]
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: malaby-dashboard-supplychain
+  namespace: malaby-dev
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/part-of: malaby
+data:
+  malaby-supply-chain.json: |-
+    {
+      "title": "Malaby — Supply Chain & Delivery",
+      "uid": "malaby-supply-chain",
+      "tags": ["malaby", "supply-chain"],
+      "schemaVersion": 39,
+      "refresh": "1m",
+      "time": {"from": "now-24h", "to": "now"},
+      "templating": {"list": [{"name": "DS_PROMETHEUS", "type": "datasource", "query": "prometheus", "current": {}}]},
+      "panels": [
+        {"type":"row","title":"Delivery","gridPos":{"x":0,"y":0,"w":24,"h":1}},
+        {"type":"stat","title":"Deployments available","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":0,"y":1,"w":6,"h":4},
+          "targets":[{"expr":"sum(kube_deployment_status_replicas_available{namespace=\"malaby-dev\"})"}]},
+        {"type":"stat","title":"Desired replicas","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":6,"y":1,"w":6,"h":4},
+          "targets":[{"expr":"sum(kube_deployment_spec_replicas{namespace=\"malaby-dev\"}) + sum(kube_statefulset_replicas{namespace=\"malaby-dev\"})"}]},
+        {"type":"stat","title":"Running containers","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":12,"y":1,"w":6,"h":4},
+          "targets":[{"expr":"count(kube_pod_container_status_running{namespace=\"malaby-dev\"}==1)"}]},
+        {"type":"stat","title":"Restart-free pods","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":18,"y":1,"w":6,"h":4},
+          "targets":[{"expr":"count(kube_pod_container_status_restarts_total{namespace=\"malaby-dev\"}==0)"}]},
+
+        {"type":"row","title":"Deployed images (digest-pinned)","gridPos":{"x":0,"y":5,"w":24,"h":1}},
+        {"type":"table","title":"Images running in malaby-dev","datasource":{"type":"prometheus","uid":"${DS_PROMETHEUS}"},"gridPos":{"x":0,"y":6,"w":24,"h":10},
+          "targets":[{"expr":"kube_pod_container_info{namespace=\"malaby-dev\"}","format":"table","instant":true}],
+          "transformations":[
+            {"id":"organize","options":{"excludeByName":{"Time":true,"Value":true,"__name__":true,"container_id":true,"job":true,"instance":true},"renameByName":{"pod":"Pod","container":"Container","image":"Image","image_id":"Digest"}}}
+          ]}
+      ]
+    }
