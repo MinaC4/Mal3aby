@@ -7,7 +7,8 @@
 | I-3 | PARTIAL | Resolved: `admin_auth_strategy`=JWT (implemented), admin password generated+hashed in Vault. Still open: `gpg_signing_owner`/key, permissions (`may_install_falco`, `may_run_zap_jobs`, `may_install_buildkit_or_kaniko`, `may_install_local_tools`), `jenkins_may_install_plugins`, `approval_phrase` | Needed for Phases 6–9 | operator |
 | I-12 | OPEN | No GPG/cosign key yet; commits unsigned and cosign signing (Phase 7) blocked on key choice | Phase 7 | operator |
 | I-13 | RESOLVED | Jenkins pod recovered by recreating `jenkins-0` (StatefulSet, fresh emptyDirs); now `3/3`. No config change. | Phase 6 CI runs | agent |
-| I-14 | OPEN | cosign credentials missing/wrong type (`cosign-key` exists as Secret text, not FileCredentials) → stage 10 sign/attest fails | Blocks stage 10–11 and Phase 7 signing | operator (CR-4) |
+| I-14 | RESOLVED | New cosign keypair generated; private key+password in Vault, Jenkins credentials `malaby-cosign-{key,pub,password}` created; sign/attest/verify now green | — | agent |
+| I-15 | NOTE | Vault dev-mode lost the `malaby/` mount on a restart; bootstrap re-created it with new Mongo creds → Mongo was re-initialized (dev data loss accepted) | Run `vault-bootstrap.sh` after any Vault restart; then reset Mongo | agent |
 | I-4 | OPEN | GitOps repo topology (single GitHub repo + branch vs. separate repos) undecided | Phase 2 | operator |
 | I-5 | MOOT-ish | `malaby/.dockerignore` fix target corrected: the live risk is `malaby/backend/.dockerignore` | Phase 2 must fix backend file | agent |
 | I-6 | NOTE | Platform creds weak/shared (`admin/admin123` on Jenkins/Harbor) | Out of scope to change; flagged | operator |

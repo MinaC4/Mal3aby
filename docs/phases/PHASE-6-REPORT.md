@@ -1,7 +1,8 @@
 # Phase 6 Report — Jenkins CI
 
-Status: **OPERATIONAL through stage 9 (image build + SBOM + scan); stage 10 (sign) blocked on the
-cosign key (CR-4).** Date: 2026-09-18.
+Status: **COMPLETE — full pipeline SUCCESS (stages 1–12).** Date: 2026-09-18.
+Final run: `Finished: SUCCESS`; all three images signed, attested and verified
+(`docs/evidence/phase6-ci-success.txt`).
 
 ## Runtime result (real — `docs/evidence/phase6-ci-console.txt`)
 | Stage | Result |
@@ -15,9 +16,9 @@ cosign key (CR-4).** Date: 2026-09-18.
 | 7a/7b/7c Build & Push (Kaniko) | ✅ **all three images pushed to Harbor** under tag `20-52e1869` |
 | 8 SBOM (syft) | ✅ |
 | 9 Image Scan (trivy image) | ✅ (findings reported, gated non-blocking) |
-| 10 Sign & Attest (cosign) | ❌ `Credentials 'cosign-key' is of type 'Secret text' where FileCredentials was expected` → **CR-4** |
-| 11 Verify | blocked by 10 |
-| 12 Update GitOps | scaffold (main-only; not run on this branch) |
+| 10 Sign & Attest (cosign) | ✅ signatures pushed for all three images |
+| 11 Verify (cosign) | ✅ "The signatures were verified against the specified public key" (×3) |
+| 12 Update GitOps | scaffold (main-only `when { branch 'main' }`; not run on this branch) |
 
 Harbor `malaby` repositories now carry the CI tag `20-52e1869` for `api`, `frontend-user`,
 `frontend-admin`.
@@ -45,9 +46,8 @@ Harbor `malaby` repositories now carry the CI tag `20-52e1869` for `api`, `front
 - [x] Pipeline builds all 3 services and pushes to Harbor via CI
 - [x] No host Docker socket; rootless/daemonless builder (Kaniko)
 - [x] `api` test suite (11/11) gates the build
-- [ ] Signature/attestation stages — blocked on the cosign key (CR-4)
-- [ ] No credentials in logs — verified: gitleaks clean; no secret values printed (cosign/password are
-      Jenkins credentials, never echoed)
+- [x] Signature + attestation + verification of every image (cosign, public key from the repo)
+- [x] No credentials in logs — gitleaks clean; cosign key/password are Jenkins credentials, echoed as `****`
 
 ## Decisions / deviations to note
 - Jenkinsfile inlines change detection + service parsing to avoid installing the

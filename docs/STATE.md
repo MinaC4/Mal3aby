@@ -1,6 +1,6 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **6 OPERATIONAL (stages 1–9 green; sign blocked on CR-4)** | Updated: 2026-09-18
+Phase: **6 COMPLETE (full CI SUCCESS, signed+verified)** → next Phase 7 finish | Updated: 2026-09-18
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared
