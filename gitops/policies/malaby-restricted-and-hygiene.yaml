@@ -125,7 +125,7 @@ metadata:
   name: malaby-restricted
   labels: { app.kubernetes.io/part-of: malaby }
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce
   background: true
   rules:
     - name: restricted-security-context
