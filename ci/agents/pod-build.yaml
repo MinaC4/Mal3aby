@@ -16,7 +16,7 @@ spec:
   containers:
     - name: kaniko
       image: gcr.io/kaniko-project/executor:debug
-      command: ["/busybox/sh", "-c", "cat"]
+      command: ["/busybox/sh", "-c", "sleep 43200"]
       tty: true
       resources:
         requests: { cpu: "200m", memory: "512Mi" }

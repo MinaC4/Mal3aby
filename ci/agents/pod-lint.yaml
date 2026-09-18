@@ -13,7 +13,7 @@ spec:
   containers:
     - name: hadolint
       image: hadolint/hadolint:latest
-      command: ["cat"]
+      command: ["sleep", "43200"]
       tty: true
       resources:
         requests: { cpu: "50m", memory: "64Mi" }
@@ -23,7 +23,7 @@ spec:
         capabilities: { drop: ["ALL"] }
     - name: yamllint
       image: pipelinecomponents/yamllint:latest
-      command: ["cat"]
+      command: ["sleep", "43200"]
       tty: true
       resources:
         requests: { cpu: "50m", memory: "64Mi" }
@@ -33,7 +33,7 @@ spec:
         capabilities: { drop: ["ALL"] }
     - name: shellcheck
       image: koalaman/shellcheck:stable
-      command: ["cat"]
+      command: ["sleep", "43200"]
       tty: true
       resources:
         requests: { cpu: "50m", memory: "64Mi" }

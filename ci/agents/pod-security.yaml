@@ -13,7 +13,7 @@ spec:
   containers:
     - name: gitleaks
       image: ghcr.io/gitleaks/gitleaks:latest
-      command: ["cat"]
+      command: ["sleep", "43200"]
       tty: true
       resources:
         requests: { cpu: "50m", memory: "128Mi" }
@@ -23,7 +23,7 @@ spec:
         capabilities: { drop: ["ALL"] }
     - name: semgrep
       image: returntocorp/semgrep:latest
-      command: ["cat"]
+      command: ["sleep", "43200"]
       tty: true
       resources:
         requests: { cpu: "50m", memory: "256Mi" }
@@ -33,7 +33,7 @@ spec:
         capabilities: { drop: ["ALL"] }
     - name: trivy
       image: aquasec/trivy:latest
-      command: ["cat"]
+      command: ["sleep", "43200"]
       tty: true
       resources:
         requests: { cpu: "50m", memory: "256Mi" }
@@ -42,8 +42,8 @@ spec:
         allowPrivilegeEscalation: false
         capabilities: { drop: ["ALL"] }
     - name: syft
-      image: anchore/syft:latest
-      command: ["cat"]
+      image: anchore/syft:debug
+      command: ["sleep", "43200"]
       tty: true
       resources:
         requests: { cpu: "50m", memory: "256Mi" }
@@ -52,8 +52,8 @@ spec:
         allowPrivilegeEscalation: false
         capabilities: { drop: ["ALL"] }
     - name: cosign
-      image: gcr.io/projectsigstore/cosign:v2.4.1
-      command: ["cat"]
+      image: bitnami/cosign:latest
+      command: ["sleep", "43200"]
       tty: true
       resources:
         requests: { cpu: "50m", memory: "128Mi" }

@@ -15,7 +15,7 @@ spec:
   containers:
     - name: node
       image: node:20-alpine
-      command: ["cat"]
+      command: ["sleep", "43200"]
       tty: true
       resources:
         requests: { cpu: "100m", memory: "256Mi" }
