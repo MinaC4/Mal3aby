@@ -64,10 +64,22 @@ spec:
     spec:
       restartPolicy: Never
       automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile: { type: RuntimeDefault }
       containers:
         - name: smoke
-          image: 192.168.1.8:30082/malaby/api@sha256:628c02fe0f29e6de384100d991ec78384317e2188a23e129167675af8273c3cf
+          image: 192.168.1.8:30082/malaby/api@sha256:978b2a9231624993b1f78c7eaf4deea401475d46748233b4e089b5fa09a61cc7
           command: ["node", "/scripts/smoke.js"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
           env:
             - { name: API_URL, value: "http://api:5000" }
           envFrom:
@@ -82,3 +94,5 @@ spec:
       volumes:
         - name: scripts
           configMap: { name: malaby-smoke-script }
+        - name: tmp
+          emptyDir: {}

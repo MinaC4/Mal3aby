@@ -54,11 +54,19 @@ spec:
     spec:
       automountServiceAccountToken: false
       securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
         fsGroup: 999
+        seccompProfile: { type: RuntimeDefault }
       containers:
         - name: mongodb
           image: mongo:7.0@sha256:609d76574151bee8b148caee83cd9fec8b5f695e5a6db9f1e0f9dced0673574e
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
           ports:
             - containerPort: 27017
               name: mongodb
@@ -88,6 +96,8 @@ spec:
               mountPath: /data/db
             - name: init
               mountPath: /docker-entrypoint-initdb.d
+            - name: tmp
+              mountPath: /tmp
           readinessProbe:
             tcpSocket:
               port: 27017
@@ -109,6 +119,8 @@ spec:
         - name: init
           configMap:
             name: mongodb-init
+        - name: tmp
+          emptyDir: {}
   volumeClaimTemplates:
     - metadata:
         name: data

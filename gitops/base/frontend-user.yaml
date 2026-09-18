@@ -19,32 +19,42 @@ spec:
         app.kubernetes.io/part-of: malaby
     spec:
       automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+        seccompProfile: { type: RuntimeDefault }
       containers:
         - name: nginx
-          image: 192.168.1.8:30082/malaby/frontend-user@sha256:d2b5dc7db690e489d8419e1c16cc35aa926fc8c2d247b686158025280d8d6418
+          image: 192.168.1.8:30082/malaby/frontend-user@sha256:2cbde1b3361c8e17b6849fed4c3cd06a8d8e078bc0647ac3f3144f16c5d8cead
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
           ports:
-            - containerPort: 80
+            - containerPort: 8080
               name: http
           readinessProbe:
-            httpGet:
-              path: /
-              port: 80
+            httpGet: { path: /, port: 8080 }
             initialDelaySeconds: 3
             periodSeconds: 10
           livenessProbe:
-            httpGet:
-              path: /
-              port: 80
+            httpGet: { path: /, port: 8080 }
             initialDelaySeconds: 10
             periodSeconds: 20
           resources:
-            requests:
-              cpu: 10m
-              memory: 32Mi
-            limits:
-              cpu: 100m
-              memory: 64Mi
+            requests: { cpu: "10m", memory: "32Mi" }
+            limits: { cpu: "100m", memory: "64Mi" }
+          volumeMounts:
+            - { name: nginx-cache, mountPath: /var/cache/nginx }
+            - { name: nginx-run, mountPath: /var/run }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - { name: nginx-cache, emptyDir: {} }
+        - { name: nginx-run, emptyDir: {} }
+        - { name: tmp, emptyDir: {} }
 ---
 apiVersion: v1
 kind: Service
@@ -60,4 +70,4 @@ spec:
   ports:
     - name: http
       port: 80
-      targetPort: 80
+      targetPort: 8080

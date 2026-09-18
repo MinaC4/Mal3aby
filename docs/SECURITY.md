@@ -22,8 +22,8 @@ Each control maps to a threat-model finding (`docs/00-threat-model.md`) and a ve
 | C16 | CI gates: gitleaks, lint, tests, SAST, SCA, SBOM, image scan, verify | F12/F18 | `docs/07-security-policy.md` |
 
 ## Known gaps (honest)
-- Kyverno `malaby-restricted` and `malaby-verify-images` run in **Audit** (non-root nginx + Mongo,
-  and Kyverno cannot verify over HTTP Harbor). See `docs/ISSUES.md` I-16/I-17.
+- Kyverno `malaby-restricted` is **Enforce** (non-root nginx/mongo/api + readOnlyRootFS). Only
+  `malaby-verify-images` runs in **Audit** (Kyverno cannot verify over HTTP Harbor). See ISSUES I-17.
 - Commits are **unsigned** (no GPG key yet, I-3).
 - Vault is **dev-mode** (ephemeral); bootstrap is idempotent.
 - ZAP DAST not executed (image pull); load baseline is a loaded-homelab number.

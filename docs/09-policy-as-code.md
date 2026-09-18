@@ -12,7 +12,7 @@ added when they exist), and never touch existing `boutique-*`/`eshtry-mny`/`heph
 | `malaby-disallow-latest` | **Enforce** | images pinned by digest (`@sha256:`) |
 | `malaby-restrict-registry` | **Enforce** | images only from Harbor `malaby` (mongo temporarily allowlisted) |
 | `malaby-sa-token` | **Enforce** | `automountServiceAccountToken: false` |
-| `malaby-restricted` | Audit | runAsNonRoot, drop ALL, no priv-escalation, seccomp, readOnlyRootFilesystem |
+| `malaby-restricted` | **Enforce** | runAsNonRoot, drop ALL, no priv-escalation, seccomp, readOnlyRootFilesystem |
 | `malaby-verify-images` | Audit | cosign signature + CycloneDX SBOM attestation |
 | `malaby-generate-default-deny` | (generate) | creates `malaby-default-deny` NetworkPolicy in namespaces labeled `malaby.io/netpol=true` |
 
@@ -26,16 +26,18 @@ added when they exist), and never touch existing `boutique-*`/`eshtry-mny`/`heph
 | `automountServiceAccountToken: true` | **denied** — `malaby-sa-token` |
 | `privileged: true` | **denied** — namespace Pod Security (baseline) |
 
-## Why two policies remain in Audit (honest status)
-1. **`malaby-restricted`** — the nginx frontends and MongoDB run as root today. To enforce:
-   rebuild both frontends on `nginxinc/nginx-unprivileged` (listen 8080, writable `/tmp`, `/var/cache`),
-   run MongoDB as UID 999 with `readOnlyRootFilesystem`, and add `securityContext` to `api`.
-2. **`malaby-verify-images`** — Kyverno could not verify signatures against Harbor over **plain HTTP**
-   (`unverified image …`), so Enforce would block all our own pods. Options: serve Harbor over TLS with a
-   trusted CA (node-level change request) or configure Kyverno for the insecure registry; until then it
-   runs in Audit and CI still enforces `cosign verify` (stage 11).
+## Restricted Pod Security — now ENFORCED
+The frontends were rebuilt on `nginxinc/nginx-unprivileged` (UID 101, listen 8080, readOnlyRootFilesystem
+with emptyDir mounts for `/tmp`, `/var/cache/nginx`, `/var/run`), MongoDB runs as UID 999 with
+readOnlyRootFilesystem, and `api` runs as 1001 with readOnlyRootFilesystem. `malaby-restricted` is now
+**Enforce**; a pod without the required securityContext is denied, and the real workloads are admitted.
+
+## Why `malaby-verify-images` remains in Audit
+Kyverno cannot verify signatures against Harbor over **plain HTTP** (`unverified image …`), so Enforce
+would block all our own pods. Options: serve Harbor over TLS with a trusted CA (node-level change
+request) or configure Kyverno for the insecure registry; until then it runs in Audit and CI still
+enforces `cosign verify` (stage 11).
 
 ## Rollout method
-Audit first (`malaby-restricted`, `malaby-verify-images`), reviewed via `PolicyReport`/`policy-reporter`,
-then flipped to Enforce for the policies the workload satisfies. The Enforce subset is applied and proven
-above; the Audit two are tracked for Phase 9 follow-up.
+Audit first, reviewed via `PolicyReport`/`policy-reporter`, then flipped to Enforce once the workload
+complied. The only remaining Audit policy is `malaby-verify-images` (blocked on Harbor TLS).
