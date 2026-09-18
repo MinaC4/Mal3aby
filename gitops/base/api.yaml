@@ -7,7 +7,6 @@ metadata:
     app: api
     app.kubernetes.io/part-of: malaby
     app.kubernetes.io/component: backend
-    gitops.malaby.io/managed: "true"
 spec:
   replicas: 1
   selector:
