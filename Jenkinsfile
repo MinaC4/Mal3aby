@@ -149,6 +149,7 @@ pipeline {
             done
           '''
         }
+        stash name: 'sboms', includes: 'sbom-*.json', allowEmpty: true
         archiveArtifacts artifacts: 'sbom-*.json', allowEmptyArchive: true
       }
     }
@@ -170,6 +171,7 @@ pipeline {
     stage('10 Sign & Attest') {
       agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'cosign' } }
       steps {
+        unstash 'sboms'
         container('cosign') {
           withCredentials([file(credentialsId: 'malaby-cosign-key', variable: 'COSIGN_KEY'),
                            string(credentialsId: 'malaby-cosign-password', variable: 'COSIGN_PASSWORD')]) {
