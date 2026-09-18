@@ -1,7 +1,7 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **12 complete on branch `feature/devsecops-phase12-14`** (13–14 next) | Updated: 2026-09-18
-Phases 0–11 already merged to `main` (`100bfd7`). Argo dev app temporarily tracks the phase12-14 branch.
+Phase: **12–14 complete; merging `feature/devsecops-phase12-14` → `main`** | Updated: 2026-09-18
+Phases 0–11 merged at `100bfd7`. This branch adds observability (12), Backstage catalog (13), docs (14).
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared
