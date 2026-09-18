@@ -122,7 +122,38 @@ pipeline {
       agent none
       steps {
         script {
-          def buildYaml = readTrusted('ci/agents/pod-build.yaml')
+          // Inlined so the scripted podTemplate needs no node context (readTrusted does).
+          // Keep in sync with ci/agents/pod-build.yaml.
+          def buildYaml = '''
+apiVersion: v1
+kind: Pod
+spec:
+  serviceAccountName: jenkins-agent
+  restartPolicy: Never
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:debug
+      command: ["/busybox/sh", "-c", "sleep 43200"]
+      tty: true
+      resources:
+        requests: { cpu: "200m", memory: "512Mi" }
+        limits: { cpu: "2", memory: "2Gi" }
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsUser: 0
+      volumeMounts:
+        - name: docker-config
+          mountPath: /kaniko/.docker
+          readOnly: true
+  volumes:
+    - name: docker-config
+      secret:
+        secretName: harbor-push
+        optional: true
+'''
           def all = malabyServices().findAll { it.deploy != 'false' }
           def selected = params.FORCE_ALL ? all : all.findAll { malabyChangedServices().contains(it.name) }
           selected.each { s ->
