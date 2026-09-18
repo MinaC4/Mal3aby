@@ -130,7 +130,7 @@ pipeline {
             sh """
               /kaniko/executor \
                 --context=dir://${ws}/malaby/${svc} \
-                --dockerfile=${ws}/malaby/${svc}/Dockerfile \
+                --dockerfile=Dockerfile \
                 --destination=${REGISTRY}/${HARBOR_PROJECT}/${svc}:${tag} \
                 ${extra} --insecure --skip-tls-verify
             """
