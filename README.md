@@ -6,12 +6,17 @@
 [![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express-4-000000?logo=express)](https://expressjs.com)
 [![MongoDB](https://img.shields.io/badge/MongoDB-7-47A248?logo=mongodb)](https://mongodb.com)
-[![Kubernetes](https://img.shields.io/badge/k3s-Kubernetes-326CE5?logo=kubernetes&logoColor=white)](https://k3s.io)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
+[![Docker](https://img.shields.io/badge/-Docker-2496ED?logo=docker&logoColor=white)](https://docker.com)
+[![k3s](https://img.shields.io/badge/k3s-Kubernetes-326CE5?logo=kubernetes&logoColor=white)](https://k3s.io)
 [![Jenkins](https://img.shields.io/badge/Jenkins-CI-D24939?logo=jenkins&logoColor=white)](https://jenkins.io)
 [![Argo CD](https://img.shields.io/badge/Argo%20CD-GitOps-EF7B4D?logo=argo&logoColor=white)](https://argo-cd.readthedocs.io)
 
-**A full-stack football-pitch booking platform (بooking API + two React SPAs) hardened and shipped with an
+**A full-stack football-pitch booking platform (booking API + two React SPAs) hardened and shipped with an
 end-to-end DevSecOps pipeline on a k3s homelab.**
+
+<img width="1918" height="950" alt="Screenshot 2026-05-18 223719" src="https://github.com/user-attachments/assets/8a50cca3-2adc-46aa-871f-55eb47227d3a" />
 
 </div>
 
