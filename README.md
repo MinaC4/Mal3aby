@@ -241,3 +241,21 @@ curl -s -X POST http://<host>/api/auth/login \
 - `pending` → slot is still visible and bookable by other users
 - `confirmed` → slot is blocked; no other booking can overlap
 - `cancelled` → slot is released back as available
+
+---
+
+## DevSecOps (this fork)
+
+This repository carries a full end-to-end DevSecOps engagement on a k3s homelab:
+
+- **Application security fixed for real**: the admin API had no server-side auth; it now uses JWT +
+  bcrypt (Vault-sourced), applied to every admin route. Before/after: `docs/evidence/phase4-unauth-exploit.txt`
+  and `docs/evidence/phase5-auth-fix.txt`.
+- **CI/CD**: Jenkins on Kubernetes pod agents → gitleaks, lint, tests, Semgrep, Trivy, Kaniko build to
+  Harbor, Syft SBOM, Cosign sign/attest/verify → GitOps (Argo CD) with digest pins.
+- **Guardrails**: Kyverno admission policies, default-deny NetworkPolicies, Falco runtime detection.
+- **Secrets**: Vault → External Secrets Operator (no secrets in Git).
+- **Observability**: Prometheus metrics + 5 Grafana dashboards + alerts.
+
+Start at `docs/ARCHITECTURE.md`, `docs/SECURITY.md`, `docs/EVIDENCE.md`, `docs/DEMO.md`,
+`docs/INTERVIEW-NOTES.md`. Full phase history: `docs/phases/`.

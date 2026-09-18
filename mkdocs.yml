@@ -1,0 +1,24 @@
+site_name: Malaby DevSecOps
+docs_dir: docs
+nav:
+  - Home: README.md
+  - Application analysis: 00-application-analysis.md
+  - Architecture: 00-architecture.md
+  - Threat model: 00-threat-model.md
+  - Infrastructure: 01-infrastructure-inventory.md
+  - Secrets: 03-secrets-management.md
+  - Security remediation: 05-security-remediation.md
+  - CI: 06-ci-design.md
+  - Supply chain: 07-supply-chain.md
+  - GitOps: 08-gitops.md
+  - Policy as code: 09-policy-as-code.md
+  - Network & runtime: 10-network-security.md
+  - Dynamic testing: 11-dynamic-testing.md
+  - Observability: 12-observability.md
+  - Security catalogue: SECURITY.md
+  - Evidence: EVIDENCE.md
+  - Runbooks: runbooks/
+theme:
+  name: material
+plugins:
+  - techdocs-core

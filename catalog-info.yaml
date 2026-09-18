@@ -1,0 +1,76 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: malaby
+  description: Football-pitch booking (ملعبي) — Express/MongoDB API + two React SPAs
+  annotations:
+    github.com/project-slug: MinaC4/Mal3aby
+spec:
+  owner: user:guest
+  domain: default
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: malaby-api
+  description: Malaby REST API (Node/Express/Mongoose)
+  annotations:
+    github.com/project-slug: MinaC4/Mal3aby
+    jenkins.io/job-full-name: malaby-ci
+    backstage.io/techdocs-ref: dir:.
+  links:
+    - { title: CI, url: "http://192.168.1.8:30081/job/malaby-ci/" }
+    - { title: Registry, url: "https://harbor.192.168.1.8.nip.io/harbor/projects/malaby/repositories/api" }
+    - { title: Grafana, url: "http://192.168.1.8:30084/d/malaby-application" }
+  tags: [node, express, mongodb, api]
+spec:
+  type: service
+  lifecycle: production
+  owner: user:guest
+  system: malaby
+  dependsOn: [resource:malaby-mongodb]
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: malaby-frontend-user
+  description: Public booking SPA (React/Vite/Nginx)
+  annotations:
+    github.com/project-slug: MinaC4/Mal3aby
+  links:
+    - { title: Site, url: "http://malaby-dev.192.168.1.8.nip.io" }
+  tags: [react, vite, nginx]
+spec:
+  type: website
+  lifecycle: production
+  owner: user:guest
+  system: malaby
+  dependsOn: [component:malaby-api]
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: malaby-frontend-admin
+  description: Admin dashboard SPA (React/Vite/Nginx, JWT auth)
+  annotations:
+    github.com/project-slug: MinaC4/Mal3aby
+  links:
+    - { title: Admin, url: "http://malaby-admin-dev.192.168.1.8.nip.io" }
+  tags: [react, vite, nginx, admin]
+spec:
+  type: website
+  lifecycle: production
+  owner: user:guest
+  system: malaby
+  dependsOn: [component:malaby-api]
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: malaby-mongodb
+  description: In-cluster MongoDB StatefulSet (local-path PVC)
+  tags: [mongodb, database]
+spec:
+  type: database
+  owner: user:guest
+  system: malaby

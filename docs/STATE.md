@@ -1,7 +1,7 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **0–11 merged to `main`** (12–14 not started) | Updated: 2026-09-18
-Branch `feature/devsecops-foundation` merged into `main` at `100bfd7`; Argo CD now tracks `main`.
+Phase: **12 complete on branch `feature/devsecops-phase12-14`** (13–14 next) | Updated: 2026-09-18
+Phases 0–11 already merged to `main` (`100bfd7`). Argo dev app temporarily tracks the phase12-14 branch.
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared
