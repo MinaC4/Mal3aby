@@ -69,11 +69,12 @@ spec:
               namespaces: [malaby-dev]
       validate:
         message: "Every container must define a livenessProbe and a readinessProbe."
-        pattern:
-          spec:
-            containers:
-              - livenessProbe: "?*"
-                readinessProbe: "?*"
+        deny:
+          conditions:
+            any:
+              - key: "{{ request.object.spec.containers[?livenessProbe == null || readinessProbe == null] | length(@) }}"
+                operator: GreaterThan
+                value: 0
 ---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy

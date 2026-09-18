@@ -9,6 +9,8 @@
 | I-13 | RESOLVED | Jenkins pod recovered by recreating `jenkins-0` (StatefulSet, fresh emptyDirs); now `3/3`. No config change. | Phase 6 CI runs | agent |
 | I-14 | RESOLVED | New cosign keypair generated; private key+password in Vault, Jenkins credentials `malaby-cosign-{key,pub,password}` created; sign/attest/verify now green | — | agent |
 | I-15 | NOTE | Vault dev-mode lost the `malaby/` mount on a restart; bootstrap re-created it with new Mongo creds → Mongo was re-initialized (dev data loss accepted) | Run `vault-bootstrap.sh` after any Vault restart; then reset Mongo | agent |
+| I-16 | OPEN | Kyverno `malaby-restricted` (Audit): frontends/mongo still run as root → need non-root nginx images + mongo UID 999/readOnlyRootFS | Phase 9 follow-up | agent |
+| I-17 | OPEN | Kyverno `malaby-verify-images` (Audit): cannot verify signatures over HTTP Harbor → needs TLS or insecure-registry config | Phase 9 follow-up | operator/agent |
 | I-4 | OPEN | GitOps repo topology (single GitHub repo + branch vs. separate repos) undecided | Phase 2 | operator |
 | I-5 | MOOT-ish | `malaby/.dockerignore` fix target corrected: the live risk is `malaby/backend/.dockerignore` | Phase 2 must fix backend file | agent |
 | I-6 | NOTE | Platform creds weak/shared (`admin/admin123` on Jenkins/Harbor) | Out of scope to change; flagged | operator |

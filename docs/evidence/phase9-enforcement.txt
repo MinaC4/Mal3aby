@@ -1,0 +1,24 @@
+# Phase 9 — Kyverno enforcement transcripts (2026-09-18T18:14:35+03:00)
+
+## Valid pod (must be ALLOWED)
+Warning: policy malaby-verify-images.verify-cosign-and-sbom: unverified image 192.168.1.8:30082/malaby/api@sha256:628c02fe0f29e6de384100d991ec78384317e2188a23e129167675af8273c3cf
+pod/policy-valid created (server dry run)
+
+## Tag instead of digest (must be DENIED)
+malaby-disallow-latest:
+  require-digest: 'validation failure: validation error: Images must be pinned by
+
+## Wrong registry docker.io/nginx (must be DENIED)
+malaby-restrict-registry:
+  only-malaby-harbor: 'validation failure: Only images from Harbor project ''malaby''
+
+## No resource limits (must be DENIED)
+malaby-require-resources:
+  require-requests-and-limits: 'validation error: Every container must set resources.requests
+
+## automountServiceAccountToken: true (must be DENIED)
+malaby-sa-token:
+  disable-automount-by-default: 'validation error: spec.automountServiceAccountToken
+
+## Privileged container (must be DENIED)
+Error from server (Forbidden): error when creating "/tmp/policy-priv.yaml": pods "policy-priv" is forbidden: violates PodSecurity "baseline:latest": privileged (container "c" must not set securityContext.privileged=true)

@@ -30,4 +30,6 @@ Rule: additive-only; `malaby-*` scope only. Nothing outside this project is modi
 | 23 | 2026-09-18 | Harbor | robots `robot$malaby+malaby-ci-push` (pull+push), `robot$malaby+malaby-cluster-pull` (pull) | `POST /api/v2.0/robots` | delete robot via `DELETE /api/v2.0/robots/{id}` |
 | 24 | 2026-09-18 | Argo CD | `AppProject/malaby`, `Application/malaby-dev` (automated+prune+selfHeal) | `kubectl apply -f gitops/apps/` | `kubectl delete application -n argocd malaby-dev` ; `kubectl delete appproject -n argocd malaby` |
 | 25 | 2026-09-18 | (repo) | pinned all three workloads to signed CI image digests | `gitops/base/*.yaml` | git revert |
-| — | - | - | _Phase 9 adds Kyverno ClusterPolicies scoped to malaby-*_ | - | - |
+| 26 | 2026-09-18 | Kyverno | 9 `malaby-*` ClusterPolicies (scoped to `malaby-dev`) | `kubectl apply -f gitops/policies/` | `kubectl delete -f gitops/policies/` |
+| 27 | 2026-09-18 | k8s | workloads: `automountServiceAccountToken: false`, mongo pinned by digest | `gitops/base/*.yaml` via Argo | git revert |
+| — | - | - | _Phase 10 adds NetworkPolicies + Falco (CR for Falco install)_ | - | - |
