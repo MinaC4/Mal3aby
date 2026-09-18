@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: 192.168.1.8:30082/malaby/api@sha256:f93cdbf0d9a8ec22ad3acae2908068a6784430ea5edcb3a6930bfb2696fff45a
+          image: 192.168.1.8:30082/malaby/api@sha256:628c02fe0f29e6de384100d991ec78384317e2188a23e129167675af8273c3cf
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
