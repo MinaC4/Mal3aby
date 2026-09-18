@@ -171,12 +171,12 @@ pipeline {
       agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'cosign' } }
       steps {
         container('cosign') {
-          withCredentials([file(credentialsId: 'cosign-key', variable: 'COSIGN_KEY'),
-                           string(credentialsId: 'cosign-password', variable: 'COSIGN_PASSWORD')]) {
+          withCredentials([file(credentialsId: 'malaby-cosign-key', variable: 'COSIGN_KEY'),
+                           string(credentialsId: 'malaby-cosign-password', variable: 'COSIGN_PASSWORD')]) {
             sh '''
               for s in api frontend-user frontend-admin; do
-                cosign sign --key $COSIGN_KEY --yes ${REGISTRY}/${HARBOR_PROJECT}/$s:${IMAGE_TAG}
-                cosign attest --key $COSIGN_KEY --predicate sbom-$s.cdx.json --type cyclonedx --yes ${REGISTRY}/${HARBOR_PROJECT}/$s:${IMAGE_TAG}
+                cosign sign --key $COSIGN_KEY --yes --allow-insecure-registry ${REGISTRY}/${HARBOR_PROJECT}/$s:${IMAGE_TAG}
+                cosign attest --key $COSIGN_KEY --predicate sbom-$s.cdx.json --type cyclonedx --yes --allow-insecure-registry ${REGISTRY}/${HARBOR_PROJECT}/$s:${IMAGE_TAG}
               done
             '''
           }
@@ -188,10 +188,10 @@ pipeline {
       agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'cosign' } }
       steps {
         container('cosign') {
-          withCredentials([file(credentialsId: 'cosign-pub', variable: 'COSIGN_PUB')]) {
+          withCredentials([file(credentialsId: 'malaby-cosign-pub', variable: 'COSIGN_PUB')]) {
             sh '''
               for s in api frontend-user frontend-admin; do
-                cosign verify --key $COSIGN_PUB ${REGISTRY}/${HARBOR_PROJECT}/$s:${IMAGE_TAG}
+                cosign verify --key $COSIGN_PUB --allow-insecure-registry ${REGISTRY}/${HARBOR_PROJECT}/$s:${IMAGE_TAG}
               done
             '''
           }
