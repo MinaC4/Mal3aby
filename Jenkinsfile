@@ -12,10 +12,11 @@
 // Parses ci/services.yaml with a tiny reader (avoids the pipeline-utility-steps plugin,
 // which is not installed). The file format is simple and stable.
 def malabyServices() {
-  def text = readFile(file: 'ci/services.yaml')
+  def lines = readFile(file: 'ci/services.yaml').split('\n')
   def services = []
   def cur = null
-  text.eachLine { line ->
+  for (int i = 0; i < lines.size(); i++) {
+    def line = lines[i]
     def n = line =~ /^\s*-\s*name:\s*(\S+)/
     if (n) { if (cur != null) { services << cur }; cur = [name: n[0][1].replaceAll('"', ''), context: null, deploy: 'true'] }
     def c = line =~ /^\s*context:\s*(\S+)/
@@ -144,7 +145,7 @@ pipeline {
         container('syft') {
           sh '''
             for s in api frontend-user frontend-admin; do
-              syft ${REGISTRY}/${HARBOR_PROJECT}/$s:${IMAGE_TAG} -o cyclonedx-json=sbom-$s.cdx.json -o spdx-json=sbom-$s.spdx.json
+              /syft ${REGISTRY}/${HARBOR_PROJECT}/$s:${IMAGE_TAG} -o cyclonedx-json=sbom-$s.cdx.json -o spdx-json=sbom-$s.spdx.json
             done
           '''
         }
