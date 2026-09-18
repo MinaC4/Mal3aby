@@ -9,15 +9,32 @@
 //
 // NOTE: authored in Phase 6; full runtime validation is gated on CI credentials (CR-3).
 
+// Parses ci/services.yaml with a tiny reader (avoids the pipeline-utility-steps plugin,
+// which is not installed). The file format is simple and stable.
+def malabyServices() {
+  def text = readFile(file: 'ci/services.yaml')
+  def services = []
+  def cur = null
+  text.eachLine { line ->
+    def n = line =~ /^\s*-\s*name:\s*(\S+)/
+    if (n) { if (cur != null) { services << cur }; cur = [name: n[0][1].replaceAll('"', ''), context: null, deploy: 'true'] }
+    def c = line =~ /^\s*context:\s*(\S+)/
+    if (c && cur != null) { cur.context = c[0][1].replaceAll('"', '') }
+    def d = line =~ /^\s*deploy:\s*(\S+)/
+    if (d && cur != null) { cur.deploy = d[0][1].replaceAll('"', '') }
+  }
+  if (cur != null) { services << cur }
+  return services
+}
+
 def malabyLoadServices() {
-  def cfg = readYaml(file: 'ci/services.yaml')
-  return cfg.services.findAll { it.deploy != false }.collect { it.name }
+  return malabyServices().findAll { it.deploy != 'false' }.collect { it.name }
 }
 
 // Uses the Jenkins change set (no `git` binary needed in the pod agent).
 def malabyChangedServices() {
-  def cfg = readYaml(file: 'ci/services.yaml')
-  def allNames = cfg.services.findAll { it.deploy != false }.collect { it.name }
+  def services = malabyServices().findAll { it.deploy != 'false' }
+  def allNames = services.collect { it.name }
 
   def files = [] as Set
   currentBuild.changeSets.each { set ->
@@ -29,7 +46,7 @@ def malabyChangedServices() {
   def changed = [] as Set
   files.each { f ->
     if (f.startsWith('Jenkinsfile') || f.startsWith('ci/') || f.startsWith('jenkins-library/')) { forceAll = true }
-    cfg.services.each { s -> if (f.startsWith(s.context + '/')) { changed << s.name } }
+    services.each { s -> if (s.context && f.startsWith(s.context + '/')) { changed << s.name } }
   }
   if (forceAll || changed.isEmpty()) { return allNames }
   return changed.toList()
