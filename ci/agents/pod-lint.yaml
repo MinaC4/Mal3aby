@@ -13,16 +13,31 @@ spec:
   containers:
     - name: hadolint
       image: hadolint/hadolint:latest
-      command: ["cat"]; tty: true
-      resources: { requests: { cpu: "50m", memory: "64Mi" }, limits: { cpu: "300m", memory: "256Mi" } }
-      securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: ["ALL"] } }
+      command: ["cat"]
+      tty: true
+      resources:
+        requests: { cpu: "50m", memory: "64Mi" }
+        limits: { cpu: "300m", memory: "256Mi" }
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities: { drop: ["ALL"] }
     - name: yamllint
       image: pipelinecomponents/yamllint:latest
-      command: ["cat"]; tty: true
-      resources: { requests: { cpu: "50m", memory: "64Mi" }, limits: { cpu: "300m", memory: "256Mi" } }
-      securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: ["ALL"] } }
+      command: ["cat"]
+      tty: true
+      resources:
+        requests: { cpu: "50m", memory: "64Mi" }
+        limits: { cpu: "300m", memory: "256Mi" }
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities: { drop: ["ALL"] }
     - name: shellcheck
       image: koalaman/shellcheck:stable
-      command: ["cat"]; tty: true
-      resources: { requests: { cpu: "50m", memory: "64Mi" }, limits: { cpu: "300m", memory: "256Mi" } }
-      securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: ["ALL"] } }
+      command: ["cat"]
+      tty: true
+      resources:
+        requests: { cpu: "50m", memory: "64Mi" }
+        limits: { cpu: "300m", memory: "256Mi" }
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities: { drop: ["ALL"] }
