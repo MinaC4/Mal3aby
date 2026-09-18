@@ -3,9 +3,31 @@
 // Pod templates: ci/agents/pod-{node,lint,security,build}.yaml
 // Shared library: jenkins-library/vars/*
 //
-// NOTE: authored in Phase 6; runtime execution is PENDING until the shared Jenkins
-// instance is restored (see docs/CHANGE_REQUESTS.md CR-2). Do not treat as verified output.
-@Library('malaby-jenkins-library') _
+// Self-contained (no global shared-library registration required, so no shared Jenkins
+// config is modified). The canonical shared library lives in `jenkins-library/` and will be
+// switched to `@Library('malaby-jenkins-library')` once CR-2 is approved.
+//
+// NOTE: authored in Phase 6; full runtime validation is gated on CI credentials (CR-3).
+
+def malabyLoadServices() {
+  def cfg = readYaml(file: 'ci/services.yaml')
+  return cfg.services.findAll { it.deploy != false }.collect { it.name }
+}
+
+def malabyChangedServices() {
+  def cfg = readYaml(file: 'ci/services.yaml')
+  def allNames = cfg.services.findAll { it.deploy != false }.collect { it.name }
+  def diff = sh(returnStdout: true, script: 'git diff --name-only origin/main...HEAD 2>/dev/null || git diff --name-only HEAD~1 2>/dev/null || true').trim()
+  if (!diff) { return allNames }
+  boolean forceAll = false
+  def changed = [] as Set
+  diff.split('\n').each { f ->
+    if (f.startsWith('Jenkinsfile') || f.startsWith('ci/') || f.startsWith('jenkins-library/')) { forceAll = true }
+    cfg.services.each { s -> if (f.startsWith(s.context + '/')) { changed << s.name } }
+  }
+  if (forceAll || changed.isEmpty()) { return allNames }
+  return changed.toList()
+}
 
 pipeline {
   agent none
@@ -26,7 +48,7 @@ pipeline {
   stages {
 
     stage('1 Preflight') {
-      agent { kubernetes { yamlFile 'ci/agents/pod-node.yaml'; defaultContainer 'node' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-node.yaml'; defaultContainer 'node' } }
       steps {
         script {
           sh 'node --version && npm --version && git --version'
@@ -39,12 +61,12 @@ pipeline {
     }
 
     stage('2 Secret Scan') {
-      agent { kubernetes { yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'gitleaks' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'gitleaks' } }
       steps { container('gitleaks') { sh 'gitleaks dir . --config .gitleaks.toml --redact --exit-code=1' } }
     }
 
     stage('3 Lint & Static') {
-      agent { kubernetes { yamlFile 'ci/agents/pod-lint.yaml'; defaultContainer 'hadolint' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-lint.yaml'; defaultContainer 'hadolint' } }
       steps {
         container('hadolint') {
           sh 'for f in malaby/backend/Dockerfile malaby/frontend-user/Dockerfile malaby/frontend-admin/Dockerfile; do hadolint --failure-threshold error "$f"; done'
@@ -55,7 +77,7 @@ pipeline {
     }
 
     stage('4 Unit Tests') {
-      agent { kubernetes { yamlFile 'ci/agents/pod-node.yaml'; defaultContainer 'node' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-node.yaml'; defaultContainer 'node' } }
       steps {
         sh 'cd malaby/backend && npm ci --no-audit --no-fund && npm test'
         sh 'cd malaby/frontend-user && npm ci --no-audit --no-fund && npm run check'
@@ -64,17 +86,17 @@ pipeline {
     }
 
     stage('5 SAST') {
-      agent { kubernetes { yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'semgrep' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'semgrep' } }
       steps { container('semgrep') { sh 'semgrep --config p/javascript --config p/security-audit --error --json -o semgrep.json malaby/ || true; head -c 2000 semgrep.json' } }
     }
 
     stage('6 SCA (source)') {
-      agent { kubernetes { yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'trivy' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'trivy' } }
       steps { container('trivy') { sh 'trivy fs --scanners vuln --severity CRITICAL,HIGH --exit-code 0 malaby/' } }
     }
 
     stage('7 Build & Push Images') {
-      agent { kubernetes { yamlFile 'ci/agents/pod-build.yaml'; defaultContainer 'kaniko' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-build.yaml'; defaultContainer 'kaniko' } }
       steps {
         script {
           def tag = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
@@ -96,7 +118,7 @@ pipeline {
     }
 
     stage('8 SBOM') {
-      agent { kubernetes { yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'syft' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'syft' } }
       steps {
         container('syft') {
           sh '''
@@ -110,7 +132,7 @@ pipeline {
     }
 
     stage('9 Image Scan') {
-      agent { kubernetes { yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'trivy' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'trivy' } }
       steps {
         container('trivy') {
           sh '''
@@ -124,7 +146,7 @@ pipeline {
     }
 
     stage('10 Sign & Attest') {
-      agent { kubernetes { yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'cosign' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'cosign' } }
       steps {
         container('cosign') {
           withCredentials([file(credentialsId: 'cosign-key', variable: 'COSIGN_KEY'),
@@ -141,7 +163,7 @@ pipeline {
     }
 
     stage('11 Verify') {
-      agent { kubernetes { yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'cosign' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'cosign' } }
       steps {
         container('cosign') {
           withCredentials([file(credentialsId: 'cosign-pub', variable: 'COSIGN_PUB')]) {
@@ -157,7 +179,7 @@ pipeline {
 
     stage('12 Update GitOps (dev)') {
       when { branch 'main' }
-      agent { kubernetes { yamlFile 'ci/agents/pod-node.yaml'; defaultContainer 'node' } }
+      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-node.yaml'; defaultContainer 'node' } }
       steps {
         withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
           sh 'malabyUpdateGitOps'
