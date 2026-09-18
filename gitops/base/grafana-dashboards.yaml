@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: malaby-dashboard-overview
-  namespace: monitoring
+  namespace: malaby-dev
   labels:
     grafana_dashboard: "1"
     app.kubernetes.io/part-of: malaby
@@ -62,7 +62,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: malaby-dashboard-application
-  namespace: monitoring
+  namespace: malaby-dev
   labels:
     grafana_dashboard: "1"
     app.kubernetes.io/part-of: malaby
