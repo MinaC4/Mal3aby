@@ -74,9 +74,10 @@ pipeline {
       steps {
         script {
           sh 'node --version && npm --version'
-          def all = malabyLoadServices()
-          env.SERVICES = all.join(',')
-          env.CHANGED  = (params.FORCE_ALL ? all : malabyChangedServices()).join(',')
+          def svc = malabyServices().findAll { it.deploy != 'false' }
+          env.SERVICES_INFO = svc.collect { "${it.name}=${it.context}" }.join(',')
+          env.SERVICES = svc.collect { it.name }.join(',')
+          env.CHANGED  = (params.FORCE_ALL ? svc.collect { it.name } : malabyChangedServices()).join(',')
           echo "services=${env.SERVICES} changed=${env.CHANGED}"
         }
       }
@@ -154,8 +155,9 @@ spec:
         secretName: harbor-push
         optional: true
 '''
-          def all = malabyServices().findAll { it.deploy != 'false' }
-          def selected = params.FORCE_ALL ? all : all.findAll { malabyChangedServices().contains(it.name) }
+          def all = env.SERVICES_INFO.split(',').collect { def p = it.split('='); [name: p[0], context: p[1]] }
+          def changed = (env.CHANGED ?: '').split(',')
+          def selected = params.FORCE_ALL ? all : all.findAll { changed.contains(it.name) }
           selected.each { s ->
             podTemplate(namespace: 'malaby-ci', yaml: buildYaml) {
               node(POD_LABEL) {
