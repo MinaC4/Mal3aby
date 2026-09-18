@@ -1,0 +1,8 @@
+# Phase 10 — NetworkPolicy test (2026-09-18T18:39:57+03:00)
+## DNS (must work)
+Address:	10.43.0.10:53
+## Expected ALLOWED: none from this unlabeled test pod except DNS
+## api:5000 (must be BLOCKED — not a frontend pod): BLOCKED api:5000 (ECONNREFUSED)
+## mongodb:27017 (must be BLOCKED — not the api pod): BLOCKED mongodb:27017 (ECONNREFUSED)
+## external 1.1.1.1:443 (must be BLOCKED — no internet egress): BLOCKED 1.1.1.1:443 (ECONNREFUSED)
+## kube-dns 10.43.0.10:53 TCP (must be ALLOWED): OPEN 10.43.0.10:53

@@ -1,0 +1,7 @@
+# Phase 10 — Falco runtime detection (2026-09-18T18:42:51+03:00)
+## Trigger: kubectl exec -n malaby-dev deploy/api -- sh -c 'echo malaby-falco-test'
+## Falco alert(s):
+Fri Sep 18 15:42:18 2026:    /etc/falco/rules.d/malaby_rules.yaml | schema validation: ok
+15:42:44.330856662: Warning Shell spawned in Malaby container (user=nodejs proc=sh ns=malaby-dev pod=api-fb7474b44-vwrw6 cmdline=sh -c echo malaby-falco-test) k8smeta_pod_name=api-fb7474b44-vwrw6 k8smeta_ns_name=malaby-dev container_id=b6690a49e709 container_name=api container_image_repository=192.168.1.8:30082/malaby/api container_image_tag=aba5ee0aa5fd00a2fd8f9dbbf9941ca407bf9e4a1acacd598312666993fd3424 k8s_pod_name=api-fb7474b44-vwrw6 k8s_ns_name=malaby-dev
+Fri Sep 18 15:42:42 2026:    /etc/falco/rules.d/malaby_rules.yaml | schema validation: ok
+Fri Sep 18 15:42:42 2026:    /etc/falco/rules.d/malaby_rules.yaml | schema validation: ok

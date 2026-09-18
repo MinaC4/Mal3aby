@@ -1,6 +1,6 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **9 PARTIAL (Enforce subset + rejection proof)** → next Phase 10 (network/runtime) | Updated: 2026-09-18
+Phase: **10 COMPLETE (netpol + Falco)** → next Phase 11 (DAST/smoke/load) | Updated: 2026-09-18
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared
