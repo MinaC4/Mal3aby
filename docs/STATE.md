@@ -1,6 +1,7 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **11 PARTIAL (smoke PASS; ZAP not executed)** → merging to main | Updated: 2026-09-18
+Phase: **0–11 merged to `main`** (12–14 not started) | Updated: 2026-09-18
+Branch `feature/devsecops-foundation` merged into `main` at `100bfd7`; Argo CD now tracks `main`.
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared
