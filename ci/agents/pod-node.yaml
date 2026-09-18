@@ -23,9 +23,3 @@ spec:
       securityContext:
         allowPrivilegeEscalation: false
         capabilities: { drop: ["ALL"] }
-      volumeMounts:
-        - name: work
-          mountPath: /home/jenkins/agent
-  volumes:
-    - name: work
-      emptyDir: {}

@@ -186,7 +186,9 @@ pipeline {
     }
   }
   post {
-    always  { archiveArtifacts artifacts: 'sbom-*.json, semgrep.json', allowEmptyArchive: true }
+    // SBOM artifacts are archived inside stage 8 (which runs on a node). With `agent none`
+    // a node-less post step would fail, so post only reports here.
+    always  { echo 'Malaby CI finished' }
     failure { echo 'Malaby CI failed — see docs/06-ci-design.md for gate policy' }
   }
 }
