@@ -1,8 +1,8 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **hardening branch** — Kyverno `malaby-restricted` now **Enforce** (non-root nginx/mongo/api) | Updated: 2026-09-18
-Merging `feature/devsecops-hardening` → `main`. Remaining optional: `verify-images` Enforce (Harbor TLS),
-ZAP run, Loki, staging/prod, GPG key.
+Phase: **0–14 + hardening merged to `main` (`6e67878`)**; Argo Synced/Healthy | Updated: 2026-09-18
+Kyverno `malaby-restricted` is **Enforce** (non-root nginx/mongo/api, readOnlyRootFS). Remaining optional:
+`verify-images` Enforce (Harbor TLS), ZAP run, Loki, staging/prod, GPG key, Backstage registration.
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared
