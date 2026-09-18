@@ -20,4 +20,6 @@ paths = [
 regexes = [
   '''container_image_tag=[0-9a-f]{64}''',
   '''container_id=[0-9a-f]{64}''',
+  # Public container image digest that appeared in an early Falco evidence commit (not a secret).
+  '''aba5ee0aa5fd00a2fd8f9dbbf9941ca407bf9e4a1acacd598312666993fd3424''',
 ]
