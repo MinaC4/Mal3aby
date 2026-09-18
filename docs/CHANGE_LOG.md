@@ -34,4 +34,5 @@ Rule: additive-only; `malaby-*` scope only. Nothing outside this project is modi
 | 27 | 2026-09-18 | k8s | workloads: `automountServiceAccountToken: false`, mongo pinned by digest | `gitops/base/*.yaml` via Argo | git revert |
 | 28 | 2026-09-18 | k8s | 5 NetworkPolicies in `malaby-dev` (default-deny + allows) | `kubectl apply -f gitops/base/networkpolicies.yaml` (via Argo) | delete via Argo / `git revert` |
 | 29 | 2026-09-18 | Helm/k8s | **Falco** (first install) in new ns `malaby-security`, modern-eBPF, 3 custom rules | `helm upgrade --install falco falcosecurity/falco -n malaby-security -f …` | `helm uninstall falco -n malaby-security` ; `kubectl delete ns malaby-security` |
-| — | - | - | _Phase 11 adds ephemeral ZAP Job + smoke Job + load script_ | - | - |
+| 30 | 2026-09-18 | k8s | smoke Job `malaby-smoke` + netpol allow (smoke→api); ZAP Job authored (removed) | `kubectl apply -f tests/smoke/smoke.yaml` | `kubectl delete job malaby-smoke -n malaby-dev` |
+| — | - | - | _Merged feature/devsecops-foundation → main_ | - | - |
