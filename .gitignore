@@ -11,3 +11,7 @@ build/
 # logs
 *.log
 
+
+# local scan artifacts
+gitleaks-report.json
+gl*.json
