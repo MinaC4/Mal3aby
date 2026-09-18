@@ -14,14 +14,20 @@ def malabyLoadServices() {
   return cfg.services.findAll { it.deploy != false }.collect { it.name }
 }
 
+// Uses the Jenkins change set (no `git` binary needed in the pod agent).
 def malabyChangedServices() {
   def cfg = readYaml(file: 'ci/services.yaml')
   def allNames = cfg.services.findAll { it.deploy != false }.collect { it.name }
-  def diff = sh(returnStdout: true, script: 'git diff --name-only origin/main...HEAD 2>/dev/null || git diff --name-only HEAD~1 2>/dev/null || true').trim()
-  if (!diff) { return allNames }
+
+  def files = [] as Set
+  currentBuild.changeSets.each { set ->
+    set.items.each { item -> item.affectedFiles.each { af -> files << af.path } }
+  }
+  if (files.isEmpty()) { return allNames }
+
   boolean forceAll = false
   def changed = [] as Set
-  diff.split('\n').each { f ->
+  files.each { f ->
     if (f.startsWith('Jenkinsfile') || f.startsWith('ci/') || f.startsWith('jenkins-library/')) { forceAll = true }
     cfg.services.each { s -> if (f.startsWith(s.context + '/')) { changed << s.name } }
   }
@@ -49,7 +55,7 @@ pipeline {
       agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-node.yaml'; defaultContainer 'node' } }
       steps {
         script {
-          sh 'node --version && npm --version && git --version'
+          sh 'node --version && npm --version'
           def all = malabyLoadServices()
           env.SERVICES = all.join(',')
           env.CHANGED  = (params.FORCE_ALL ? all : malabyChangedServices()).join(',')
