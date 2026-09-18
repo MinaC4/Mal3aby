@@ -1,0 +1,149 @@
+# Malaby admission policies — scoped to application namespaces only.
+# malaby-ci (build pods) is excluded because it has no `environment` label.
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: malaby-require-labels
+  labels: { app.kubernetes.io/part-of: malaby }
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: require-part-of-label
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [malaby-dev]
+      validate:
+        message: "Pods must carry app.kubernetes.io/part-of=malaby and app=<name> labels."
+        pattern:
+          metadata:
+            labels:
+              app.kubernetes.io/part-of: malaby
+              app: "?*"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: malaby-require-resources
+  labels: { app.kubernetes.io/part-of: malaby }
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: require-requests-and-limits
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [malaby-dev]
+      validate:
+        message: "Every container must set resources.requests and resources.limits (cpu+memory)."
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  requests:
+                    cpu: "?*"
+                    memory: "?*"
+                  limits:
+                    cpu: "?*"
+                    memory: "?*"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: malaby-require-probes
+  labels: { app.kubernetes.io/part-of: malaby }
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: require-liveness-and-readiness
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [malaby-dev]
+      validate:
+        message: "Every container must define a livenessProbe and a readinessProbe."
+        pattern:
+          spec:
+            containers:
+              - livenessProbe: "?*"
+                readinessProbe: "?*"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: malaby-disallow-latest
+  labels: { app.kubernetes.io/part-of: malaby }
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: require-digest
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [malaby-dev]
+      validate:
+        message: "Images must be pinned by digest (image@sha256:...); no mutable tags."
+        foreach:
+          - list: "request.object.spec.containers"
+            pattern:
+              image: "*@sha256:*"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: malaby-sa-token
+  labels: { app.kubernetes.io/part-of: malaby }
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: disable-automount-by-default
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [malaby-dev]
+      validate:
+        message: "spec.automountServiceAccountToken must be false (annotate for exceptions)."
+        pattern:
+          spec:
+            automountServiceAccountToken: false
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: malaby-restricted
+  labels: { app.kubernetes.io/part-of: malaby }
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: restricted-security-context
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [malaby-dev]
+      validate:
+        message: "Containers must run non-root, drop ALL caps, no privilege escalation, seccomp RuntimeDefault, read-only root filesystem."
+        pattern:
+          spec:
+            securityContext:
+              runAsNonRoot: true
+              seccompProfile:
+                type: RuntimeDefault
+            containers:
+              - securityContext:
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: true
+                  capabilities:
+                    drop: ["ALL"]

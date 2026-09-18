@@ -18,6 +18,7 @@ spec:
         app: frontend-admin
         app.kubernetes.io/part-of: malaby
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: nginx
           image: 192.168.1.8:30082/malaby/frontend-admin@sha256:610ddd3ee852abd14aab707085ab0669c1b0af8172668ee2ceea9850b271ac2e

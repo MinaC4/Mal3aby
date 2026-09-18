@@ -1,0 +1,94 @@
+# Malaby image supply-chain policies.
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: malaby-restrict-registry
+  labels: { app.kubernetes.io/part-of: malaby }
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: only-malaby-harbor
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [malaby-dev]
+      validate:
+        message: "Only images from Harbor project 'malaby' are allowed (mongo pending mirror)."
+        foreach:
+          - list: "request.object.spec.containers"
+            deny:
+              conditions:
+                all:
+                  - key: "{{ starts_with(element.image, '192.168.1.8:30082/malaby/') || starts_with(element.image, 'mongo') || starts_with(element.image, 'docker.io/library/mongo') }}"
+                    operator: Equals
+                    value: false
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: malaby-verify-images
+  labels: { app.kubernetes.io/part-of: malaby }
+spec:
+  validationFailureAction: Enforce
+  background: false
+  webhookTimeoutSeconds: 30
+  rules:
+    - name: verify-cosign-and-sbom
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [malaby-dev]
+      verifyImages:
+        - imageReferences:
+            - "192.168.1.8:30082/malaby/*"
+          mutateDigest: true
+          attestors:
+            - count: 1
+              entries:
+                - keys:
+                    publicKeys: |-
+                      -----BEGIN PUBLIC KEY-----
+                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEpc5kaaLcSoYw/10IgdrSwIG+h6G/
+                      rf8pVXf54d4pabdHsHr0OTl+lqHkeq+qxz3ZHc7P23foi3AibhwiQYztzg==
+                      -----END PUBLIC KEY-----
+          attestations:
+            - type: cyclonedx
+              attestors:
+                - count: 1
+                  entries:
+                    - keys:
+                        publicKeys: |-
+                          -----BEGIN PUBLIC KEY-----
+                          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEpc5kaaLcSoYw/10IgdrSwIG+h6G/
+                          rf8pVXf54d4pabdHsHr0OTl+lqHkeq+qxz3ZHc7P23foi3AibhwiQYztzg==
+                          -----END PUBLIC KEY-----
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: malaby-generate-default-deny
+  labels: { app.kubernetes.io/part-of: malaby }
+spec:
+  rules:
+    - name: generate-default-deny-netpol
+      match:
+        any:
+          - resources:
+              kinds: [Namespace]
+              selector:
+                matchLabels:
+                  malaby.io/netpol: "true"
+      generate:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: malaby-default-deny
+        namespace: "{{ request.object.metadata.name }}"
+        synchronize: true
+        data:
+          spec:
+            podSelector: {}
+            policyTypes: [Ingress, Egress]
