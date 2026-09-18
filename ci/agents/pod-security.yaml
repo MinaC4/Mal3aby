@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/part-of: malaby
+    malaby.io/agent: security
+spec:
+  serviceAccountName: jenkins-agent
+  restartPolicy: Never
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: gitleaks
+      image: ghcr.io/gitleaks/gitleaks:latest
+      command: ["sleep", "43200"]
+      tty: true
+      env:
+        - { name: HOME, value: /tmp }
+      resources:
+        requests: { cpu: "50m", memory: "128Mi" }
+        limits: { cpu: "500m", memory: "512Mi" }
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities: { drop: ["ALL"] }
+    - name: semgrep
+      image: returntocorp/semgrep:latest
+      command: ["sleep", "43200"]
+      tty: true
+      env:
+        - { name: HOME, value: /tmp }
+      resources:
+        requests: { cpu: "50m", memory: "256Mi" }
+        limits: { cpu: "500m", memory: "1Gi" }
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities: { drop: ["ALL"] }
+    - name: trivy
+      image: aquasec/trivy:latest
+      command: ["sleep", "43200"]
+      tty: true
+      env:
+        - { name: HOME, value: /tmp }
+        - { name: TRIVY_CACHE_DIR, value: /tmp/trivy-cache }
+      resources:
+        requests: { cpu: "50m", memory: "256Mi" }
+        limits: { cpu: "500m", memory: "1Gi" }
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities: { drop: ["ALL"] }
+    - name: syft
+      image: anchore/syft:debug
+      command: ["sleep", "43200"]
+      tty: true
+      env:
+        - { name: HOME, value: /tmp }
+      resources:
+        requests: { cpu: "50m", memory: "256Mi" }
+        limits: { cpu: "500m", memory: "1Gi" }
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities: { drop: ["ALL"] }
+    - name: cosign
+      image: bitnami/cosign:latest
+      command: ["sleep", "43200"]
+      tty: true
+      env:
+        - { name: HOME, value: /tmp }
+      volumeMounts:
+        - { name: docker-config, mountPath: /tmp/.docker, readOnly: true }
+      resources:
+        requests: { cpu: "50m", memory: "128Mi" }
+        limits: { cpu: "500m", memory: "512Mi" }
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities: { drop: ["ALL"] }
+  volumes:
+    - name: docker-config
+      secret:
+        secretName: harbor-push
+        optional: true

@@ -1,0 +1,18 @@
+# Phase 4 smoke test — public booking flow (control group)
+pitchId=6aac76efdc82bf59b72c5983 date=2026-10-01 slot=18:00
+
+$ POST /api/bookings
+{
+  "success": true,
+  "id": "6aac77049a2dfece2e4c161d",
+  "status": "pending",
+  "total": 400
+}
+
+$ GET /api/bookings (admin host, unauthenticated) — must contain Smoke Tester
+{
+  "customerName": "Smoke Tester",
+  "status": "pending",
+  "bookingDate": "2026-10-01T00:00:00.000Z",
+  "timeSlot": "18:00"
+}

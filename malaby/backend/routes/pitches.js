@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Pitch = require('../models/Pitch');
 const Booking = require('../models/Booking');
+const { to24Hour, utcDayRange } = require('../utils/time');
+const { escapeRegex } = require('../utils/security');
 
 // @desc    Get all pitches
 // @route   GET /api/pitches
@@ -12,14 +14,15 @@ router.get('/', async (req, res, next) => {
     let query = { isActive: true };
 
     if (search) {
+      const safeSearch = escapeRegex(String(search).slice(0, 100));
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
+        { name: { $regex: safeSearch, $options: 'i' } },
+        { description: { $regex: safeSearch, $options: 'i' } }
       ];
     }
 
     if (location) {
-      query.location = { $regex: location, $options: 'i' };
+      query.location = { $regex: escapeRegex(String(location).slice(0, 100)), $options: 'i' };
     }
 
     if (minPrice || maxPrice) {
@@ -79,9 +82,9 @@ router.get('/:id/slots', async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Date is required' });
     }
 
-    const selectedDate = new Date(date);
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const dayName = dayNames[selectedDate.getDay()];
+    const { start, end } = utcDayRange(date);
+    const dayName = dayNames[start.getUTCDay()];
 
     const dayAvailability = pitch.availability.find(a => a.day === dayName);
 
@@ -92,22 +95,19 @@ router.get('/:id/slots', async (req, res, next) => {
     // Only confirmed bookings block slots — pending bookings do NOT block slots
     const bookings = await Booking.find({
       pitch: req.params.id,
-      bookingDate: {
-        $gte: new Date(selectedDate.setHours(0, 0, 0, 0)),
-        $lt: new Date(selectedDate.setHours(23, 59, 59, 999))
-      },
+      bookingDate: { $gte: start, $lte: end },
       status: { $in: ['confirmed', 'completed'] }
     });
 
-    const bookedSlots = bookings.map(b => b.timeSlot);
+    const bookedSlots = bookings.map(b => to24Hour(b.timeSlot));
 
     const availableSlots = dayAvailability.slots.filter(
-      slot => !bookedSlots.includes(slot.time) && slot.available
+      slot => !bookedSlots.includes(to24Hour(slot.time)) && slot.available
     );
 
     res.status(200).json({
       success: true,
-      data: availableSlots.map(s => s.time)
+      data: availableSlots.map(s => to24Hour(s.time))
     });
   } catch (error) {
     res.status(200).json({ success: true, data: [] });

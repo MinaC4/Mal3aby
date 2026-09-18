@@ -199,6 +199,7 @@ Full documentation: [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md)
 
 | Method | Endpoint | Description |
 |---|---|---|
+| POST | `/api/auth/login` | Admin login → JWT |
 | GET | `/api/pitches` | List all active pitches |
 | GET | `/api/pitches/:id` | Get pitch details |
 | GET | `/api/bookings/availability` | Get available slots (only confirmed block slots) |
@@ -212,12 +213,16 @@ Full documentation: [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md)
 
 ## Admin Access
 
-Default credentials (hardcoded for demo — change before production):
+Admin endpoints require a JWT obtained from `POST /api/auth/login`. Credentials are **not** hardcoded;
+the username and a bcrypt password hash are read from Vault at runtime (see
+`docs/03-secrets-management.md`, `docs/05-security-remediation.md`). Send the token as
+`Authorization: Bearer <token>`.
 
-| Field | Value |
-|---|---|
-| Username | `admin` |
-| Password | `admin123` |
+```bash
+curl -s -X POST http://<host>/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"<from Vault>"}' | jq -r .data.token
+```
 
 ---
 

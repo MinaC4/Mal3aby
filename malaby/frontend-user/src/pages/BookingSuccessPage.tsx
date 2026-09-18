@@ -1,5 +1,6 @@
 import { useLocation, Link } from 'react-router-dom';
 import { Check, Calendar, Clock, Phone, Mail, CreditCard, ArrowLeft, Home } from 'lucide-react';
+import { formatTime12Hour } from '@/lib/utils';
 
 interface BookingState {
   pitchName: string;
@@ -37,7 +38,7 @@ export default function BookingSuccessPage() {
   const details = [
     { icon: Home,     label: 'الملعب',            value: pitchName, dir: undefined },
     { icon: Calendar, label: 'التاريخ',           value: new Date(booking.bookingDate).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' }), dir: undefined },
-    { icon: Clock,    label: 'الوقت',             value: booking.timeSlot, dir: undefined },
+    { icon: Clock,    label: 'الوقت',             value: formatTime12Hour(booking.timeSlot), dir: undefined },
     { icon: Clock,    label: 'المدة',             value: `${booking.duration} ساعة`, dir: undefined },
     { icon: Mail,     label: 'البريد الإلكتروني', value: booking.customerEmail, dir: 'ltr' as const },
     { icon: Phone,    label: 'رقم الهاتف',        value: booking.customerPhone, dir: 'ltr' as const },

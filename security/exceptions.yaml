@@ -1,0 +1,19 @@
+exceptions:
+  - id: EXC-0001
+    type: application-vulnerability
+    identifier: admin-endpoints-unauthenticated
+    description: >
+      Every admin API route (GET/PUT/DELETE /api/bookings*, all /api/notifications*) has no
+      server-side authentication. The only "auth" is a client-side check with a hardcoded
+      password. Reachable by anyone with curl and no credentials.
+    justification: >
+      Deliberate Phase 4 control group: the baseline is deployed BEFORE the Phase 5 fix so the
+      vulnerability can be exploited for real and then proven fixed.
+    owner: malaby-devsecops
+    created: 2026-09-18
+    expires: 2026-09-19            # tied to the start of Phase 5
+    phase_opened: 4
+    phase_closed: 5
+    closed: 2026-09-18
+    closure_evidence: docs/evidence/phase5-auth-fix.txt   # unauth calls now 401; login issues JWT
+    evidence: docs/evidence/phase4-unauth-exploit.txt

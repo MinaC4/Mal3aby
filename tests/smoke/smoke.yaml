@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: malaby-smoke-script
+  namespace: malaby-dev
+  labels: { app: smoke, app.kubernetes.io/part-of: malaby }
+data:
+  smoke.js: |
+    const base = process.env.API_URL || 'http://api:5000';
+    const results = [];
+    const check = (name, ok, detail) => { results.push({ name, ok, detail }); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}  ${detail || ''}`); };
+    const req = async (path, opts = {}) => {
+      const r = await fetch(base + path, opts);
+      let body = null; try { body = await r.json(); } catch {}
+      return { status: r.status, body };
+    };
+    (async () => {
+      try {
+        let r = await req('/health');
+        check('health 200 + db connected', r.status === 200 && r.body?.database === 'connected', `status=${r.status} db=${r.body?.database}`);
+
+        r = await req('/api/pitches');
+        check('public pitches list', r.status === 200 && (r.body?.count ?? 0) > 0, `count=${r.body?.count}`);
+
+        const pitchId = r.body?.data?.[0]?._id;
+        const date = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+        r = await req('/api/bookings', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pitchId, customerName: 'Smoke Test', customerEmail: 'smoke@example.com', customerPhone: '01000000000', bookingDate: date, timeSlot: '11:00', duration: 1 }) });
+        check('create booking 201', r.status === 201, `status=${r.status} id=${r.body?.data?._id}`);
+
+        r = await req('/api/bookings');
+        check('admin list WITHOUT token -> 401', r.status === 401, `status=${r.status}`);
+
+        const login = await req('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: process.env.ADMIN_USERNAME, password: process.env.ADMIN_PASSWORD }) });
+        const token = login.body?.data?.token;
+        check('admin login -> token', login.status === 200 && !!token, `status=${login.status}`);
+
+        r = await req('/api/bookings', { headers: { Authorization: `Bearer ${token}` } });
+        check('admin list WITH token -> 200', r.status === 200 && (r.body?.count ?? 0) > 0, `count=${r.body?.count}`);
+      } catch (e) {
+        check('unexpected error', false, String(e));
+      }
+      const failed = results.filter((x) => !x.ok);
+      console.log(`\nSMOKE ${failed.length === 0 ? 'PASS' : 'FAIL'} (${results.length - failed.length}/${results.length})`);
+      process.exit(failed.length === 0 ? 0 : 1);
+    })();
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: malaby-smoke
+  namespace: malaby-dev
+  labels: { app: smoke, app.kubernetes.io/part-of: malaby }
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded,BeforeHookCreation
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels: { app: smoke, app.kubernetes.io/part-of: malaby }
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      containers:
+        - name: smoke
+          image: 192.168.1.8:30082/malaby/api@sha256:628c02fe0f29e6de384100d991ec78384317e2188a23e129167675af8273c3cf
+          command: ["node", "/scripts/smoke.js"]
+          env:
+            - { name: API_URL, value: "http://api:5000" }
+          envFrom:
+            - secretRef: { name: api-secrets-eso }
+          resources:
+            requests: { cpu: "50m", memory: "64Mi" }
+            limits: { cpu: "250m", memory: "128Mi" }
+          readinessProbe: { exec: { command: ["sh", "-c", "true"] } }
+          livenessProbe: { exec: { command: ["sh", "-c", "true"] } }
+          volumeMounts:
+            - { name: scripts, mountPath: /scripts }
+      volumes:
+        - name: scripts
+          configMap: { name: malaby-smoke-script }

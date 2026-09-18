@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: malaby
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: malaby
+spec:
+  description: Malaby DevSecOps project (scoped to malaby-* only)
+  sourceRepos:
+    - https://github.com/MinaC4/Mal3aby.git
+  destinations:
+    - namespace: 'malaby-*'
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist: []
+  namespaceResourceBlacklist:
+    - group: ''
+      kind: ResourceQuota
+  orphanedResources:
+    warn: true

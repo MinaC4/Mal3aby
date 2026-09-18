@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: malaby-zap-script
+  namespace: malaby-ci
+  labels: { app: zap, app.kubernetes.io/part-of: malaby }
+data:
+  scan.sh: |
+    #!/bin/sh
+    set -e
+    TARGET="${TARGET:-http://malaby-dev.192.168.1.8.nip.io}"
+    /zap/zap-baseline.py -t "$TARGET" -J /zap/wrk/zap.json -r /zap/wrk/zap.html -I || true
+    echo '--- admin API auth check (must be 401) ---'
+    code=$(wget -qO- --server-response "$TARGET/api/bookings" 2>&1 | awk '/HTTP\//{print $2}' | tail -1)
+    echo "GET /api/bookings without token -> $code"
+    [ "$code" = "401" ] && echo 'ADMIN-AUTH OK' || echo 'ADMIN-AUTH FAIL'
+    echo '--- ZAP summary ---'
+    grep -o '"HIGH":[^,]*\|"MEDIUM":[^,]*\|"LOW":[^,]*\|"INFORMATIONAL":[^,]*' /zap/wrk/zap.json | head -4 || true
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: malaby-zap
+  namespace: malaby-ci
+  labels: { app: zap, app.kubernetes.io/part-of: malaby }
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 1200
+  template:
+    metadata:
+      labels: { app: zap, app.kubernetes.io/part-of: malaby }
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: zap
+          image: ghcr.io/zaproxy/zaproxy:stable
+          command: ["/bin/sh", "/scripts/scan.sh"]
+          env:
+            - { name: TARGET, value: "http://malaby-dev.192.168.1.8.nip.io" }
+          resources:
+            requests: { cpu: "200m", memory: "512Mi" }
+            limits: { cpu: "1", memory: "1536Mi" }
+          volumeMounts:
+            - { name: scripts, mountPath: /scripts }
+            - { name: wrk, mountPath: /zap/wrk }
+      volumes:
+        - name: scripts
+          configMap: { name: malaby-zap-script }
+        - name: wrk
+          emptyDir: {}

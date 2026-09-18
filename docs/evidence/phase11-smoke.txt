@@ -1,0 +1,8 @@
+PASS  health 200 + db connected  status=200 db=connected
+PASS  public pitches list  count=4
+PASS  create booking 201  status=201 id=6aad5df94638baf03f488fae
+PASS  admin list WITHOUT token -> 401  status=401
+PASS  admin login -> token  status=200
+PASS  admin list WITH token -> 200  count=5
+
+SMOKE PASS (6/6)

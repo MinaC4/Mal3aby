@@ -1,0 +1,5 @@
+# Phase 11 DAST (ZAP) — NOT EXECUTED
+Reason: ghcr.io/zaproxy/zaproxy:stable image pull did not complete within the session (~8min, still ContainerCreating).
+Unblock: allow the image to finish pulling (or pre-pull on the node) and re-run tests/dast/zap-job.yaml.
+
+Admin-auth rejection is instead proven by docs/evidence/phase5-auth-fix.txt and the smoke test (401).

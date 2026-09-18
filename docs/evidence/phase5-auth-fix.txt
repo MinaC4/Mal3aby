@@ -1,0 +1,38 @@
+# Phase 5 — admin auth remediation: before->after (real transcripts)
+# Date: 2026-09-18T03:38:19+03:00
+
+## A) Same unauthenticated calls that SUCCEEDED in Phase 4 — now rejected
+$ curl -s -o /dev/null -w '%{http_code}' http://malaby-admin-dev.192.168.1.8.nip.io/api/bookings   (no credentials)
+  -> HTTP 401
+$ curl -s -o /dev/null -w '%{http_code}' http://malaby-admin-dev.192.168.1.8.nip.io/api/notifications   (no credentials)
+  -> HTTP 401
+$ curl -X PUT http://malaby-admin-dev.192.168.1.8.nip.io/api/bookings/<id>/status -d '{"status":"confirmed"}'   (no credentials)
+  -> HTTP 401
+$ curl -X DELETE http://malaby-admin-dev.192.168.1.8.nip.io/api/notifications/<id>   (no credentials)
+  -> HTTP 401
+
+## B) Public booking flow unaffected
+$ POST http://malaby-dev.192.168.1.8.nip.io/api/bookings (public) -> HTTP 201
+
+## C) Login: wrong password rejected, correct password issues a JWT
+$ POST http://malaby-admin-dev.192.168.1.8.nip.io/api/auth/login (wrong password) -> HTTP 401
+$ POST http://malaby-admin-dev.192.168.1.8.nip.io/api/auth/login (correct) -> token length 167 (redacted)
+$ curl -H 'Authorization: Bearer <token>' http://malaby-admin-dev.192.168.1.8.nip.io/api/bookings
+{
+  "success": true,
+  "count": 5
+}
+
+## D) Authenticated admin action works
+{
+  "success": true,
+  "newStatus": "confirmed"
+}
+
+## E) Hardening spot-checks
+regex injection $GET /pitches?search=.*  -> HTTP 200 (escaped, no error)
+invalid payment url -> HTTP 400
+$ GET /health (from inside the api pod; the SPA only proxies /api)
+{"success":true,"message":"Malaby API is running","timestamp":"2026-09-18T00:38:45.996Z","environment":"production","database":"connected"}
+$ GET /ready
+200 {"success":true,"message":"Ready"}

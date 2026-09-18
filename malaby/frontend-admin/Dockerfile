@@ -12,8 +12,10 @@ COPY . .
 
 # Build
 ARG VITE_API_URL
+ARG VITE_BASE_URL
 ENV VITE_API_URL=${VITE_API_URL}
-RUN npx vite build
+ENV VITE_BASE_URL=${VITE_BASE_URL}
+RUN npm run build
 
 # Production stage with Nginx
 FROM nginx:alpine

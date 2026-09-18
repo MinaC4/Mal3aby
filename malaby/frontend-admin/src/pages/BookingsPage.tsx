@@ -155,7 +155,7 @@ export default function BookingsPage() {
                             <Check className="h-4 w-4" />
                           </button>
                         )}
-                        {booking.status !== 'cancelled' && (
+                        {(booking.status === 'pending' || booking.status === 'confirmed') && (
                           <button
                             onClick={() => handleStatusUpdate(booking._id, 'cancelled')}
                             className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
