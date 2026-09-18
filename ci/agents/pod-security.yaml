@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/part-of: malaby
+    malaby.io/agent: security
+spec:
+  serviceAccountName: jenkins-agent
+  restartPolicy: Never
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: gitleaks
+      image: ghcr.io/gitleaks/gitleaks:latest
+      command: ["cat"]; tty: true
+      resources: { requests: { cpu: "50m", memory: "128Mi" }, limits: { cpu: "500m", memory: "512Mi" } }
+      securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: ["ALL"] } }
+    - name: semgrep
+      image: returntocorp/semgrep:latest
+      command: ["cat"]; tty: true
+      resources: { requests: { cpu: "50m", memory: "256Mi" }, limits: { cpu: "500m", memory: "1Gi" } }
+      securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: ["ALL"] } }
+    - name: trivy
+      image: aquasec/trivy:latest
+      command: ["cat"]; tty: true
+      resources: { requests: { cpu: "50m", memory: "256Mi" }, limits: { cpu: "500m", memory: "1Gi" } }
+      securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: ["ALL"] } }
+    - name: syft
+      image: anchore/syft:latest
+      command: ["cat"]; tty: true
+      resources: { requests: { cpu: "50m", memory: "256Mi" }, limits: { cpu: "500m", memory: "1Gi" } }
+      securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: ["ALL"] } }
+    - name: cosign
+      image: gcr.io/projectsigstore/cosign:v2.4.1
+      command: ["cat"]; tty: true
+      resources: { requests: { cpu: "50m", memory: "128Mi" }, limits: { cpu: "500m", memory: "512Mi" } }
+      securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: ["ALL"] } }
+  volumes:
+    - name: work
+      emptyDir: {}

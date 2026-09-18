@@ -19,4 +19,5 @@ Rule: additive-only; `malaby-*` scope only. Nothing outside this project is modi
 | 12 | 2026-09-18 | Harbor/k8s | rebuilt images `api`,`frontend-user`,`frontend-admin` — current api digest `sha256:8c6af7c0…`, user `sha256:edffd680…`, admin `sha256:bfb32e13…` | `docker build/push` ; `kubectl apply -f gitops/base/` | `kubectl rollout undo deploy/<svc> -n malaby-dev` |
 | 13 | 2026-09-18 | Vault | `malaby/data/dev/api` + `ADMIN_USERNAME`,`ADMIN_PASSWORD_HASH`; `CORS_ORIGIN` allowlist | `vault kv patch` (via `ci/scripts/vault-bootstrap.sh` on re-run) | `vault kv metadata delete malaby/dev/api` |
 | 14 | 2026-09-18 | Harbor/k8s | Phase-5 images — api `sha256:a18ca59f…`, frontend-admin `sha256:985f15ea…`, frontend-user `sha256:639e2bc3…` | `docker build/push` ; `kubectl apply -f gitops/base/` | `kubectl rollout undo deploy/<svc> -n malaby-dev` |
-| — | - | - | _Phase 6 adds Jenkins CI objects only_ | - | - |
+| 15 | 2026-09-18 | k8s | ns `malaby-ci`, SA `jenkins-agent`, Role/RoleBinding `jenkins-agent` | `kubectl apply -f ci/agents/{namespace,rbac}.yaml` | `kubectl delete ns malaby-ci` |
+| — | - | - | _Phase 6 pipeline artifacts are repo-only; Jenkins runtime blocked (CR-1)_ | - | - |

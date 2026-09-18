@@ -1,0 +1,36 @@
+# Rootless, daemonless image build with Kaniko. No host Docker socket is ever mounted.
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/part-of: malaby
+    malaby.io/agent: build
+spec:
+  serviceAccountName: jenkins-agent
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:debug
+      command: ["/busybox/sh", "-c", "cat"]
+      tty: true
+      resources:
+        requests: { cpu: "200m", memory: "512Mi" }
+        limits: { cpu: "2", memory: "2Gi" }
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities: { drop: ["ALL"] }
+      volumeMounts:
+        # Created from the Jenkins credential 'harbor-push' (docker config.json for Harbor).
+        - name: docker-config
+          mountPath: /kaniko/.docker
+          readOnly: true
+  volumes:
+    - name: docker-config
+      secret:
+        secretName: harbor-push
+        optional: true

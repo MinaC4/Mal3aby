@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jenkins-agent
+  namespace: malaby-ci
+  labels:
+    app.kubernetes.io/part-of: malaby
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: jenkins-agent
+  namespace: malaby-ci
+  labels:
+    app.kubernetes.io/part-of: malaby
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/exec", "pods/log", "pods/portforward"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets", "services", "persistentvolumeclaims", "events"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jenkins-agent
+  namespace: malaby-ci
+  labels:
+    app.kubernetes.io/part-of: malaby
+subjects:
+  - kind: ServiceAccount
+    name: jenkins-agent
+    namespace: malaby-ci
+  # The Jenkins controller service account, if it authenticates with this SA.
+  # Verify the actual controller SA/credential; adjust via a change request if different.
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: jenkins
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: jenkins-agent
