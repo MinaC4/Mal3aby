@@ -7,19 +7,10 @@ const Notification = require('../models/Notification');
 
 // ==================== HELPER FUNCTIONS ====================
 
-const { addHoursToTime, timeToMinutes, utcDayRange } = require('../utils/time');
-
-function hasTimeOverlap(start1, duration1, start2, duration2) {
-  const end1 = addHoursToTime(start1, duration1);
-  const end2 = addHoursToTime(start2, duration2);
-
-  const start1Min = timeToMinutes(start1);
-  const end1Min = timeToMinutes(end1);
-  const start2Min = timeToMinutes(start2);
-  const end2Min = timeToMinutes(end2);
-
-  return (start1Min < end2Min && end1Min > start2Min);
-}
+const { addHoursToTime, hasTimeOverlap, utcDayRange } = require('../utils/time');
+const { requireAdmin } = require('../middleware/requireAdmin');
+const { writeLimiter } = require('../middleware/rateLimiters');
+const { validateHttpUrl } = require('../utils/security');
 
 // ==================== MIDDLEWARE ====================
 
@@ -102,6 +93,7 @@ router.get('/availability', async (req, res, next) => {
 // @access  Public
 router.post(
   '/',
+  writeLimiter,
   [
     body('pitchId').notEmpty().withMessage('Pitch is required'),
     body('customerName').notEmpty().trim().withMessage('Customer name is required'),
@@ -191,7 +183,7 @@ router.post(
 // @desc    Get all bookings (Admin)
 // @route   GET /api/bookings
 // @access  Admin
-router.get('/', async (req, res, next) => {
+router.get('/', requireAdmin, async (req, res, next) => {
   try {
     const { status, date, pitchId } = req.query;
     let query = {};
@@ -220,7 +212,7 @@ router.get('/', async (req, res, next) => {
 // @desc    Get single booking
 // @route   GET /api/bookings/:id
 // @access  Admin
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', requireAdmin, async (req, res, next) => {
   try {
     const booking = await Booking.findById(req.params.id).populate('pitch');
 
@@ -243,7 +235,7 @@ router.get('/:id', async (req, res, next) => {
 // @desc    Update booking status
 // @route   PUT /api/bookings/:id/status
 // @access  Admin
-router.put('/:id/status', async (req, res, next) => {
+router.put('/:id/status', writeLimiter, requireAdmin, async (req, res, next) => {
   try {
     const { status } = req.body;
 
@@ -319,9 +311,16 @@ router.put('/:id/status', async (req, res, next) => {
 // @desc    Upload payment screenshot
 // @route   PUT /api/bookings/:id/payment
 // @access  Public
-router.put('/:id/payment', async (req, res, next) => {
+router.put('/:id/payment', writeLimiter, async (req, res, next) => {
   try {
     const { paymentScreenshotUrl } = req.body;
+
+    if (!validateHttpUrl(paymentScreenshotUrl)) {
+      return res.status(400).json({
+        success: false,
+        message: 'paymentScreenshotUrl must be a valid http(s) URL'
+      });
+    }
 
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
@@ -359,7 +358,7 @@ router.put('/:id/payment', async (req, res, next) => {
 // @desc    Delete booking
 // @route   DELETE /api/bookings/:id
 // @access  Admin
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', requireAdmin, async (req, res, next) => {
   try {
     const booking = await Booking.findByIdAndDelete(req.params.id);
 

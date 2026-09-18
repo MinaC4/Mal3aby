@@ -14,4 +14,6 @@ exceptions:
     expires: 2026-09-19            # tied to the start of Phase 5
     phase_opened: 4
     phase_closed: 5
+    closed: 2026-09-18
+    closure_evidence: docs/evidence/phase5-auth-fix.txt   # unauth calls now 401; login issues JWT
     evidence: docs/evidence/phase4-unauth-exploit.txt

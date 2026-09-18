@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { apiLogin, getToken, setToken, clearToken, getStoredUsername, setStoredUsername } from '@/hooks/useApi';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -6,43 +7,43 @@ interface AuthState {
 }
 
 interface AuthContextValue extends AuthState {
-  login: (username: string, password: string) => boolean;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
-
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'admin123';
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useState<AuthState>(() => {
-    const stored = localStorage.getItem('malaby_admin_auth');
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch {
-        return { isAuthenticated: false, username: null };
-      }
-    }
-    return { isAuthenticated: false, username: null };
+    const token = getToken();
+    return {
+      isAuthenticated: !!token,
+      username: token ? getStoredUsername() : null
+    };
   });
 
+  // A 401/403 from any admin call clears the session and returns to login.
   useEffect(() => {
-    localStorage.setItem('malaby_admin_auth', JSON.stringify(auth));
-  }, [auth]);
+    const handleUnauthorized = () => setAuth({ isAuthenticated: false, username: null });
+    window.addEventListener('malaby:unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('malaby:unauthorized', handleUnauthorized);
+  }, []);
 
-  const login = useCallback((username: string, password: string): boolean => {
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      setAuth({ isAuthenticated: true, username });
+  const login = useCallback(async (username: string, password: string): Promise<boolean> => {
+    try {
+      const data = await apiLogin(username, password);
+      setToken(data.token);
+      setStoredUsername(data.username);
+      setAuth({ isAuthenticated: true, username: data.username });
       return true;
+    } catch {
+      return false;
     }
-    return false;
   }, []);
 
   const logout = useCallback(() => {
+    clearToken();
     setAuth({ isAuthenticated: false, username: null });
-    localStorage.removeItem('malaby_admin_auth');
   }, []);
 
   return (

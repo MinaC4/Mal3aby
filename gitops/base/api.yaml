@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: 192.168.1.8:30082/malaby/api@sha256:8c6af7c0fed34efbcba03c0bc05ce105ff17efcd9590f53383898fb52f6ceaa3
+          image: 192.168.1.8:30082/malaby/api@sha256:a18ca59f2735c62eee700480a8fb177481b09ba8a36cdbacd6a97520ad004813
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
@@ -40,7 +40,7 @@ spec:
                 name: api-secrets-eso
           readinessProbe:
             httpGet:
-              path: /health
+              path: /ready
               port: 5000
             initialDelaySeconds: 5
             periodSeconds: 10

@@ -10,18 +10,16 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    setTimeout(() => {
-      const success = login(username, password);
-      if (!success) {
-        setError('اسم المستخدم أو كلمة المرور غير صحيحة');
-      }
-      setLoading(false);
-    }, 500);
+    const success = await login(username, password);
+    if (!success) {
+      setError('اسم المستخدم أو كلمة المرور غير صحيحة');
+    }
+    setLoading(false);
   };
 
   return (

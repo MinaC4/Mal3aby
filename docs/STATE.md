@@ -1,6 +1,6 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **4 COMPLETE** → next Phase 5 (application security remediation) | Updated: 2026-09-18
+Phase: **5 COMPLETE** → next Phase 6 (Jenkins CI) | Updated: 2026-09-18
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared
@@ -92,13 +92,17 @@ platform. Operator answers I-1/I-2/I-3 in `docs/ISSUES.md` unblock Phase 1.
 - Current live image digests: api `sha256:8c6af7c0…`, frontend-user `sha256:edffd680…`,
   frontend-admin `sha256:bfb32e13…` (in `gitops/base/`).
 
-## Next (Phase 5 — mandatory app security fix)
-- Add `requireAdmin` JWT middleware + `POST /api/auth/login` (bcrypt hash from Vault), apply to all
-  admin routes; replace client-side `AuthContext` check; escape `$regex`; helmet + rate limit;
-  fix payment URL; disable sourcemaps; add `npm test`.
-- Then re-run the Phase 4 exploit → expect 401/403, and a legitimate login succeeding.
-- Decisions still pending but defaulted: JWT (recommended), generate admin password (already generated
-  in Vault `malaby/data/dev/api` `ADMIN_PASSWORD`). Signing key still unresolved (I-3).
+- Phase 5: `docs/05-security-remediation.md`, `docs/evidence/phase5-auth-fix.txt`. Real JWT auth
+  (`requireAdmin` + `POST /api/auth/login`, bcrypt hash from Vault), regex escape, payment-URL
+  validation, explicit CORS allowlist, helmet, rate limiting, `/ready`, sourcemaps off, `npm test`
+  (11/11 passing). EXC-0001 closed. Current image digests: api `sha256:a18ca59f…`,
+  frontend-admin `sha256:985f15ea…`, frontend-user `sha256:639e2bc3…`.
+
+## Next (Phase 6 — Jenkins CI)
+- Jenkins Kubernetes pod agents in `malaby-ci` (new namespace); pipeline from `ci/services.yaml`.
+- Stages 1–15 with gitleaks/hadolint/tsc/`npm test`/semgrep/trivy/Syft/cosign/Harbor push.
+- No host Docker socket; rootless builder (Kaniko/BuildKit). Needs `jenkins_may_install_plugins` and
+  a Jenkins API token/credentials decision (I-3).
 
 ## Key Phase 1 facts
 - Egress to registries/GitHub OK. Atlas not needed (in-cluster Mongo). NetworkPolicy controller active.

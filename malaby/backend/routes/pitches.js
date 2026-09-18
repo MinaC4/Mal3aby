@@ -3,6 +3,7 @@ const router = express.Router();
 const Pitch = require('../models/Pitch');
 const Booking = require('../models/Booking');
 const { to24Hour, utcDayRange } = require('../utils/time');
+const { escapeRegex } = require('../utils/security');
 
 // @desc    Get all pitches
 // @route   GET /api/pitches
@@ -13,14 +14,15 @@ router.get('/', async (req, res, next) => {
     let query = { isActive: true };
 
     if (search) {
+      const safeSearch = escapeRegex(String(search).slice(0, 100));
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
+        { name: { $regex: safeSearch, $options: 'i' } },
+        { description: { $regex: safeSearch, $options: 'i' } }
       ];
     }
 
     if (location) {
-      query.location = { $regex: location, $options: 'i' };
+      query.location = { $regex: escapeRegex(String(location).slice(0, 100)), $options: 'i' };
     }
 
     if (minPrice || maxPrice) {

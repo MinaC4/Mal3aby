@@ -17,4 +17,6 @@ Rule: additive-only; `malaby-*` scope only. Nothing outside this project is modi
 | 10 | 2026-09-18 | Harbor | project `malaby` (+ images api/frontend-user/frontend-admin `:baseline`) | `POST /api/v2.0/projects` ; `docker push localhost:30082/malaby/…` | Harbor UI/API delete project `malaby` |
 | 11 | 2026-09-18 | k8s | `gitops/base/` workloads: mongodb StatefulSet+svc+cm+PVC, api deploy+svc, frontend-user/admin deploy+svc, Ingress `malaby-dev` | `kubectl apply -f gitops/base/` | `kubectl delete -f gitops/base/` ; or `kubectl delete ns malaby-dev` |
 | 12 | 2026-09-18 | Harbor/k8s | rebuilt images `api`,`frontend-user`,`frontend-admin` — current api digest `sha256:8c6af7c0…`, user `sha256:edffd680…`, admin `sha256:bfb32e13…` | `docker build/push` ; `kubectl apply -f gitops/base/` | `kubectl rollout undo deploy/<svc> -n malaby-dev` |
-| — | - | - | _Phase 5 modifies the app, not new cluster objects_ | - | - |
+| 13 | 2026-09-18 | Vault | `malaby/data/dev/api` + `ADMIN_USERNAME`,`ADMIN_PASSWORD_HASH`; `CORS_ORIGIN` allowlist | `vault kv patch` (via `ci/scripts/vault-bootstrap.sh` on re-run) | `vault kv metadata delete malaby/dev/api` |
+| 14 | 2026-09-18 | Harbor/k8s | Phase-5 images — api `sha256:a18ca59f…`, frontend-admin `sha256:985f15ea…`, frontend-user `sha256:639e2bc3…` | `docker build/push` ; `kubectl apply -f gitops/base/` | `kubectl rollout undo deploy/<svc> -n malaby-dev` |
+| — | - | - | _Phase 6 adds Jenkins CI objects only_ | - | - |

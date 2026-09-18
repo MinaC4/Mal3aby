@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: 192.168.1.8:30082/malaby/frontend-user@sha256:edffd680fdc6dafc9e7c8218fe753a35b12613a27563fdaf7b053c6035664c4e
+          image: 192.168.1.8:30082/malaby/frontend-user@sha256:639e2bc356465821f75f43743082adc4fc33e8f21b159eb890ab486396566399
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80

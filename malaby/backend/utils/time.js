@@ -26,6 +26,14 @@ function timeToMinutes(timeStr) {
   return hours * 60 + minutes;
 }
 
+function hasTimeOverlap(start1, duration1, start2, duration2) {
+  const s1 = timeToMinutes(start1);
+  const s2 = timeToMinutes(start2);
+  const e1 = s1 + Number(duration1 || 1) * 60;
+  const e2 = s2 + Number(duration2 || 1) * 60;
+  return s1 < e2 && e1 > s2;
+}
+
 function to24Hour(timeStr) {
   const { hours, minutes } = parseTimeToParts(timeStr);
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
@@ -47,4 +55,4 @@ function utcDayRange(input) {
   return { start, end };
 }
 
-module.exports = { parseTimeToParts, addHoursToTime, timeToMinutes, to24Hour, utcDayRange };
+module.exports = { parseTimeToParts, addHoursToTime, timeToMinutes, hasTimeOverlap, to24Hour, utcDayRange };

@@ -1,9 +1,12 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const dotenv = require('dotenv');
 const path = require('path');
+const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
+const { apiLimiter } = require('./middleware/rateLimiters');
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
@@ -12,14 +15,22 @@ connectDB();
 const pitches = require('./routes/pitches');
 const bookings = require('./routes/bookings');
 const notifications = require('./routes/notifications');
+const auth = require('./routes/auth');
 
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.disable('x-powered-by');
+app.use(helmet());
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 
+// CORS: explicit allowlist per environment; "*" only if explicitly configured.
+const corsOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: corsOrigins.length === 0 || corsOrigins.includes('*') ? '*' : corsOrigins,
   credentials: true
 }));
 
@@ -30,15 +41,28 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
+// Liveness: process is up. Readiness: database is actually reachable.
+const dbConnected = () => mongoose.connection.readyState === 1;
+
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
     message: 'Malaby API is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'production'
+    environment: process.env.NODE_ENV || 'production',
+    database: dbConnected() ? 'connected' : 'disconnected'
   });
 });
 
+app.get('/ready', (req, res) => {
+  if (!dbConnected()) {
+    return res.status(503).json({ success: false, message: 'Database not ready' });
+  }
+  return res.status(200).json({ success: true, message: 'Ready' });
+});
+
+app.use('/api', apiLimiter);
+app.use('/api/auth', auth);
 app.use('/api/pitches', pitches);
 app.use('/api/bookings', bookings);
 app.use('/api/notifications', notifications);
@@ -49,6 +73,7 @@ app.get('/api', (req, res) => {
     message: 'Welcome to Malaby API',
     version: '1.0.0',
     endpoints: {
+      auth: '/api/auth/login',
       pitches: '/api/pitches',
       bookings: '/api/bookings',
       notifications: '/api/notifications',

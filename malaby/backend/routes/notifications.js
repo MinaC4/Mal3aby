@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Notification = require('../models/Notification');
+const { requireAdmin } = require('../middleware/requireAdmin');
+
+// Every notification endpoint is admin-only.
+router.use(requireAdmin);
 
 // @desc    Get unread notifications count
 // @route   GET /api/notifications/stats/unread
