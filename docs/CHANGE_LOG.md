@@ -20,4 +20,7 @@ Rule: additive-only; `malaby-*` scope only. Nothing outside this project is modi
 | 13 | 2026-09-18 | Vault | `malaby/data/dev/api` + `ADMIN_USERNAME`,`ADMIN_PASSWORD_HASH`; `CORS_ORIGIN` allowlist | `vault kv patch` (via `ci/scripts/vault-bootstrap.sh` on re-run) | `vault kv metadata delete malaby/dev/api` |
 | 14 | 2026-09-18 | Harbor/k8s | Phase-5 images — api `sha256:a18ca59f…`, frontend-admin `sha256:985f15ea…`, frontend-user `sha256:639e2bc3…` | `docker build/push` ; `kubectl apply -f gitops/base/` | `kubectl rollout undo deploy/<svc> -n malaby-dev` |
 | 15 | 2026-09-18 | k8s | ns `malaby-ci`, SA `jenkins-agent`, Role/RoleBinding `jenkins-agent` | `kubectl apply -f ci/agents/{namespace,rbac}.yaml` | `kubectl delete ns malaby-ci` |
-| — | - | - | _Phase 6 pipeline artifacts are repo-only; Jenkins runtime blocked (CR-1)_ | - | - |
+| 16 | 2026-09-18 | k8s | secret `harbor-push` in `malaby-ci` (docker config for Kaniko) | `kubectl create secret generic harbor-push -n malaby-ci --from-file=config.json=...` | `kubectl delete secret harbor-push -n malaby-ci` |
+| 17 | 2026-09-18 | Jenkins | (operator-authorized) recreated `pod/jenkins-0` to clear the init `cp` loop — no config change | `kubectl delete pod jenkins-0 -n jenkins` | n/a (STS recreates) |
+| 18 | 2026-09-18 | Jenkins | new job `malaby-ci` (Pipeline from GitHub), throwaway `malaby-ci-selftest`, credential `harbor-push` | Jenkins API `createItem` / `createCredentials` | `curl -X POST /job/<name>/doDelete` ; delete credential |
+| — | - | - | _Phase 7 adds signing keys/robots (CR-4)_ | - | - |

@@ -1,7 +1,9 @@
 # 06 — CI Design (Jenkins)
 
-> **Runtime status:** the pipeline is authored and reviewed, but **not executed** yet — the shared
-> Jenkins instance is down (CR-1). Nothing here is claimed as verified console output.
+> **Runtime status:** Operational through stage 9. Jenkins was restored by recreating the broken pod
+> (no config change); the `malaby-ci` job runs on Kubernetes pod agents in `malaby-ci`. Stages 1–9 are
+> green and Kaniko pushed all three images (`Harbor malaby/*:20-52e1869`). Stage 10 (cosign sign) is
+> blocked on the signing key (CR-4). Real console: `docs/evidence/phase6-ci-console.txt`.
 
 ## Execution model
 - Jenkins **Kubernetes pod agents** in the new `malaby-ci` namespace (`ci/agents/namespace.yaml`,

@@ -1,6 +1,6 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **6 PARTIAL** (authored; runtime BLOCKED by Jenkins CR-1) | Updated: 2026-09-18
+Phase: **6 OPERATIONAL (stages 1–9 green; sign blocked on CR-4)** | Updated: 2026-09-18
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared
@@ -102,11 +102,16 @@ platform. Operator answers I-1/I-2/I-3 in `docs/ISSUES.md` unblock Phase 1.
   ns + RBAC, `docs/06-ci-design.md`, `docs/adr/ADR-0006-image-builder.md`,
   `docs/06-jenkins-security-review.md`. **Runtime blocked**: shared Jenkins is down (I-13 / CR-1).
 
+## Phase 6 runtime result
+- Jenkins recovered (`3/3`); job `malaby-ci` runs on Kubernetes pod agents in `malaby-ci`.
+- Stages 1–9 GREEN: gitleaks `no leaks`, lint, `npm test 11/11`, semgrep `0 findings`, trivy fs,
+  **Kaniko pushed all 3 images** (`Harbor malaby/*:20-52e1869`), SBOM, image scan.
+- Stage 10 sign FAILED: cosign credential type (CR-4). Console: `docs/evidence/phase6-ci-console.txt`.
+
 ## Next
-- Phase 6 completion (after CR-1): start Jenkins, register shared library (CR-2), create credentials
-  (CR-3), run the pipeline, capture real console output.
-- Then Phase 7 (SBOM/signing/attestation) — also needs the cosign key (CR-4).
-- No further cluster changes required for Phase 7 beyond Vault keys/Harbor robots.
+- Phase 7 needs CR-4 (cosign keypair → Vault + Jenkins file credentials; Harbor push/pull robots).
+  Optionally CR-2 to register the shared library and CR-3 `github-token`.
+- Then stages 10–11 go green and Phase 7 (SBOM/sign/attest/verify) proceeds.
 
 ## Key Phase 1 facts
 - Egress to registries/GitHub OK. Atlas not needed (in-cluster Mongo). NetworkPolicy controller active.
