@@ -19,6 +19,8 @@ spec:
       image: ghcr.io/gitleaks/gitleaks:latest
       command: ["sleep", "43200"]
       tty: true
+      env:
+        - { name: HOME, value: /tmp }
       resources:
         requests: { cpu: "50m", memory: "128Mi" }
         limits: { cpu: "500m", memory: "512Mi" }
@@ -29,6 +31,8 @@ spec:
       image: returntocorp/semgrep:latest
       command: ["sleep", "43200"]
       tty: true
+      env:
+        - { name: HOME, value: /tmp }
       resources:
         requests: { cpu: "50m", memory: "256Mi" }
         limits: { cpu: "500m", memory: "1Gi" }
@@ -39,6 +43,9 @@ spec:
       image: aquasec/trivy:latest
       command: ["sleep", "43200"]
       tty: true
+      env:
+        - { name: HOME, value: /tmp }
+        - { name: TRIVY_CACHE_DIR, value: /tmp/trivy-cache }
       resources:
         requests: { cpu: "50m", memory: "256Mi" }
         limits: { cpu: "500m", memory: "1Gi" }
@@ -49,6 +56,8 @@ spec:
       image: anchore/syft:debug
       command: ["sleep", "43200"]
       tty: true
+      env:
+        - { name: HOME, value: /tmp }
       resources:
         requests: { cpu: "50m", memory: "256Mi" }
         limits: { cpu: "500m", memory: "1Gi" }
@@ -59,6 +68,8 @@ spec:
       image: bitnami/cosign:latest
       command: ["sleep", "43200"]
       tty: true
+      env:
+        - { name: HOME, value: /tmp }
       resources:
         requests: { cpu: "50m", memory: "128Mi" }
         limits: { cpu: "500m", memory: "512Mi" }
