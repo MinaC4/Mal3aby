@@ -1,0 +1,93 @@
+# malaby-dev network segmentation. MongoDB is in-cluster, so the api needs NO internet egress.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: malaby-default-deny
+  namespace: malaby-dev
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: malaby-allow-dns
+  namespace: malaby-dev
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - { protocol: UDP, port: 53 }
+        - { protocol: TCP, port: 53 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: malaby-frontend
+  namespace: malaby-dev
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: app, operator: In, values: [frontend-user, frontend-admin] }
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: { kubernetes.io/metadata.name: kube-system }
+          podSelector:
+            matchLabels: { app.kubernetes.io/name: traefik }
+      ports:
+        - { protocol: TCP, port: 80 }
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: { app: api }
+      ports:
+        - { protocol: TCP, port: 5000 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: malaby-api
+  namespace: malaby-dev
+spec:
+  podSelector:
+    matchLabels: { app: api }
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: { app: frontend-user }
+        - podSelector:
+            matchLabels: { app: frontend-admin }
+      ports:
+        - { protocol: TCP, port: 5000 }
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: { app: mongodb }
+      ports:
+        - { protocol: TCP, port: 27017 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: malaby-mongodb
+  namespace: malaby-dev
+spec:
+  podSelector:
+    matchLabels: { app: mongodb }
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: { app: api }
+      ports:
+        - { protocol: TCP, port: 27017 }
