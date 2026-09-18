@@ -118,23 +118,25 @@ pipeline {
     }
 
     stage('7 Build & Push Images') {
-      agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-build.yaml'; defaultContainer 'kaniko' } }
+      // One fresh Kaniko pod per service (isolates disk/memory and failures).
+      agent none
       steps {
         script {
-          def tag = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
-          env.IMAGE_TAG = tag
-          def ws = sh(returnStdout: true, script: 'pwd').trim()
+          def buildYaml = readTrusted('ci/agents/pod-build.yaml')
           def all = malabyServices().findAll { it.deploy != 'false' }
           def selected = params.FORCE_ALL ? all : all.findAll { malabyChangedServices().contains(it.name) }
           selected.each { s ->
-            def extra = (s.name == 'frontend-admin') ? '--build-arg VITE_BASE_URL=/' : ''
-            sh """
-              /kaniko/executor \
-                --context=dir://${ws}/${s.context} \
-                --dockerfile=Dockerfile \
-                --destination=${REGISTRY}/${HARBOR_PROJECT}/${s.name}:${tag} \
-                ${extra} --insecure --skip-tls-verify
-            """
+            podTemplate(namespace: 'malaby-ci', yaml: buildYaml) {
+              node(POD_LABEL) {
+                container('kaniko') {
+                  def tag = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
+                  env.IMAGE_TAG = tag
+                  def ws = sh(returnStdout: true, script: 'pwd').trim()
+                  def extra = (s.name == 'frontend-admin') ? '--build-arg VITE_BASE_URL=/' : ''
+                  sh "/kaniko/executor --context=dir://${ws}/${s.context} --dockerfile=Dockerfile --destination=${REGISTRY}/${HARBOR_PROJECT}/${s.name}:${tag} ${extra} --insecure --skip-tls-verify"
+                }
+              }
+            }
           }
         }
       }
