@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
 interface SlotData {
   time: string;
   endTime: string;
@@ -40,15 +42,22 @@ export default function TimeSlotPicker({
       setBookedMsg(null);
       return;
     }
+    const controller = new AbortController();
     setLoading(true);
     setBookedMsg(null);
-    fetch(`/api/bookings/availability?pitchId=${pitchId}&date=${date}&duration=${duration}`)
+    fetch(
+      `${API_BASE_URL}/bookings/availability?pitchId=${pitchId}&date=${date}&duration=${duration}`,
+      { signal: controller.signal }
+    )
       .then((r) => r.json())
       .then((res) => {
         if (res.success) setSlots(res.data.slots);
       })
-      .catch(() => setSlots([]))
+      .catch((err) => {
+        if (err?.name !== 'AbortError') setSlots([]);
+      })
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, [pitchId, date, duration]);
 
   const handleSlotClick = (slot: SlotData) => {

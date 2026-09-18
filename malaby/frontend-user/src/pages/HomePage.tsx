@@ -66,11 +66,20 @@ export default function HomePage() {
     { icon: Zap, title: 'أسعار تنافسية', description: 'أفضل الأسعار مع خيارات متعددة تناسب الجميع', color: 'bg-amber-500', bg: 'bg-amber-50 dark:bg-amber-950/40' },
   ];
 
+  const pitchCount = pitches?.length ?? 0;
+  const cityCount = new Set((pitches ?? []).map((p) => p.location)).size;
+  const avgRating =
+    pitches && pitches.length
+      ? (pitches.reduce((sum, p) => sum + (p.rating || 0), 0) / pitches.length).toFixed(1)
+      : '—';
+  const minPrice =
+    pitches && pitches.length ? Math.min(...pitches.map((p) => p.pricePerHour)) : null;
+
   const stats = [
-    { label: 'ملعب', value: '50+', icon: MapPin, color: 'bg-teal-500', data: [30,50,40,70,55,80,60,90,75,95] },
-    { label: 'حجز ناجح', value: '10K+', icon: Calendar, color: 'bg-emerald-600', data: sparkData },
-    { label: 'عميل سعيد', value: '5K+', icon: Users, color: 'bg-blue-500', data: [50,60,45,75,65,85,70,80,88,92] },
-    { label: 'تقييم', value: '4.8', icon: Star, color: 'bg-amber-500', data: [70,75,72,80,78,85,82,88,85,90] },
+    { label: 'ملعب متاح', value: pitchCount ? String(pitchCount) : '—', sub: 'مباشر', icon: MapPin, color: 'bg-teal-500', data: [30,50,40,70,55,80,60,90,75,95] },
+    { label: 'مدن', value: cityCount ? String(cityCount) : '—', sub: 'تغطية', icon: Calendar, color: 'bg-emerald-600', data: sparkData },
+    { label: 'متوسط التقييم', value: String(avgRating), sub: 'تقييم', icon: Star, color: 'bg-amber-500', data: [70,75,72,80,78,85,82,88,85,90] },
+    { label: 'تبدأ من', value: minPrice != null ? `${minPrice} ج.م` : '—', sub: 'أرخص سعر', icon: Users, color: 'bg-blue-500', data: [50,60,45,75,65,85,70,80,88,92] },
   ];
 
   return (
@@ -157,7 +166,7 @@ export default function HomePage() {
                 key={stat.label}
                 label={stat.label}
                 value={stat.value}
-                sub="+12%"
+                sub={stat.sub}
                 icon={stat.icon}
                 color={stat.color}
                 data={stat.data}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, User, Phone, Mail, FileText, AlertCircle, Check } from 'lucide-react';
 import type { Pitch } from '@/types';
 import { apiPost } from '@/hooks/useApi';
+import { formatTime12Hour, todayLocalISO } from '@/lib/utils';
 import TimeSlotPicker from './TimeSlotPicker';
 
 interface BookingFormProps {
@@ -163,7 +164,7 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
           required
           value={formData.bookingDate}
           onChange={handleChange}
-          min={new Date().toISOString().split('T')[0]}
+          min={todayLocalISO()}
           className={fieldClass}
         />
       </div>
@@ -194,7 +195,7 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
           اختر الميعاد
           {formData.timeSlot && (
             <span className="mr-auto text-emerald-600 dark:text-emerald-400 font-bold text-xs bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
-              ✓ مختار: {formData.timeSlot}
+              ✓ مختار: {formatTime12Hour(formData.timeSlot)}
             </span>
           )}
         </label>
@@ -282,7 +283,7 @@ export default function BookingForm({ pitch, preselectedDate, preselectedTime }:
           <div className="flex justify-between items-center mb-2.5">
             <span className="text-gray-600 dark:text-gray-400 text-sm">الميعاد</span>
             <span className="font-bold text-gray-900 dark:text-white text-sm">
-              {formData.timeSlot}
+              {formatTime12Hour(formData.timeSlot)}
             </span>
           </div>
         )}

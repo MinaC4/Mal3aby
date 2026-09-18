@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapPin, Star, ChevronLeft, ChevronRight, Clock, Calendar, Check, Phone, CreditCard } from 'lucide-react';
 import { useApi } from '@/hooks/useApi';
+import { todayLocalISO } from '@/lib/utils';
 import type { Pitch } from '@/types';
 
 export default function PitchDetailPage() {
@@ -10,7 +11,7 @@ export default function PitchDetailPage() {
   const { data: pitch, loading } = useApi<Pitch>(`/pitches/${id}`);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTime, setSelectedTime] = useState('');
+  const [dateError, setDateError] = useState('');
 
   const nextImage = () => {
     if (pitch) setCurrentImageIndex((prev) => (prev + 1) % pitch.images.length);
@@ -19,8 +20,13 @@ export default function PitchDetailPage() {
     if (pitch) setCurrentImageIndex((prev) => (prev - 1 + pitch.images.length) % pitch.images.length);
   };
   const handleBookNow = () => {
+    if (!selectedDate) {
+      setDateError('اختر تاريخ الحجز أولاً');
+      return;
+    }
+    setDateError('');
     navigate(`/booking/${id}`, {
-      state: { preselectedDate: selectedDate, preselectedTime: selectedTime }
+      state: { preselectedDate: selectedDate }
     });
   };
 
@@ -153,32 +159,25 @@ export default function PitchDetailPage() {
             {/* Quick Booking */}
             <div className="glass-card p-5 mb-5">
               <h3 className="font-black text-gray-900 dark:text-white mb-4 text-sm uppercase tracking-wide">حجز سريع</h3>
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div>
-                  <label className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 mb-1.5 font-semibold">
-                    <Calendar className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                    التاريخ
-                  </label>
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="input-field text-sm py-2.5"
-                  />
-                </div>
-                <div>
-                  <label className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 mb-1.5 font-semibold">
-                    <Clock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                    الوقت
-                  </label>
-                  <input
-                    type="time"
-                    value={selectedTime}
-                    onChange={(e) => setSelectedTime(e.target.value)}
-                    className="input-field text-sm py-2.5"
-                  />
-                </div>
+              <div className="mb-4">
+                <label className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 mb-1.5 font-semibold">
+                  <Calendar className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                  التاريخ
+                </label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => { setSelectedDate(e.target.value); setDateError(''); }}
+                  min={todayLocalISO()}
+                  className="input-field text-sm py-2.5"
+                />
+                <p className="flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500 mt-2">
+                  <Clock className="h-3 w-3" />
+                  سيتم اختيار الوقت المتاح في الخطوة التالية
+                </p>
+                {dateError && (
+                  <p className="text-xs text-red-500 mt-2">{dateError}</p>
+                )}
               </div>
               <button
                 onClick={handleBookNow}

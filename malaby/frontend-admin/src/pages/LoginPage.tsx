@@ -107,13 +107,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
-          {/* Demo credentials */}
-          <div className="mt-6 bg-gray-50 rounded-lg p-4 text-center">
-            <p className="text-xs text-gray-500 mb-2">بيانات تجريبية:</p>
-            <p className="text-sm text-gray-700">اسم المستخدم: <strong>admin</strong></p>
-            <p className="text-sm text-gray-700">كلمة المرور: <strong>admin123</strong></p>
-          </div>
         </div>
       </div>
     </div>

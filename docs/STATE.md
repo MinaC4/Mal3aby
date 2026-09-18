@@ -84,6 +84,14 @@ platform. Operator answers I-1/I-2/I-3 in `docs/ISSUES.md` unblock Phase 1.
 - Deployment/Service `api` (:5000), `frontend-user` (:80), `frontend-admin` (:80); Ingress `malaby-dev`
 - Hosts: `malaby-dev.192.168.1.8.nip.io`, `malaby-admin-dev.192.168.1.8.nip.io`
 
+## Bugfix batch (between Phase 4 and 5)
+- `docs/BUGFIXES.md`: audit of both frontends + backend time logic. Critical fix B1: double-booking
+  was allowed because the overlap check matched the exact date, not the day. Also B2/B3 (NaN + TZ),
+  blank admin screen (A1/A2), fake auth dead code, displayed credentials, fake dashboard trends,
+  quick-booking arbitrary time, fake home stats, etc.
+- Current live image digests: api `sha256:8c6af7c0…`, frontend-user `sha256:edffd680…`,
+  frontend-admin `sha256:bfb32e13…` (in `gitops/base/`).
+
 ## Next (Phase 5 — mandatory app security fix)
 - Add `requireAdmin` JWT middleware + `POST /api/auth/login` (bcrypt hash from Vault), apply to all
   admin routes; replace client-side `AuthContext` check; escape `$regex`; helmet + rate limit;

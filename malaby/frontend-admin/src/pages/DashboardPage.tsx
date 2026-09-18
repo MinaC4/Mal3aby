@@ -1,4 +1,4 @@
-import { CalendarDays, CheckCircle, Clock, DollarSign, Bell, TrendingUp } from 'lucide-react';
+import { CalendarDays, CheckCircle, Clock, DollarSign, Bell } from 'lucide-react';
 import { useApi } from '@/hooks/useApi';
 import type { Booking, Notification } from '@/types';
 import { formatDate, formatPrice, getStatusColor, getStatusLabel } from '@/lib/utils';
@@ -14,29 +14,25 @@ export default function DashboardPage() {
       label: 'إجمالي الحجوزات',
       value: bookings?.length || 0,
       icon: <CalendarDays className="h-6 w-6 text-emerald-600" />,
-      bg: 'bg-emerald-50',
-      trend: '+12%'
+      bg: 'bg-emerald-50'
     },
     {
       label: 'الحجوزات المعلقة',
       value: bookings?.filter(b => b.status === 'pending').length || 0,
       icon: <Clock className="h-6 w-6 text-amber-600" />,
-      bg: 'bg-amber-50',
-      trend: null
+      bg: 'bg-amber-50'
     },
     {
       label: 'الحجوزات المؤكدة',
       value: bookings?.filter(b => b.status === 'confirmed').length || 0,
       icon: <CheckCircle className="h-6 w-6 text-blue-600" />,
-      bg: 'bg-blue-50',
-      trend: null
+      bg: 'bg-blue-50'
     },
     {
       label: 'إجمالي الإيرادات',
       value: formatPrice(bookings?.reduce((sum, b) => sum + (b.status !== 'cancelled' ? b.totalPrice : 0), 0) || 0),
       icon: <DollarSign className="h-6 w-6 text-emerald-600" />,
-      bg: 'bg-emerald-50',
-      trend: '+8%'
+      bg: 'bg-emerald-50'
     }
   ];
 
@@ -56,12 +52,6 @@ export default function DashboardPage() {
               <div className={`${stat.bg} p-3 rounded-xl`}>
                 {stat.icon}
               </div>
-              {stat.trend && (
-                <span className="flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
-                  <TrendingUp className="h-3 w-3" />
-                  {stat.trend}
-                </span>
-              )}
             </div>
             <div className="mt-4">
               <p className="text-2xl font-bold text-gray-900">{stat.value}</p>

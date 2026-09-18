@@ -12,7 +12,7 @@ export default function PitchCard({ pitch }: PitchCardProps) {
       {/* Image */}
       <div className="relative h-52 overflow-hidden bg-gray-200 dark:bg-dark-700">
         <img
-          src={pitch.images[0]}
+          src={pitch.images?.[0] || '/vite.svg'}
           alt={pitch.name}
           className="pitch-card-img w-full h-full object-cover"
         />
