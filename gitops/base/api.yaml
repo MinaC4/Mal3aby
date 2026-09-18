@@ -21,7 +21,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: api
-          image: 192.168.1.8:30082/malaby/api@sha256:628c02fe0f29e6de384100d991ec78384317e2188a23e129167675af8273c3cf
+          image: 192.168.1.8:30082/malaby/api@sha256:978b2a9231624993b1f78c7eaf4deea401475d46748233b4e089b5fa09a61cc7
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000

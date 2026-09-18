@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiters');
+const { register, httpRequestDuration, httpRequestsTotal } = require('./utils/metrics');
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
@@ -62,6 +63,22 @@ app.get('/ready', (req, res) => {
     return res.status(503).json({ success: false, message: 'Database not ready' });
   }
   return res.status(200).json({ success: true, message: 'Ready' });
+});
+
+// Prometheus metrics for every request (also used by Grafana dashboards).
+app.use((req, res, next) => {
+  const stop = httpRequestDuration.startTimer();
+  res.on('finish', () => {
+    const labels = { method: req.method, route: req.route ? req.route.path : req.path, status: String(res.statusCode) };
+    stop(labels);
+    httpRequestsTotal.inc(labels);
+  });
+  next();
+});
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
 });
 
 app.use('/api', apiLimiter);
