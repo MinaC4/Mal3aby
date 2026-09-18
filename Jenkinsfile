@@ -124,14 +124,15 @@ pipeline {
           def tag = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
           env.IMAGE_TAG = tag
           def ws = sh(returnStdout: true, script: 'pwd').trim()
-          def services = params.FORCE_ALL ? malabyLoadServices() : malabyChangedServices()
-          services.each { svc ->
-            def extra = (svc == 'frontend-admin') ? '--build-arg VITE_BASE_URL=/' : ''
+          def all = malabyServices().findAll { it.deploy != 'false' }
+          def selected = params.FORCE_ALL ? all : all.findAll { malabyChangedServices().contains(it.name) }
+          selected.each { s ->
+            def extra = (s.name == 'frontend-admin') ? '--build-arg VITE_BASE_URL=/' : ''
             sh """
               /kaniko/executor \
-                --context=dir://${ws}/malaby/${svc} \
+                --context=dir://${ws}/${s.context} \
                 --dockerfile=Dockerfile \
-                --destination=${REGISTRY}/${HARBOR_PROJECT}/${svc}:${tag} \
+                --destination=${REGISTRY}/${HARBOR_PROJECT}/${s.name}:${tag} \
                 ${extra} --insecure --skip-tls-verify
             """
           }
