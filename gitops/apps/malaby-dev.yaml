@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: malaby-dev
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: malaby
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: malaby
+  source:
+    repoURL: https://github.com/MinaC4/Mal3aby.git
+    targetRevision: feature/devsecops-foundation
+    path: gitops/base
+    directory:
+      recurse: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: malaby-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ApplyOutOfSyncOnly=true
