@@ -9,8 +9,6 @@ spec:
   serviceAccountName: jenkins-agent
   restartPolicy: Never
   securityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
     seccompProfile:
       type: RuntimeDefault
   containers:
@@ -22,8 +20,11 @@ spec:
         requests: { cpu: "200m", memory: "512Mi" }
         limits: { cpu: "2", memory: "2Gi" }
       securityContext:
+        # Kaniko must chown the Dockerfile under /kaniko, which requires root.
+        # This build pod mounts no host paths; it only writes to the workspace and Harbor.
+        # Documented exception — see docs/06-ci-design.md (Phase 9 will revisit in Kyverno).
         allowPrivilegeEscalation: false
-        capabilities: { drop: ["ALL"] }
+        runAsUser: 0
       volumeMounts:
         # Created from the Jenkins credential 'harbor-push' (docker config.json for Harbor).
         - name: docker-config
