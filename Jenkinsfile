@@ -118,12 +118,12 @@ pipeline {
 
     stage('5 SAST') {
       agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'semgrep' } }
-      steps { container('semgrep') { sh 'semgrep --config p/javascript --config p/security-audit --error --json -o semgrep.json malaby/ || true; head -c 2000 semgrep.json' } }
+      steps { container('semgrep') { sh 'semgrep --config p/javascript --config p/security-audit --error --json -o semgrep.json malaby/; head -c 2000 semgrep.json' } }
     }
 
     stage('6 SCA (source)') {
       agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-security.yaml'; defaultContainer 'trivy' } }
-      steps { container('trivy') { sh 'trivy fs --scanners vuln --severity CRITICAL,HIGH --exit-code 0 malaby/' } }
+      steps { container('trivy') { sh 'trivy fs --scanners vuln --severity CRITICAL --ignore-unfixed --exit-code 1 malaby/' } }
     }
 
     stage('7a Build api') {
@@ -160,7 +160,7 @@ pipeline {
         container('trivy') {
           sh '''
             for s in api frontend-user frontend-admin; do
-              trivy image --scanners vuln,secret,misconfig --severity CRITICAL,HIGH --exit-code 0 \
+              trivy image --scanners vuln,secret,misconfig --severity CRITICAL --ignore-unfixed --exit-code 1 \
                 ${REGISTRY}/${HARBOR_PROJECT}/$s:${IMAGE_TAG}
             done
           '''
@@ -201,13 +201,14 @@ pipeline {
       }
     }
 
-    stage('12 Update GitOps (dev)') {
+    stage('12 Promote (digest note)') {
+      // Promotion is a signed PR that pins the new digests in gitops/base (manual, reviewed).
+      // The previous scaffold called a non-existent shell command; replaced with an explicit,
+      // non-failing note so the stage never breaks the build. See docs/08-gitops.md.
       when { branch 'main' }
       agent { kubernetes { namespace 'malaby-ci'; yamlFile 'ci/agents/pod-node.yaml'; defaultContainer 'node' } }
       steps {
-        withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
-          sh 'malabyUpdateGitOps'
-        }
+        echo "Promote ${REGISTRY}/${HARBOR_PROJECT}/{api,frontend-user,frontend-admin}:${IMAGE_TAG} by pinning digests in gitops/base via PR."
       }
     }
   }

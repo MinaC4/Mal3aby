@@ -6,6 +6,7 @@ metadata:
     malaby.io/agent: lint
 spec:
   serviceAccountName: jenkins-agent
+  automountServiceAccountToken: false
   restartPolicy: Never
   securityContext:
     runAsUser: 1000

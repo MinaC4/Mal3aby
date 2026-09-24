@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-backup
+  namespace: malaby-dev
+  labels: { app: mongodb-backup, app.kubernetes.io/part-of: malaby }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: local-path
+  resources: { requests: { storage: 1Gi } }
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mongodb-backup
+  namespace: malaby-dev
+  labels: { app: mongodb-backup, app.kubernetes.io/part-of: malaby }
+spec:
+  schedule: "0 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels: { app: mongodb-backup, app.kubernetes.io/part-of: malaby }
+        spec:
+          restartPolicy: Never
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+            runAsGroup: 999
+            fsGroup: 999
+            seccompProfile: { type: RuntimeDefault }
+          containers:
+            - name: mongodump
+              image: mongo:7.0@sha256:609d76574151bee8b148caee83cd9fec8b5f695e5a6db9f1e0f9dced0673574e
+              command: ["sh", "-c"]
+              args:
+                - |
+                  set -e
+                  mongodump --uri="$MONGODB_URI" --archive=/backup/malaby-$(date +%F).gz --gzip
+                  find /backup -name 'malaby-*.gz' -mtime +7 -delete
+                  ls -lh /backup
+              env:
+                - name: MONGODB_URI
+                  valueFrom:
+                    secretKeyRef: { name: mongodb-secrets-eso, key: MONGODB_URI }
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities: { drop: ["ALL"] }
+              resources:
+                requests: { cpu: "50m", memory: "128Mi" }
+                limits: { cpu: "500m", memory: "512Mi" }
+              readinessProbe: { exec: { command: ["sh", "-c", "true"] } }
+              livenessProbe: { exec: { command: ["sh", "-c", "true"] } }
+              volumeMounts:
+                - { name: backup, mountPath: /backup }
+                - { name: tmp, mountPath: /tmp }
+          volumes:
+            - name: backup
+              persistentVolumeClaim: { claimName: mongodb-backup }
+            - name: tmp
+              emptyDir: {}

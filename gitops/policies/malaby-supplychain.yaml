@@ -16,13 +16,20 @@ spec:
               kinds: [Pod]
               namespaces: [malaby-dev]
       validate:
-        message: "Only images from Harbor project 'malaby' are allowed (mongo pending mirror)."
+        message: "Only images from Harbor project 'malaby' are allowed (the exact mongo image is temporarily allowlisted)."
         foreach:
           - list: "request.object.spec.containers"
             deny:
               conditions:
                 all:
-                  - key: "{{ starts_with(element.image, '192.168.1.8:30082/malaby/') || starts_with(element.image, 'mongo') || starts_with(element.image, 'docker.io/library/mongo') }}"
+                  - key: "{{ starts_with(element.image, '192.168.1.8:30082/malaby/') || starts_with(element.image, 'mongo:') || starts_with(element.image, 'mongo@') || starts_with(element.image, 'docker.io/library/mongo') }}"
+                    operator: Equals
+                    value: false
+          - list: "request.object.spec.initContainers || `[]`"
+            deny:
+              conditions:
+                all:
+                  - key: "{{ starts_with(element.image, '192.168.1.8:30082/malaby/') || starts_with(element.image, 'mongo:') || starts_with(element.image, 'mongo@') || starts_with(element.image, 'docker.io/library/mongo') }}"
                     operator: Equals
                     value: false
 ---

@@ -6,6 +6,7 @@ metadata:
     malaby.io/agent: security
 spec:
   serviceAccountName: jenkins-agent
+  automountServiceAccountToken: false
   restartPolicy: Never
   securityContext:
     runAsUser: 1000
@@ -16,7 +17,7 @@ spec:
       type: RuntimeDefault
   containers:
     - name: gitleaks
-      image: ghcr.io/gitleaks/gitleaks:latest
+      image: ghcr.io/gitleaks/gitleaks:v8.28.0
       command: ["sleep", "43200"]
       tty: true
       env:
@@ -28,7 +29,7 @@ spec:
         allowPrivilegeEscalation: false
         capabilities: { drop: ["ALL"] }
     - name: semgrep
-      image: returntocorp/semgrep:latest
+      image: semgrep/semgrep:1.95.0
       command: ["sleep", "43200"]
       tty: true
       env:
@@ -40,7 +41,7 @@ spec:
         allowPrivilegeEscalation: false
         capabilities: { drop: ["ALL"] }
     - name: trivy
-      image: aquasec/trivy:latest
+      image: aquasec/trivy:0.57.1
       command: ["sleep", "43200"]
       tty: true
       env:
@@ -53,7 +54,7 @@ spec:
         allowPrivilegeEscalation: false
         capabilities: { drop: ["ALL"] }
     - name: syft
-      image: anchore/syft:debug
+      image: anchore/syft:v1.18.0-debug
       command: ["sleep", "43200"]
       tty: true
       env:
@@ -65,7 +66,7 @@ spec:
         allowPrivilegeEscalation: false
         capabilities: { drop: ["ALL"] }
     - name: cosign
-      image: bitnami/cosign:latest
+      image: bitnami/cosign:sha256-348db85058fc55736357e9f9bc46b6539f910d26674e831c11ae0ee2498a8d03
       command: ["sleep", "43200"]
       tty: true
       env:

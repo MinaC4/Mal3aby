@@ -6,6 +6,7 @@ metadata:
     malaby.io/agent: node
 spec:
   serviceAccountName: jenkins-agent
+  automountServiceAccountToken: false
   restartPolicy: Never
   securityContext:
     runAsNonRoot: true

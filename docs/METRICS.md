@@ -16,11 +16,11 @@
 - trivy image scan runs per image (report-only today; tighten to fail on CRITICAL-with-fix).
 
 ## Capacity (steady state, malaby-dev)
-- api 50m/64Mi req (lim 250m/256Mi), frontends 10m/32Mi (lim 100m/64Mi), mongo 100m/256Mi (lim 500m/512Mi).
+- api 50m/64Mi req (lim 500m/256Mi), frontends 10m/32Mi (lim 100m/64Mi), mongo 100m/256Mi (lim 500m/512Mi).
 - Actual observed ≈ 53m CPU / 157Mi RAM for the app; Falco adds ~100m/256Mi per node.
 - **Load baseline** (`GET /api/pitches`, 200 req, conc 10, loaded node): p50 1400 ms, p95 1759 ms,
-  p99 2225 ms, 7.1 rps, 0 errors. High due to multi-hop proxy + loaded node; recommend api CPU
-  limit 250m→500m and re-measure.
+  p99 2225 ms, 7.1 rps, 0 errors. High due to multi-hop proxy + a loaded node; the deployed api CPU
+  limit is already 500m — re-measure on a quiet node and add per-hop timing (nginx/api/Mongo).
 
 ## Security signal
 - `malaby_admin_auth_failures_total`: should stay ~0 post-fix; a spike alerts (`MalabyAdminAuthFailureSpike`).

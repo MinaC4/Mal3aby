@@ -21,9 +21,9 @@ const auth = require('./routes/auth');
 const app = express();
 
 app.disable('x-powered-by');
-// Behind the frontend nginx proxy and the Traefik ingress: trust one proxy hop so
-// express-rate-limit reads the real client IP from X-Forwarded-For.
-app.set('trust proxy', 1);
+// Traffic path: Traefik -> frontend nginx -> api (two proxies). Trusting two hops makes
+// express-rate-limit read the real client IP from X-Forwarded-For (one hop gave the Traefik IP).
+app.set('trust proxy', 2);
 app.use(helmet());
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true, limit: '100kb' }));
@@ -69,7 +69,7 @@ app.get('/ready', (req, res) => {
 app.use((req, res, next) => {
   const stop = httpRequestDuration.startTimer();
   res.on('finish', () => {
-    const labels = { method: req.method, route: req.route ? req.route.path : req.path, status: String(res.statusCode) };
+    const labels = { method: req.method, route: req.route ? req.route.path : 'unmatched', status: String(res.statusCode) };
     stop(labels);
     httpRequestsTotal.inc(labels);
   });
@@ -140,6 +140,13 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', err.message);
+});
+
+// Graceful shutdown so Kubernetes rolling updates don't wait for the kill timeout.
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down');
+  server.close(() => process.exit(0));
+  setTimeout(() => process.exit(1), 10000).unref();
 });
 
 module.exports = app;
