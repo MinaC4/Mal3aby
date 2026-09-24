@@ -1,8 +1,9 @@
 # Malaby DevSecOps — STATE (handoff)
 
-Phase: **0–14 + hardening merged to `main` (`6e67878`)**; Argo Synced/Healthy | Updated: 2026-09-18
-Kyverno `malaby-restricted` is **Enforce** (non-root nginx/mongo/api, readOnlyRootFS). Remaining optional:
-`verify-images` Enforce (Harbor TLS), ZAP run, Loki, staging/prod, GPG key, Backstage registration.
+Phase: **external review remediated** (`docs/REVIEW-REMEDIATION.md`) | Updated: 2026-09-24
+M-01/02/03/04/08/09/11/13/14/17 fixed & verified live (getIndexes, 400/409, smoke 6/6, npm 13/13);
+M-05/06/07 fixed in code. Deferred: Vault persistence + TLS (operator), CI re-run to confirm gates.
+Cosign key rotated after a Vault dev-mode loss; deployed images re-signed & verified.
 
 ## Resume here
 Read this file + the one or two files it names. Touch only `malaby-*`. Never modify the shared
