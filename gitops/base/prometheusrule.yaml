@@ -36,7 +36,7 @@ spec:
           annotations:
             summary: "A Malaby pod is restarting repeatedly"
         - alert: MalabyKyvernoPolicyFailures
-          expr: sum(kyverno_policy_results_total{result="fail"}) > 0
+          expr: sum(increase(kyverno_policy_results_total{result="fail", namespace="malaby-dev"}[15m])) > 0
           for: 10m
           labels: { severity: info, part_of: malaby }
           annotations:

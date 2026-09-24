@@ -7,13 +7,14 @@ metadata:
     malaby.io/agent: build
 spec:
   serviceAccountName: jenkins-agent
+  automountServiceAccountToken: false
   restartPolicy: Never
   securityContext:
     seccompProfile:
       type: RuntimeDefault
   containers:
     - name: kaniko
-      image: gcr.io/kaniko-project/executor:debug
+      image: gcr.io/kaniko-project/executor:v1.23.2-debug
       command: ["/busybox/sh", "-c", "sleep 43200"]
       tty: true
       resources:

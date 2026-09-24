@@ -66,8 +66,11 @@ for env in $ENVS; do
   # api secret
   if [ "$FORCE" = "1" ] || [ "$(api GET "malaby/data/$env/api")" = "404" ]; then
     jwt="$(rand 32)"; adminpw="$(rand 16)"
-    code=$(api POST "malaby/data/$env/api" "$(jq -n --arg j "$jwt" --arg a "$adminpw" \
-      '{data:{JWT_SECRET:$j, ADMIN_PASSWORD:$a, CORS_ORIGIN:"*"}}')")
+    cors="http://malaby-$env.192.168.1.8.nip.io,http://malaby-admin-$env.192.168.1.8.nip.io"
+    hash="$(node -e "console.log(require('./malaby/backend/node_modules/bcryptjs').hashSync(process.argv[1],10))" "$adminpw" 2>/dev/null || true)"
+    if [ -z "$hash" ]; then echo "    ERROR: bcryptjs not found — run 'npm ci' in malaby/backend first"; exit 1; fi
+    code=$(api POST "malaby/data/$env/api" "$(jq -n --arg j "$jwt" --arg a "$adminpw" --arg h "$hash" --arg c "$cors" \
+      '{data:{JWT_SECRET:$j, ADMIN_PASSWORD:$a, ADMIN_PASSWORD_HASH:$h, ADMIN_USERNAME:"admin", CORS_ORIGIN:$c}}')")
     [ "$code" = "204" ] || [ "$code" = "200" ] || { echo "    api secret ERROR $code: $(cat /tmp/vb.out)"; exit 1; }
     echo "    wrote malaby/data/$env/api"
   else

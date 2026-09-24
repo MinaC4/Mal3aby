@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
+const { isValidDuration, isValidDateString } = require('../utils/validation');
 const Booking = require('../models/Booking');
 const Pitch = require('../models/Pitch');
 const Notification = require('../models/Notification');
@@ -41,7 +43,19 @@ router.get('/availability', async (req, res, next) => {
       });
     }
 
-    const requestedDuration = parseInt(duration) || 1;
+    if (!mongoose.isValidObjectId(pitchId)) {
+      return res.status(400).json({ success: false, message: 'pitchId is not a valid id' });
+    }
+
+    if (!isValidDateString(date)) {
+      return res.status(400).json({ success: false, message: 'date must be YYYY-MM-DD' });
+    }
+
+    if (!isValidDuration(duration)) {
+      return res.status(400).json({ success: false, message: 'duration must be an integer between 1 and 4' });
+    }
+
+    const requestedDuration = Number(duration);
 
     const { start: startOfDay, end: endOfDay } = utcDayRange(date);
 
@@ -278,7 +292,7 @@ router.put('/:id/status', writeLimiter, requireAdmin, async (req, res, next) => 
 
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
-      { status },
+      { status, isBlocking: status === 'confirmed' || status === 'completed' },
       { new: true, runValidators: true }
     ).populate('pitch');
 
@@ -322,14 +336,7 @@ router.put('/:id/payment', writeLimiter, async (req, res, next) => {
       });
     }
 
-    const booking = await Booking.findByIdAndUpdate(
-      req.params.id,
-      {
-        paymentScreenshot: paymentScreenshotUrl,
-        status: 'pending'
-      },
-      { new: true }
-    ).populate('pitch');
+    const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
       return res.status(404).json({
@@ -337,6 +344,19 @@ router.put('/:id/payment', writeLimiter, async (req, res, next) => {
         message: 'Booking not found'
       });
     }
+
+    // Payment proof can only be attached to a still-pending booking and must never
+    // change its status (previously this endpoint reset confirmed bookings to pending).
+    if (booking.status !== 'pending') {
+      return res.status(409).json({
+        success: false,
+        message: 'Payment can only be attached to a pending booking'
+      });
+    }
+
+    booking.paymentScreenshot = paymentScreenshotUrl;
+    await booking.save();
+    await booking.populate('pitch');
 
     await Notification.create({
       booking: booking._id,

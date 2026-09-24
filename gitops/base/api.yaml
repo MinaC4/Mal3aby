@@ -27,7 +27,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: api
-          image: 192.168.1.8:30082/malaby/api@sha256:978b2a9231624993b1f78c7eaf4deea401475d46748233b4e089b5fa09a61cc7
+          image: 192.168.1.8:30082/malaby/api@sha256:4e3346e5ecf9a93655c2fc6a4d2796bbc5bab1320a8f2ec5ee2fba22bc36782b
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false

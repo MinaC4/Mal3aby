@@ -54,6 +54,11 @@ const bookingSchema = new mongoose.Schema({
     enum: ['pending', 'confirmed', 'cancelled', 'completed'],
     default: 'pending'
   },
+  // True only for confirmed/completed bookings. Used by the DB-level double-booking guard.
+  isBlocking: {
+    type: Boolean,
+    default: false
+  },
   notes: {
     type: String,
     trim: true
@@ -62,14 +67,13 @@ const bookingSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// ✅ FIXED: Partial unique index - excludes cancelled bookings
-// This allows re-booking a cancelled time slot
+// DB-level double-booking guard: at most ONE blocking booking (confirmed/completed)
+// per pitch + date + slot. The partial filter uses EQUALITY (isBlocking: true), which
+// MongoDB supports in partialFilterExpression — the previous `{ status: { $ne: 'cancelled' } }`
+// filter is NOT supported and the index silently failed to build (verified with getIndexes()).
 bookingSchema.index(
-  { pitch: 1, bookingDate: 1, timeSlot: 1, status: 1 },
-  { 
-    unique: true,
-    partialFilterExpression: { status: { $ne: 'cancelled' } }
-  }
+  { pitch: 1, bookingDate: 1, timeSlot: 1 },
+  { unique: true, partialFilterExpression: { isBlocking: true } }
 );
 
 // Regular index for fast queries

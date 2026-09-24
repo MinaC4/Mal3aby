@@ -39,7 +39,7 @@ dashboard lists/confirm/cancels bookings and reads notifications. Three deployab
 
 ## 5. Data model (`models/`)
 - `Pitch`: name, description, images[], pricePerHour, location, amenities[], weekly `availability[day].slots[time,available]`, rating, isActive.
-- `Booking`: pitch(ref), customer{Name,Email,Phone}, bookingDate, timeSlot(string), duration(1-4), totalPrice, paymentScreenshot, paymentMethod enum, status enum, notes. Partial unique index `{pitch,bookingDate,timeSlot,status}` excluding `cancelled` (`Booking.js:67-73`) — good DB-level double-booking guard.
+- `Booking`: pitch(ref), customer{Name,Email,Phone}, bookingDate, timeSlot(string), duration(1-4), totalPrice, paymentScreenshot, paymentMethod enum, status enum, notes, `isBlocking` (true for confirmed/completed). **The original partial unique index used `$ne` in `partialFilterExpression`, which MongoDB does not support, so it silently failed to build** (verified with `getIndexes()`). Replaced by a partial unique index on `{pitch,bookingDate,timeSlot}` with `partialFilterExpression: { isBlocking: true }` (equality — supported) — the real DB-level double-booking guard.
 - `Notification`: booking(ref), title, message, type enum, read, readAt.
 - `seed.js`/`clean.js` are dev-only; seed uses `dotenv.config()` default path (inconsistent with server).
 

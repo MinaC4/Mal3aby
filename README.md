@@ -71,7 +71,7 @@ internet → Traefik
 No internet egress from the app (MongoDB is in-cluster). Full diagram and delivery flow:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-## DevSecOps controls (all live)
+## DevSecOps controls (live on `dev`)
 
 | Area | Implementation |
 |---|---|
@@ -150,6 +150,7 @@ docker compose up --build -d
 
 ## Honest limitations
 
+- The dev environment is **HTTP-only** (no cert-manager/TLS on the homelab): the admin password and JWT travel unencrypted on the LAN.
 - Vault runs in dev mode (in-memory): a restart wipes the `malaby/` secrets (idempotent bootstrap provided).
 - Commits are **unsigned** (no GPG key configured).
 - Kyverno `malaby-verify-images` is in **Audit** because Harbor is served over HTTP (Kyverno cannot verify);
