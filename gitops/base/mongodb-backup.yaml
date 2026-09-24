@@ -46,6 +46,8 @@ spec:
                   find /backup -name 'malaby-*.gz' -mtime +7 -delete
                   ls -lh /backup
               env:
+                - name: HOME
+                  value: /tmp
                 - name: MONGODB_URI
                   valueFrom:
                     secretKeyRef: { name: mongodb-secrets-eso, key: MONGODB_URI }

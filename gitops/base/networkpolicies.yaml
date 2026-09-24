@@ -91,6 +91,8 @@ spec:
     - from:
         - podSelector:
             matchLabels: { app: api }
+        - podSelector:
+            matchLabels: { app: mongodb-backup }
       ports:
         - { protocol: TCP, port: 27017 }
 ---
