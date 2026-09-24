@@ -11,7 +11,7 @@ spec:
   project: malaby
   source:
     repoURL: https://github.com/MinaC4/Mal3aby.git
-    targetRevision: fix/claude-review-remediation
+    targetRevision: main
     path: gitops/base
     directory:
       recurse: false
